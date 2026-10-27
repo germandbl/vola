@@ -1,0 +1,27 @@
+{
+  "name": "vola",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev:api": "pnpm --filter ./apps/api start:dev",
+    "dev:web": "pnpm --filter ./apps/web dev",
+    "dev": "pnpm run \"/^dev:.*/\""
+  },
+  "workspaces": [
+    "apps/*"
+  ],
+  "engines": {
+    "packageManager": {
+      "name": "pnpm",
+      "version": "12.15.0",
+      "onFail": "download"
+    }
+  },
+  "packageManager": "pnpm@12.15.0",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module"
+}
