@@ -12,7 +12,7 @@
   "workspaces": [
     "apps/*"
   ],
-  "packageManager": "pnpm@12.15.0",
+  "packageManager": "pnpm@10.34.9",
   "keywords": [],
   "author": "",
   "license": "ISC",
