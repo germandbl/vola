@@ -1,5 +1,9 @@
 # Visión
 
+## Problema
+
+Muchos comercios coordinan sus entregas por WhatsApp y llamadas. No saben por dónde va cada pedido, suele haber conflicto por cobros hechos en efectivo y registro de todo en hojas de excel o cuadernos.
+
 ## Evidencia
 
 La visión del producto salió de un problema que yo veía muy común cada vez que compraba algo por redes sociales a alguna empresa, estas son algunas de las cosas que hice en esta ocasión para el proyecto:
@@ -31,10 +35,11 @@ Ventaja: atención cercana y un producto pensado para la región.
 
 ## Hipótesis riesgosas
 
-1. Los comercios tienen o pueden conseguir sus propios motoristas.
-2. Los motoristas usarían la app en cada entrega.
+1. Los comercios usarían la app para registrar los cobros en efectivo en vez del cuaderno o Excel
+2. Los comercios tienen o pueden conseguir sus propios motoristas.
+3. Los motoristas usarían la app en cada entrega.
 
-## Dentro / fuera
+## Alcance (dentro / fuera)
 
 Dentro:
 - Login con email y contraseña.
