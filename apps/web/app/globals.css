@@ -98,7 +98,7 @@
   --card-foreground: var(--color-tinta);
   --popover: var(--color-blanco);
   --popover-foreground: var(--color-tinta);
-  --primary: var(--color-accion);
+  --primary: var(--color-tinta);
   --primary-foreground: var(--color-blanco);
   --secondary: var(--color-blanco);
   --secondary-foreground: var(--color-tinta);
@@ -117,11 +117,11 @@
   --chart-4: var(--color-maya);
   --chart-5: var(--color-tinta-suave);
   --radius: 8px;
-  --sidebar: var(--color-marino);
+  --sidebar: var(--color-tinta);
   --sidebar-foreground: var(--color-blanco);
-  --sidebar-primary: var(--color-accion);
-  --sidebar-primary-foreground: var(--color-blanco);
-  --sidebar-accent: var(--color-accion);
+  --sidebar-primary: var(--color-blanco);
+  --sidebar-primary-foreground: var(--color-tinta);
+  --sidebar-accent: color-mix(in oklab, var(--color-blanco) 12%, transparent);
   --sidebar-accent-foreground: var(--color-blanco);
   --sidebar-border: color-mix(in oklab, var(--color-blanco) 15%, transparent);
   --sidebar-ring: var(--color-blanco);

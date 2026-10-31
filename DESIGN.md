@@ -39,7 +39,7 @@ Usamos el voseo centroamericano y el imperativo directo.
 Todavía no hay logotipo diseñado. Mientras tanto, la marca se escribe como palabra: **Volá!** en Outfit 800, siempre con tilde y signo de exclamación.
 
 - Sobre `cielo`, `maya`, `escarcha`, `nube`, `aire` o `blanco`: logotipo en `tinta`.
-- Sobre `marino` o `accion`: logotipo en `blanco`.
+- Sobre `tinta`, `marino` o `accion`: logotipo en `blanco`.
 - Nunca en blanco sobre `cielo` ni ningún azul claro (2.6:1 o menos, no se lee).
 - Nunca "Vola" sin tilde ni sin exclamación.
 - Área de respeto: la altura de la letra "V" alrededor de todo el logotipo.
@@ -65,10 +65,10 @@ La paleta parte de azules suaves de cielo y se completa con azules profundos que
 
 | Token | Hex | Uso | Texto encima |
 | --- | --- | --- | --- |
-| `tinta` | `#0E1F3D` | Texto principal y logotipo sobre todos los azules claros y blanco. | — |
+| `tinta` | `#0E1F3D` | Texto principal y logotipo sobre azules claros y blanco. También el color oscuro de la marca: barra lateral, botones principales y bloques oscuros. | `blanco` (16.4:1) |
 | `tinta-suave` | `#46587A` | Texto secundario sobre blanco, aire, bruma y nube (5.2:1 o más). No sobre cielo ni maya. | — |
-| `marino` | `#1E3F8A` | Barra lateral de la web, bloques oscuros, encabezados. | `blanco` (9.8:1) |
-| `accion` | `#2A5BD7` | Botones principales, enlaces, anillo de foco. | `blanco` (5.9:1) |
+| `marino` | `#1E3F8A` | Apoyo oscuro secundario: ilustraciones y material impreso. No para la barra lateral ni botones. | `blanco` (9.8:1) |
+| `accion` | `#2A5BD7` | Enlaces y anillo de foco. No para botones ni fondos. | `blanco` (5.9:1) |
 
 ### 4.3 Neutros y bordes
 
@@ -80,19 +80,20 @@ La paleta parte de azules suaves de cielo y se completa con azules profundos que
 
 ### 4.4 Regla de oro: texto oscuro sobre azul claro
 
-Los azules suaves **no aguantan texto blanco**. Todo texto sobre `cielo`, `maya`, `escarcha`, `nube`, `bruma` o `aire` va en `tinta` (o `tinta-suave` donde se indica). El texto blanco solo va sobre `marino` y `accion`.
+Los azules suaves **no aguantan texto blanco**. Todo texto sobre `cielo`, `maya`, `escarcha`, `nube`, `bruma` o `aire` va en `tinta` (o `tinta-suave` donde se indica). El texto blanco solo va sobre `tinta`, `marino` y `accion`.
 
 | Fondo | Texto permitido | Contraste |
 | --- | --- | --- |
 | `cielo` | `tinta` | 6.3:1 |
 | `maya` / `escarcha` | `tinta` | 8.9:1 o más |
 | `nube` / `bruma` / `aire` | `tinta`, `tinta-suave` | 5.0:1 o más |
+| `tinta` | `blanco` | 16.4:1 |
 | `marino` | `blanco` | 9.8:1 |
 | `accion` | `blanco` | 5.9:1 |
 
 ### 4.5 Proporción
 
-- **Pantallas**: ~60% `aire` y `blanco`, 25% azules de marca, 10% `tinta` y `marino`, 5% `accion` (solo lo que se toca).
+- **Pantallas**: ~60% `aire` y `blanco`, 25% azules de marca, 15% `tinta` (texto, barra lateral y botones). `accion` solo en enlaces y foco.
 - **Calle** (mochilas, chalecos, cascos): `cielo` domina, logotipo grande en `tinta`, franja reflectiva para seguridad nocturna.
 
 ---
@@ -156,9 +157,9 @@ Píldoras horizontales de alto 8px y largos distintos, como estelas de algo que 
 ## 11. Componentes base
 
 ### Botón principal
-- Fondo `accion`, texto `blanco`, estilo `etiqueta` a 16px / 600, `radius-pill`.
+- Fondo `tinta`, texto `blanco`, estilo `etiqueta` a 16px / 600, `radius-pill`.
 - Alto 48px en móvil, 40px en web. Padding horizontal `space-6`.
-- Hover/pressed: fondo `marino`.
+- Hover/pressed: fondo `tinta` al 85%.
 - Foco: anillo de 2px `accion` con 2px de separación en el color del fondo.
 
 ### Botón secundario
@@ -188,16 +189,16 @@ Píldoras horizontales de alto 8px y largos distintos, como estelas de algo que 
 | Cancelado | "Cancelado" |
 
 ### Barra lateral (web de comercios y superadmins)
-- Fondo `marino`, texto e íconos `blanco`.
-- Ítem activo: fondo `accion`, texto `blanco`.
+- Fondo `tinta`, texto e íconos `blanco`.
+- Ítem activo y hover: fondo `blanco` al 12%, texto `blanco`.
 - El panel de superadmin usa el mismo sistema, con un chip `etiqueta` "Admin" junto al logotipo.
 
 ---
 
 ## 12. Aplicaciones
 
-- **App de motoristas**: fondo `aire`, tarjetas `blanco`, botón "Aceptar pedido" en `accion` con `radius-pill`, estados en chips `nube`.
-- **Web de comercios y superadmins**: barra lateral `marino`, contenido sobre `aire`, tablas con filas alternas `bruma`.
+- **App de motoristas**: fondo `aire`, tarjetas `blanco`, botón "Aceptar pedido" en `tinta` con `radius-pill`, estados en chips `nube`.
+- **Web de comercios y superadmins**: barra lateral `tinta`, contenido sobre `aire`, tablas con filas alternas `bruma`.
 - **Material de calle**: mochila y chaleco en `cielo` (o `escarcha` para tela, que es su Pantone), logotipo en `tinta`, franja reflectiva.
 - **Redes sociales**: fondos `cielo` o `maya`, títulos en `tinta`, líneas de velocidad como recurso.
 
@@ -205,7 +206,7 @@ Píldoras horizontales de alto 8px y largos distintos, como estelas de algo que 
 
 - Texto blanco sobre cualquier azul claro.
 - Mezclar la paleta con rojo o naranja de marca (son los colores de la competencia).
-- Usar `accion` como fondo de grandes áreas; es solo para lo que se toca.
+- Usar `accion` como fondo; es solo para enlaces y foco.
 - Deformar, inclinar o cambiar el color del logotipo fuera de las reglas.
 - Comunicar un estado solo con color.
 
