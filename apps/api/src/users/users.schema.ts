@@ -5,7 +5,8 @@ import { roles } from '../roles/roles.schema.js';
 export const users = pgTable('users', {
   id: bigint('id', { mode: 'number' }).primaryKey().generatedAlwaysAsIdentity(),
   name: varchar('name').notNull(),
-  email: varchar('email').notNull(),
+  email: varchar('email').notNull().unique(),
+  passwordHash: varchar('password_hash').notNull(),
   phoneNumber: varchar('phone_number').notNull(),
   roleId: bigint('role_id', { mode: 'number' })
     .notNull()

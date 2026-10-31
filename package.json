@@ -5,9 +5,10 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "dev:shared": "pnpm --filter ./packages/shared dev",
     "dev:api": "pnpm --filter ./apps/api start:dev",
     "dev:web": "pnpm --filter ./apps/web dev",
-    "dev": "pnpm run \"/^dev:.*/\""
+    "dev": "pnpm --filter ./packages/shared build && pnpm run \"/^dev:.*/\""
   },
   "workspaces": [
     "apps/*"

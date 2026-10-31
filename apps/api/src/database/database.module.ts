@@ -6,7 +6,7 @@ export const DATABASE = Symbol('DATABASE');
 
 export type Database = NodePgDatabase & { $client: Pool };
 
-function createDatabase(): Database {
+export function createDatabase(): Database {
   const databaseUrl = process.env.DATABASE_URL;
   if (!databaseUrl) {
     throw new Error('DATABASE_URL is not defined. Add it to apps/api/.env');
