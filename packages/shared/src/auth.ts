@@ -7,16 +7,20 @@ export const loginSchema = z.object({
 
 export type LoginRequest = z.infer<typeof loginSchema>;
 
-export interface AuthUser {
-  id: number;
-  name: string;
-  email: string;
-  phoneNumber: string;
-  roleId: number;
-  organizationId: number;
-}
+export const authUserSchema = z.object({
+  id: z.number(),
+  name: z.string(),
+  email: z.string(),
+  phoneNumber: z.string(),
+  roleId: z.number(),
+  organizationId: z.number(),
+});
 
-export interface LoginResponse {
-  token: string;
-  user: AuthUser;
-}
+export type AuthUser = z.infer<typeof authUserSchema>;
+
+export const loginResponseSchema = z.object({
+  token: z.string(),
+  user: authUserSchema,
+});
+
+export type LoginResponse = z.infer<typeof loginResponseSchema>;

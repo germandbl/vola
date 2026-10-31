@@ -164,6 +164,8 @@ retries++;
 - Si un componente pasa de ~150 líneas, divídelo, pero no lo pongas en el mismo archivo, cada componente en un archivo aparte, correctamente agrupados en carpetas, solo si un componente es lo suficientemente pequeño y solo es usado por otro componente más, puedes ponerlos en el mismo archivo.
 - La lógica de datos va en hooks (`useOrders`), no mezclada con el JSX.
 - Usa los colores, espacios y tipografía de `DESIGN.md`. Nunca escribas colores hex sueltos en componentes.
+- En `apps/web`, toda la UI se arma con componentes de shadcn/ui (`pnpm dlx shadcn@latest add <componente>` desde `apps/web`). No hagas a mano un componente que shadcn ya tiene. El tema de shadcn está conectado a los tokens de `DESIGN.md` en `app/globals.css`.
+- En `apps/web`, la tipografía de `DESIGN.md` usa la escala de Tailwind: `etiqueta` = `text-xs`, `pequeno` = `text-sm`, `cuerpo` = `text-base`, `titulo-3` = `text-lg`, `titulo-2` = `text-2xl`, `titulo-1` = `text-4xl`.
 - Textos de la interfaz en español con voseo: "Pedí", "Probá de nuevo".
 
 ## Antes de terminar una tarea
