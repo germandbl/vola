@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/sidebar";
 import { logout } from "@/lib/auth-actions";
 import { LogoutButton } from "./LogoutButton";
-import { SidebarNav } from "./SidebarNav";
+import { SidebarNavForUser, SidebarNavSkeleton } from "./SidebarNavForUser";
 import { UserSummary, UserSummarySkeleton } from "./UserSummary";
 
 export function AppSidebar() {
@@ -21,7 +21,9 @@ export function AppSidebar() {
         <Logo tone="blanco" size="medio" />
       </SidebarHeader>
       <SidebarContent>
-        <SidebarNav />
+        <Suspense fallback={<SidebarNavSkeleton />}>
+          <SidebarNavForUser />
+        </Suspense>
       </SidebarContent>
       <SidebarSeparator />
       <SidebarFooter className="gap-4 pb-4">
