@@ -1,4 +1,6 @@
 import { z } from 'zod';
+import { organizationTypeSchema } from './organizations.js';
+import { roleNameSchema } from './roles.js';
 
 export const loginSchema = z.object({
   email: z.email('Escribí un email válido.').toLowerCase(),
@@ -12,8 +14,9 @@ export const authUserSchema = z.object({
   name: z.string(),
   email: z.string(),
   phoneNumber: z.string(),
-  roleId: z.number(),
+  role: roleNameSchema,
   organizationId: z.number(),
+  organizationType: organizationTypeSchema,
 });
 
 export type AuthUser = z.infer<typeof authUserSchema>;

@@ -3,8 +3,14 @@ import type { AuthUser, LoginRequest, LoginResponse } from '@vola/shared';
 import { and, eq, gt } from 'drizzle-orm';
 import { createHash, randomBytes } from 'node:crypto';
 import { DATABASE, type Database } from '../database/database.module.js';
+import { organizations } from '../organizations/organizations.schema.js';
+import { roles } from '../roles/roles.schema.js';
 import { users } from '../users/users.schema.js';
-import { UsersService, type User } from '../users/users.service.js';
+import {
+  UsersService,
+  authUserColumns,
+  toAuthUser,
+} from '../users/users.service.js';
 import { verifyPassword } from './passwords.js';
 import { sessions } from './sessions.schema.js';
 
@@ -16,17 +22,6 @@ const INVALID_CREDENTIALS_MESSAGE = 'Email or password is incorrect';
 // Guardamos solo el hash para que alguien con acceso de lectura a la base de datos no pueda usar las sesiones.
 function hashSessionToken(token: string): string {
   return createHash('sha256').update(token).digest('hex');
-}
-
-function toAuthUser(user: User): AuthUser {
-  return {
-    id: user.id,
-    name: user.name,
-    email: user.email,
-    phoneNumber: user.phoneNumber,
-    roleId: user.roleId,
-    organizationId: user.organizationId,
-  };
 }
 
 @Injectable()
@@ -48,7 +43,8 @@ export class AuthService {
     }
 
     const token = await this.createSession(user.id);
-    return { token, user: toAuthUser(user) };
+    const authUser = await this.usersService.findAuthUserById(user.id);
+    return { token, user: authUser };
   }
 
   async logout(token: string): Promise<void> {
@@ -59,9 +55,11 @@ export class AuthService {
 
   async findUserBySessionToken(token: string): Promise<AuthUser | undefined> {
     const [result] = await this.database
-      .select({ user: users })
+      .select(authUserColumns)
       .from(sessions)
       .innerJoin(users, eq(sessions.userId, users.id))
+      .innerJoin(roles, eq(users.roleId, roles.id))
+      .innerJoin(organizations, eq(users.organizationId, organizations.id))
       .where(
         and(
           eq(sessions.tokenHash, hashSessionToken(token)),
@@ -69,7 +67,7 @@ export class AuthService {
         ),
       );
     if (!result) return undefined;
-    return toAuthUser(result.user);
+    return toAuthUser(result);
   }
 
   private async createSession(userId: number): Promise<string> {
