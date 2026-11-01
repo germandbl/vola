@@ -43,14 +43,14 @@ Ventaja: atención cercana y un producto pensado para la región.
 
 Dentro:
 - Login con email y contraseña.
-- Usuarios creados por un superadmin.
-- Organizaciones, roles, equipos y motoristas asignados a comercios.
-- Panel web para comercios y superadmins.
+- Organizaciones, usuarios, roles y permisos por usuario.
+- Órdenes, asignación a motoristas y seguimiento por GPS.
+- Solicitudes de cuenta de motoristas y comercios.
+- Reglas de asignación y de cobro por comercio.
+- Panel web para comercios y Volá.
 - App para motoristas.
 
 Fuera:
-- Registro público.
 - Recuperar contraseña.
-- Permisos por usuario.
 - App para clientes.
 - Pagos dentro de la plataforma.

@@ -28,6 +28,14 @@ Un panel web donde el comercio ve sus pedidos y motoristas, y una app para que e
 - Sesiones guardadas en la base de datos: puedo quitarle el acceso a un usuario al momento.
 - Railway: base de datos y API en el mismo lugar.
 
+## Definición de Hecho
+
+Una historia está hecha cuando:
+
+- Cumple todos sus criterios de aceptación.
+- Compila sin errores y pasa el lint.
+- Está desplegada en producción.
+
 ## Correr en local
 
 ```sh
