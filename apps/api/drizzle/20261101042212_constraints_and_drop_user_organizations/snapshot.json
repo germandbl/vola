@@ -1,0 +1,1048 @@
+{
+  "type": "diff",
+  "version": "9",
+  "dialect": "postgres",
+  "id": "61e74329-c19d-405b-bcb8-303b138aa6f6",
+  "prevIds": [
+    "e140f25b-b240-4044-9c75-58ca7f98e4c6"
+  ],
+  "footprints": [
+    {
+      "statementType": "drop_table",
+      "statementTarget": [
+        "table",
+        "public",
+        "user_organizations"
+      ],
+      "writes": [
+        "s|tbl|public.user_organizations",
+        "n|tbl|public.user_organizations",
+        "e|tbl|public.user_organizations",
+        "n|rel|public.user_organizations",
+        "n|type|public.user_organizations"
+      ],
+      "reads": [
+        "n|sch|public"
+      ]
+    },
+    {
+      "statementType": "add_unique",
+      "statementTarget": [
+        "table",
+        "public",
+        "driver_merchant_assignments"
+      ],
+      "writes": [
+        "s|uq|public.driver_merchant_assignments.driver_merchant_assignments_driver_id_organization_id_unique",
+        "n|uq|public.driver_merchant_assignments.driver_merchant_assignments_driver_id_organization_id_unique",
+        "e|uq|public.driver_merchant_assignments.driver_merchant_assignments_driver_id_organization_id_unique",
+        "n|con|public.driver_merchant_assignments.driver_merchant_assignments_driver_id_organization_id_unique",
+        "n|rel|public.driver_merchant_assignments_driver_id_organization_id_unique"
+      ],
+      "reads": [
+        "n|tbl|public.driver_merchant_assignments",
+        "n|sch|public",
+        "n|col|public.driver_merchant_assignments.driver_id",
+        "n|col|public.driver_merchant_assignments.organization_id"
+      ]
+    },
+    {
+      "statementType": "add_unique",
+      "statementTarget": [
+        "table",
+        "public",
+        "role_permissions"
+      ],
+      "writes": [
+        "s|uq|public.role_permissions.role_permissions_role_id_permission_key_unique",
+        "n|uq|public.role_permissions.role_permissions_role_id_permission_key_unique",
+        "e|uq|public.role_permissions.role_permissions_role_id_permission_key_unique",
+        "n|con|public.role_permissions.role_permissions_role_id_permission_key_unique",
+        "n|rel|public.role_permissions_role_id_permission_key_unique"
+      ],
+      "reads": [
+        "n|tbl|public.role_permissions",
+        "n|sch|public",
+        "n|col|public.role_permissions.role_id",
+        "n|col|public.role_permissions.permission_key"
+      ]
+    },
+    {
+      "statementType": "add_unique",
+      "statementTarget": [
+        "table",
+        "public",
+        "team_members"
+      ],
+      "writes": [
+        "s|uq|public.team_members.team_members_team_id_user_id_unique",
+        "n|uq|public.team_members.team_members_team_id_user_id_unique",
+        "e|uq|public.team_members.team_members_team_id_user_id_unique",
+        "n|con|public.team_members.team_members_team_id_user_id_unique",
+        "n|rel|public.team_members_team_id_user_id_unique"
+      ],
+      "reads": [
+        "n|tbl|public.team_members",
+        "n|sch|public",
+        "n|col|public.team_members.team_id",
+        "n|col|public.team_members.user_id"
+      ]
+    },
+    {
+      "statementType": "add_unique",
+      "statementTarget": [
+        "table",
+        "public",
+        "teams"
+      ],
+      "writes": [
+        "s|uq|public.teams.teams_organization_id_name_unique",
+        "n|uq|public.teams.teams_organization_id_name_unique",
+        "e|uq|public.teams.teams_organization_id_name_unique",
+        "n|con|public.teams.teams_organization_id_name_unique",
+        "n|rel|public.teams_organization_id_name_unique"
+      ],
+      "reads": [
+        "n|tbl|public.teams",
+        "n|sch|public",
+        "n|col|public.teams.organization_id",
+        "n|col|public.teams.name"
+      ]
+    },
+    {
+      "statementType": "add_unique",
+      "statementTarget": [
+        "table",
+        "public",
+        "user_permissions"
+      ],
+      "writes": [
+        "s|uq|public.user_permissions.user_permissions_user_id_permission_key_unique",
+        "n|uq|public.user_permissions.user_permissions_user_id_permission_key_unique",
+        "e|uq|public.user_permissions.user_permissions_user_id_permission_key_unique",
+        "n|con|public.user_permissions.user_permissions_user_id_permission_key_unique",
+        "n|rel|public.user_permissions_user_id_permission_key_unique"
+      ],
+      "reads": [
+        "n|tbl|public.user_permissions",
+        "n|sch|public",
+        "n|col|public.user_permissions.user_id",
+        "n|col|public.user_permissions.permission_key"
+      ]
+    },
+    {
+      "statementType": "add_unique",
+      "statementTarget": [
+        "table",
+        "public",
+        "countries"
+      ],
+      "writes": [
+        "s|uq|public.countries.countries_name_key",
+        "n|uq|public.countries.countries_name_key",
+        "e|uq|public.countries.countries_name_key",
+        "n|con|public.countries.countries_name_key",
+        "n|rel|public.countries_name_key"
+      ],
+      "reads": [
+        "n|tbl|public.countries",
+        "n|sch|public",
+        "n|col|public.countries.name"
+      ]
+    },
+    {
+      "statementType": "add_unique",
+      "statementTarget": [
+        "table",
+        "public",
+        "countries"
+      ],
+      "writes": [
+        "s|uq|public.countries.countries_code_key",
+        "n|uq|public.countries.countries_code_key",
+        "e|uq|public.countries.countries_code_key",
+        "n|con|public.countries.countries_code_key",
+        "n|rel|public.countries_code_key"
+      ],
+      "reads": [
+        "n|tbl|public.countries",
+        "n|sch|public",
+        "n|col|public.countries.code"
+      ]
+    },
+    {
+      "statementType": "add_unique",
+      "statementTarget": [
+        "table",
+        "public",
+        "drivers"
+      ],
+      "writes": [
+        "s|uq|public.drivers.drivers_user_id_key",
+        "n|uq|public.drivers.drivers_user_id_key",
+        "e|uq|public.drivers.drivers_user_id_key",
+        "n|con|public.drivers.drivers_user_id_key",
+        "n|rel|public.drivers_user_id_key"
+      ],
+      "reads": [
+        "n|tbl|public.drivers",
+        "n|sch|public",
+        "n|col|public.drivers.user_id"
+      ]
+    },
+    {
+      "statementType": "add_unique",
+      "statementTarget": [
+        "table",
+        "public",
+        "roles"
+      ],
+      "writes": [
+        "s|uq|public.roles.roles_name_key",
+        "n|uq|public.roles.roles_name_key",
+        "e|uq|public.roles.roles_name_key",
+        "n|con|public.roles.roles_name_key",
+        "n|rel|public.roles_name_key"
+      ],
+      "reads": [
+        "n|tbl|public.roles",
+        "n|sch|public",
+        "n|col|public.roles.name"
+      ]
+    },
+    {
+      "statementType": "recreate_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "driver_merchant_assignments"
+      ],
+      "writes": [
+        "s|fk|public.driver_merchant_assignments.driver_merchant_assignments_driver_id_drivers_id_fkey",
+        "n|fk|public.driver_merchant_assignments.driver_merchant_assignments_driver_id_drivers_id_fkey",
+        "e|fk|public.driver_merchant_assignments.driver_merchant_assignments_driver_id_drivers_id_fkey",
+        "n|con|public.driver_merchant_assignments.driver_merchant_assignments_driver_id_drivers_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.driver_merchant_assignments",
+        "n|sch|public",
+        "n|tbl|public.drivers",
+        "n|sch|public",
+        "n|col|public.driver_merchant_assignments.driver_id",
+        "n|col|public.drivers.id",
+        "e|uniqueness|public.drivers.id"
+      ],
+      "sqlHash": "260074622d457f8b"
+    },
+    {
+      "statementType": "recreate_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "driver_merchant_assignments"
+      ],
+      "writes": [
+        "s|fk|public.driver_merchant_assignments.driver_merchant_assignments_FrXDMPggKPSV_fkey",
+        "n|fk|public.driver_merchant_assignments.driver_merchant_assignments_FrXDMPggKPSV_fkey",
+        "e|fk|public.driver_merchant_assignments.driver_merchant_assignments_FrXDMPggKPSV_fkey",
+        "n|con|public.driver_merchant_assignments.driver_merchant_assignments_FrXDMPggKPSV_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.driver_merchant_assignments",
+        "n|sch|public",
+        "n|tbl|public.organizations",
+        "n|sch|public",
+        "n|col|public.driver_merchant_assignments.organization_id",
+        "n|col|public.organizations.id",
+        "e|uniqueness|public.organizations.id"
+      ],
+      "sqlHash": "386033cef72c9b8e"
+    },
+    {
+      "statementType": "recreate_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "drivers"
+      ],
+      "writes": [
+        "s|fk|public.drivers.drivers_user_id_users_id_fkey",
+        "n|fk|public.drivers.drivers_user_id_users_id_fkey",
+        "e|fk|public.drivers.drivers_user_id_users_id_fkey",
+        "n|con|public.drivers.drivers_user_id_users_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.drivers",
+        "n|sch|public",
+        "n|tbl|public.users",
+        "n|sch|public",
+        "n|col|public.drivers.user_id",
+        "n|col|public.users.id",
+        "e|uniqueness|public.users.id"
+      ],
+      "sqlHash": "10db9b19805ff435"
+    },
+    {
+      "statementType": "recreate_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "drivers"
+      ],
+      "writes": [
+        "s|fk|public.drivers.drivers_country_id_countries_id_fkey",
+        "n|fk|public.drivers.drivers_country_id_countries_id_fkey",
+        "e|fk|public.drivers.drivers_country_id_countries_id_fkey",
+        "n|con|public.drivers.drivers_country_id_countries_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.drivers",
+        "n|sch|public",
+        "n|tbl|public.countries",
+        "n|sch|public",
+        "n|col|public.drivers.country_id",
+        "n|col|public.countries.id",
+        "e|uniqueness|public.countries.id"
+      ],
+      "sqlHash": "42c8170b45d4a93c"
+    },
+    {
+      "statementType": "recreate_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "organizations"
+      ],
+      "writes": [
+        "s|fk|public.organizations.organizations_country_id_countries_id_fkey",
+        "n|fk|public.organizations.organizations_country_id_countries_id_fkey",
+        "e|fk|public.organizations.organizations_country_id_countries_id_fkey",
+        "n|con|public.organizations.organizations_country_id_countries_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.organizations",
+        "n|sch|public",
+        "n|tbl|public.countries",
+        "n|sch|public",
+        "n|col|public.organizations.country_id",
+        "n|col|public.countries.id",
+        "e|uniqueness|public.countries.id"
+      ],
+      "sqlHash": "4ab6b44df4f07b12"
+    },
+    {
+      "statementType": "recreate_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "role_permissions"
+      ],
+      "writes": [
+        "s|fk|public.role_permissions.role_permissions_role_id_roles_id_fkey",
+        "n|fk|public.role_permissions.role_permissions_role_id_roles_id_fkey",
+        "e|fk|public.role_permissions.role_permissions_role_id_roles_id_fkey",
+        "n|con|public.role_permissions.role_permissions_role_id_roles_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.role_permissions",
+        "n|sch|public",
+        "n|tbl|public.roles",
+        "n|sch|public",
+        "n|col|public.role_permissions.role_id",
+        "n|col|public.roles.id",
+        "e|uniqueness|public.roles.id"
+      ],
+      "sqlHash": "3e80b7ad1829ad4c"
+    },
+    {
+      "statementType": "recreate_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "team_members"
+      ],
+      "writes": [
+        "s|fk|public.team_members.team_members_user_id_users_id_fkey",
+        "n|fk|public.team_members.team_members_user_id_users_id_fkey",
+        "e|fk|public.team_members.team_members_user_id_users_id_fkey",
+        "n|con|public.team_members.team_members_user_id_users_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.team_members",
+        "n|sch|public",
+        "n|tbl|public.users",
+        "n|sch|public",
+        "n|col|public.team_members.user_id",
+        "n|col|public.users.id",
+        "e|uniqueness|public.users.id"
+      ],
+      "sqlHash": "3666d689872620c3"
+    },
+    {
+      "statementType": "recreate_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "team_members"
+      ],
+      "writes": [
+        "s|fk|public.team_members.team_members_team_id_teams_id_fkey",
+        "n|fk|public.team_members.team_members_team_id_teams_id_fkey",
+        "e|fk|public.team_members.team_members_team_id_teams_id_fkey",
+        "n|con|public.team_members.team_members_team_id_teams_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.team_members",
+        "n|sch|public",
+        "n|tbl|public.teams",
+        "n|sch|public",
+        "n|col|public.team_members.team_id",
+        "n|col|public.teams.id",
+        "e|uniqueness|public.teams.id"
+      ],
+      "sqlHash": "da2b1b2acc0c636d"
+    },
+    {
+      "statementType": "recreate_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "teams"
+      ],
+      "writes": [
+        "s|fk|public.teams.teams_organization_id_organizations_id_fkey",
+        "n|fk|public.teams.teams_organization_id_organizations_id_fkey",
+        "e|fk|public.teams.teams_organization_id_organizations_id_fkey",
+        "n|con|public.teams.teams_organization_id_organizations_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.teams",
+        "n|sch|public",
+        "n|tbl|public.organizations",
+        "n|sch|public",
+        "n|col|public.teams.organization_id",
+        "n|col|public.organizations.id",
+        "e|uniqueness|public.organizations.id"
+      ],
+      "sqlHash": "db112b846fb637e3"
+    },
+    {
+      "statementType": "recreate_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "user_permissions"
+      ],
+      "writes": [
+        "s|fk|public.user_permissions.user_permissions_user_id_users_id_fkey",
+        "n|fk|public.user_permissions.user_permissions_user_id_users_id_fkey",
+        "e|fk|public.user_permissions.user_permissions_user_id_users_id_fkey",
+        "n|con|public.user_permissions.user_permissions_user_id_users_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.user_permissions",
+        "n|sch|public",
+        "n|tbl|public.users",
+        "n|sch|public",
+        "n|col|public.user_permissions.user_id",
+        "n|col|public.users.id",
+        "e|uniqueness|public.users.id"
+      ],
+      "sqlHash": "4c3f14a74b63de9b"
+    },
+    {
+      "statementType": "recreate_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "users"
+      ],
+      "writes": [
+        "s|fk|public.users.users_role_id_roles_id_fkey",
+        "n|fk|public.users.users_role_id_roles_id_fkey",
+        "e|fk|public.users.users_role_id_roles_id_fkey",
+        "n|con|public.users.users_role_id_roles_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.users",
+        "n|sch|public",
+        "n|tbl|public.roles",
+        "n|sch|public",
+        "n|col|public.users.role_id",
+        "n|col|public.roles.id",
+        "e|uniqueness|public.roles.id"
+      ],
+      "sqlHash": "8ca5a29b8f2b38f5"
+    },
+    {
+      "statementType": "recreate_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "users"
+      ],
+      "writes": [
+        "s|fk|public.users.users_organization_id_organizations_id_fkey",
+        "n|fk|public.users.users_organization_id_organizations_id_fkey",
+        "e|fk|public.users.users_organization_id_organizations_id_fkey",
+        "n|con|public.users.users_organization_id_organizations_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.users",
+        "n|sch|public",
+        "n|tbl|public.organizations",
+        "n|sch|public",
+        "n|col|public.users.organization_id",
+        "n|col|public.organizations.id",
+        "e|uniqueness|public.organizations.id"
+      ],
+      "sqlHash": "5264e98bf493706e"
+    },
+    {
+      "statementType": "recreate_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "sessions"
+      ],
+      "writes": [
+        "s|fk|public.sessions.sessions_user_id_users_id_fkey",
+        "n|fk|public.sessions.sessions_user_id_users_id_fkey",
+        "e|fk|public.sessions.sessions_user_id_users_id_fkey",
+        "n|con|public.sessions.sessions_user_id_users_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.sessions",
+        "n|sch|public",
+        "n|tbl|public.users",
+        "n|sch|public",
+        "n|col|public.sessions.user_id",
+        "n|col|public.users.id",
+        "e|uniqueness|public.users.id"
+      ],
+      "sqlHash": "cf18a4d7310e6b73"
+    },
+    {
+      "statementType": "add_check",
+      "statementTarget": [
+        "table",
+        "public",
+        "sessions"
+      ],
+      "writes": [
+        "s|ck|public.sessions.sessions_expires_after_created",
+        "n|ck|public.sessions.sessions_expires_after_created",
+        "e|ck|public.sessions.sessions_expires_after_created",
+        "n|con|public.sessions.sessions_expires_after_created"
+      ],
+      "reads": [
+        "n|tbl|public.sessions",
+        "n|sch|public",
+        "n|col|public.sessions.expires_at",
+        "n|col|public.sessions.created_at"
+      ]
+    },
+    {
+      "statementType": "add_check",
+      "statementTarget": [
+        "table",
+        "public",
+        "countries"
+      ],
+      "writes": [
+        "s|ck|public.countries.countries_code_iso",
+        "n|ck|public.countries.countries_code_iso",
+        "e|ck|public.countries.countries_code_iso",
+        "n|con|public.countries.countries_code_iso"
+      ],
+      "reads": [
+        "n|tbl|public.countries",
+        "n|sch|public",
+        "n|col|public.countries.code"
+      ]
+    },
+    {
+      "statementType": "add_check",
+      "statementTarget": [
+        "table",
+        "public",
+        "countries"
+      ],
+      "writes": [
+        "s|ck|public.countries.countries_currency_iso",
+        "n|ck|public.countries.countries_currency_iso",
+        "e|ck|public.countries.countries_currency_iso",
+        "n|con|public.countries.countries_currency_iso"
+      ],
+      "reads": [
+        "n|tbl|public.countries",
+        "n|sch|public",
+        "n|col|public.countries.currency"
+      ]
+    },
+    {
+      "statementType": "add_check",
+      "statementTarget": [
+        "table",
+        "public",
+        "organizations"
+      ],
+      "writes": [
+        "s|ck|public.organizations.organizations_name_not_blank",
+        "n|ck|public.organizations.organizations_name_not_blank",
+        "e|ck|public.organizations.organizations_name_not_blank",
+        "n|con|public.organizations.organizations_name_not_blank"
+      ],
+      "reads": [
+        "n|tbl|public.organizations",
+        "n|sch|public",
+        "n|col|public.organizations.name"
+      ]
+    },
+    {
+      "statementType": "add_check",
+      "statementTarget": [
+        "table",
+        "public",
+        "roles"
+      ],
+      "writes": [
+        "s|ck|public.roles.roles_name_known",
+        "n|ck|public.roles.roles_name_known",
+        "e|ck|public.roles.roles_name_known",
+        "n|con|public.roles.roles_name_known"
+      ],
+      "reads": [
+        "n|tbl|public.roles",
+        "n|sch|public",
+        "n|col|public.roles.name"
+      ]
+    },
+    {
+      "statementType": "add_check",
+      "statementTarget": [
+        "table",
+        "public",
+        "teams"
+      ],
+      "writes": [
+        "s|ck|public.teams.teams_name_not_blank",
+        "n|ck|public.teams.teams_name_not_blank",
+        "e|ck|public.teams.teams_name_not_blank",
+        "n|con|public.teams.teams_name_not_blank"
+      ],
+      "reads": [
+        "n|tbl|public.teams",
+        "n|sch|public",
+        "n|col|public.teams.name"
+      ]
+    },
+    {
+      "statementType": "add_check",
+      "statementTarget": [
+        "table",
+        "public",
+        "users"
+      ],
+      "writes": [
+        "s|ck|public.users.users_name_not_blank",
+        "n|ck|public.users.users_name_not_blank",
+        "e|ck|public.users.users_name_not_blank",
+        "n|con|public.users.users_name_not_blank"
+      ],
+      "reads": [
+        "n|tbl|public.users",
+        "n|sch|public",
+        "n|col|public.users.name"
+      ]
+    },
+    {
+      "statementType": "add_check",
+      "statementTarget": [
+        "table",
+        "public",
+        "users"
+      ],
+      "writes": [
+        "s|ck|public.users.users_email_lowercase",
+        "n|ck|public.users.users_email_lowercase",
+        "e|ck|public.users.users_email_lowercase",
+        "n|con|public.users.users_email_lowercase"
+      ],
+      "reads": [
+        "n|tbl|public.users",
+        "n|sch|public",
+        "n|col|public.users.email"
+      ]
+    },
+    {
+      "statementType": "add_check",
+      "statementTarget": [
+        "table",
+        "public",
+        "users"
+      ],
+      "writes": [
+        "s|ck|public.users.users_phone_number_not_blank",
+        "n|ck|public.users.users_phone_number_not_blank",
+        "e|ck|public.users.users_phone_number_not_blank",
+        "n|con|public.users.users_phone_number_not_blank"
+      ],
+      "reads": [
+        "n|tbl|public.users",
+        "n|sch|public",
+        "n|col|public.users.phone_number"
+      ]
+    }
+  ],
+  "deltas": [
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "driver_merchant_assignments",
+        "name": "driver_merchant_assignments_driver_id_organization_id_unique",
+        "nameExplicit": false,
+        "columns": [
+          "driver_id",
+          "organization_id"
+        ],
+        "nullsNotDistinct": false,
+        "entityType": "uniques"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "role_permissions",
+        "name": "role_permissions_role_id_permission_key_unique",
+        "nameExplicit": false,
+        "columns": [
+          "role_id",
+          "permission_key"
+        ],
+        "nullsNotDistinct": false,
+        "entityType": "uniques"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "team_members",
+        "name": "team_members_team_id_user_id_unique",
+        "nameExplicit": false,
+        "columns": [
+          "team_id",
+          "user_id"
+        ],
+        "nullsNotDistinct": false,
+        "entityType": "uniques"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "teams",
+        "name": "teams_organization_id_name_unique",
+        "nameExplicit": false,
+        "columns": [
+          "organization_id",
+          "name"
+        ],
+        "nullsNotDistinct": false,
+        "entityType": "uniques"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "user_permissions",
+        "name": "user_permissions_user_id_permission_key_unique",
+        "nameExplicit": false,
+        "columns": [
+          "user_id",
+          "permission_key"
+        ],
+        "nullsNotDistinct": false,
+        "entityType": "uniques"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "countries",
+        "name": "countries_name_key",
+        "nameExplicit": false,
+        "columns": [
+          "name"
+        ],
+        "nullsNotDistinct": false,
+        "entityType": "uniques"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "countries",
+        "name": "countries_code_key",
+        "nameExplicit": false,
+        "columns": [
+          "code"
+        ],
+        "nullsNotDistinct": false,
+        "entityType": "uniques"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "drivers",
+        "name": "drivers_user_id_key",
+        "nameExplicit": false,
+        "columns": [
+          "user_id"
+        ],
+        "nullsNotDistinct": false,
+        "entityType": "uniques"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "roles",
+        "name": "roles_name_key",
+        "nameExplicit": false,
+        "columns": [
+          "name"
+        ],
+        "nullsNotDistinct": false,
+        "entityType": "uniques"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "sessions",
+        "name": "sessions_expires_after_created",
+        "value": "\"expires_at\" > \"created_at\"",
+        "entityType": "checks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "countries",
+        "name": "countries_code_iso",
+        "value": "\"code\" ~ '^[A-Z]{2}$'",
+        "entityType": "checks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "countries",
+        "name": "countries_currency_iso",
+        "value": "\"currency\" ~ '^[A-Z]{3}$'",
+        "entityType": "checks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "organizations",
+        "name": "organizations_name_not_blank",
+        "value": "btrim(\"name\") <> ''",
+        "entityType": "checks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "roles",
+        "name": "roles_name_known",
+        "value": "\"name\" IN ('superadmin', 'administrator', 'agent', 'driver')",
+        "entityType": "checks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "teams",
+        "name": "teams_name_not_blank",
+        "value": "btrim(\"name\") <> ''",
+        "entityType": "checks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "users",
+        "name": "users_name_not_blank",
+        "value": "btrim(\"name\") <> ''",
+        "entityType": "checks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "users",
+        "name": "users_email_lowercase",
+        "value": "\"email\" = lower(\"email\")",
+        "entityType": "checks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "users",
+        "name": "users_phone_number_not_blank",
+        "value": "btrim(\"phone_number\") <> ''",
+        "entityType": "checks"
+      }
+    },
+    {
+      "op": "drop",
+      "key": "tables\u0000[\"public\",\"user_organizations\"]"
+    },
+    {
+      "op": "drop",
+      "key": "columns\u0000[\"public\",\"user_organizations\",\"id\"]"
+    },
+    {
+      "op": "drop",
+      "key": "columns\u0000[\"public\",\"user_organizations\",\"name\"]"
+    },
+    {
+      "op": "drop",
+      "key": "columns\u0000[\"public\",\"user_organizations\",\"user_id\"]"
+    },
+    {
+      "op": "drop",
+      "key": "columns\u0000[\"public\",\"user_organizations\",\"organization_id\"]"
+    },
+    {
+      "op": "drop",
+      "key": "columns\u0000[\"public\",\"user_organizations\",\"created_at\"]"
+    },
+    {
+      "op": "drop",
+      "key": "fks\u0000[\"public\",\"user_organizations\",\"user_organizations_user_id_users_id_fkey\"]"
+    },
+    {
+      "op": "drop",
+      "key": "fks\u0000[\"public\",\"user_organizations\",\"user_organizations_organization_id_organizations_id_fkey\"]"
+    },
+    {
+      "op": "drop",
+      "key": "pks\u0000[\"public\",\"user_organizations\",\"user_organizations_pkey\"]"
+    },
+    {
+      "op": "alter",
+      "key": "fks\u0000[\"public\",\"driver_merchant_assignments\",\"driver_merchant_assignments_driver_id_drivers_id_fkey\"]",
+      "set": {
+        "onDelete": "CASCADE"
+      }
+    },
+    {
+      "op": "alter",
+      "key": "fks\u0000[\"public\",\"driver_merchant_assignments\",\"driver_merchant_assignments_FrXDMPggKPSV_fkey\"]",
+      "set": {
+        "onDelete": "CASCADE"
+      }
+    },
+    {
+      "op": "alter",
+      "key": "fks\u0000[\"public\",\"drivers\",\"drivers_user_id_users_id_fkey\"]",
+      "set": {
+        "onDelete": "CASCADE"
+      }
+    },
+    {
+      "op": "alter",
+      "key": "fks\u0000[\"public\",\"drivers\",\"drivers_country_id_countries_id_fkey\"]",
+      "set": {
+        "onDelete": "RESTRICT"
+      }
+    },
+    {
+      "op": "alter",
+      "key": "fks\u0000[\"public\",\"organizations\",\"organizations_country_id_countries_id_fkey\"]",
+      "set": {
+        "onDelete": "RESTRICT"
+      }
+    },
+    {
+      "op": "alter",
+      "key": "fks\u0000[\"public\",\"role_permissions\",\"role_permissions_role_id_roles_id_fkey\"]",
+      "set": {
+        "onDelete": "CASCADE"
+      }
+    },
+    {
+      "op": "alter",
+      "key": "fks\u0000[\"public\",\"team_members\",\"team_members_user_id_users_id_fkey\"]",
+      "set": {
+        "onDelete": "CASCADE"
+      }
+    },
+    {
+      "op": "alter",
+      "key": "fks\u0000[\"public\",\"team_members\",\"team_members_team_id_teams_id_fkey\"]",
+      "set": {
+        "onDelete": "CASCADE"
+      }
+    },
+    {
+      "op": "alter",
+      "key": "fks\u0000[\"public\",\"teams\",\"teams_organization_id_organizations_id_fkey\"]",
+      "set": {
+        "onDelete": "CASCADE"
+      }
+    },
+    {
+      "op": "alter",
+      "key": "fks\u0000[\"public\",\"user_permissions\",\"user_permissions_user_id_users_id_fkey\"]",
+      "set": {
+        "onDelete": "CASCADE"
+      }
+    },
+    {
+      "op": "alter",
+      "key": "fks\u0000[\"public\",\"users\",\"users_role_id_roles_id_fkey\"]",
+      "set": {
+        "onDelete": "RESTRICT"
+      }
+    },
+    {
+      "op": "alter",
+      "key": "fks\u0000[\"public\",\"users\",\"users_organization_id_organizations_id_fkey\"]",
+      "set": {
+        "onDelete": "RESTRICT"
+      }
+    },
+    {
+      "op": "alter",
+      "key": "fks\u0000[\"public\",\"sessions\",\"sessions_user_id_users_id_fkey\"]",
+      "set": {
+        "onDelete": "CASCADE"
+      }
+    }
+  ]
+}
