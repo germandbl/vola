@@ -1,0 +1,462 @@
+{
+  "type": "diff",
+  "version": "9",
+  "dialect": "postgres",
+  "id": "96afad7e-dafa-465e-91f1-f079d73f386b",
+  "prevIds": [
+    "399be504-971d-43b1-877e-42fbca5d7b95"
+  ],
+  "footprints": [
+    {
+      "statementType": "create_table",
+      "statementTarget": [
+        "table",
+        "public",
+        "delivery_fee_rate_ranges"
+      ],
+      "writes": [
+        "s|tbl|public.delivery_fee_rate_ranges",
+        "n|tbl|public.delivery_fee_rate_ranges",
+        "e|tbl|public.delivery_fee_rate_ranges",
+        "n|rel|public.delivery_fee_rate_ranges",
+        "n|type|public.delivery_fee_rate_ranges",
+        "n|rel|public.delivery_fee_rate_ranges_pkey",
+        "n|rel|public.delivery_fee_rate_ranges_rate_id_up_to_km_unique"
+      ],
+      "reads": [
+        "n|sch|public"
+      ]
+    },
+    {
+      "statementType": "create_table",
+      "statementTarget": [
+        "table",
+        "public",
+        "delivery_fee_rates"
+      ],
+      "writes": [
+        "s|tbl|public.delivery_fee_rates",
+        "n|tbl|public.delivery_fee_rates",
+        "e|tbl|public.delivery_fee_rates",
+        "n|rel|public.delivery_fee_rates",
+        "n|type|public.delivery_fee_rates",
+        "n|rel|public.delivery_fee_rates_pkey",
+        "n|rel|public.delivery_fee_rates_organization_id_key"
+      ],
+      "reads": [
+        "n|sch|public"
+      ]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "delivery_fee_rate_ranges"
+      ],
+      "writes": [
+        "s|fk|public.delivery_fee_rate_ranges.delivery_fee_rate_ranges_rate_id_delivery_fee_rates_id_fkey",
+        "n|fk|public.delivery_fee_rate_ranges.delivery_fee_rate_ranges_rate_id_delivery_fee_rates_id_fkey",
+        "e|fk|public.delivery_fee_rate_ranges.delivery_fee_rate_ranges_rate_id_delivery_fee_rates_id_fkey",
+        "n|con|public.delivery_fee_rate_ranges.delivery_fee_rate_ranges_rate_id_delivery_fee_rates_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.delivery_fee_rate_ranges",
+        "n|sch|public",
+        "n|tbl|public.delivery_fee_rates",
+        "n|sch|public",
+        "n|col|public.delivery_fee_rate_ranges.rate_id",
+        "n|col|public.delivery_fee_rates.id",
+        "e|uniqueness|public.delivery_fee_rates.id"
+      ]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "delivery_fee_rates"
+      ],
+      "writes": [
+        "s|fk|public.delivery_fee_rates.delivery_fee_rates_organization_id_organizations_id_fkey",
+        "n|fk|public.delivery_fee_rates.delivery_fee_rates_organization_id_organizations_id_fkey",
+        "e|fk|public.delivery_fee_rates.delivery_fee_rates_organization_id_organizations_id_fkey",
+        "n|con|public.delivery_fee_rates.delivery_fee_rates_organization_id_organizations_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.delivery_fee_rates",
+        "n|sch|public",
+        "n|tbl|public.organizations",
+        "n|sch|public",
+        "n|col|public.delivery_fee_rates.organization_id",
+        "n|col|public.organizations.id",
+        "e|uniqueness|public.organizations.id"
+      ]
+    },
+    {
+      "statementType": "add_check",
+      "statementTarget": [
+        "table",
+        "public",
+        "role_permissions"
+      ],
+      "writes": [
+        "s|ck|public.role_permissions.role_permissions_permission_key_known",
+        "n|ck|public.role_permissions.role_permissions_permission_key_known",
+        "e|ck|public.role_permissions.role_permissions_permission_key_known",
+        "n|con|public.role_permissions.role_permissions_permission_key_known"
+      ],
+      "reads": [
+        "n|tbl|public.role_permissions",
+        "n|sch|public",
+        "n|col|public.role_permissions.permission_key"
+      ]
+    },
+    {
+      "statementType": "add_check",
+      "statementTarget": [
+        "table",
+        "public",
+        "user_permissions"
+      ],
+      "writes": [
+        "s|ck|public.user_permissions.user_permissions_permission_key_known",
+        "n|ck|public.user_permissions.user_permissions_permission_key_known",
+        "e|ck|public.user_permissions.user_permissions_permission_key_known",
+        "n|con|public.user_permissions.user_permissions_permission_key_known"
+      ],
+      "reads": [
+        "n|tbl|public.user_permissions",
+        "n|sch|public",
+        "n|col|public.user_permissions.permission_key"
+      ]
+    }
+  ],
+  "deltas": [
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "name": "delivery_fee_rate_ranges",
+        "isRlsEnabled": false,
+        "entityType": "tables"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "name": "delivery_fee_rates",
+        "isRlsEnabled": false,
+        "entityType": "tables"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "delivery_fee_rate_ranges",
+        "name": "id",
+        "type": "bigint",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": {
+          "type": "always",
+          "name": "delivery_fee_rate_ranges_id_seq",
+          "increment": "1",
+          "startWith": "1",
+          "minValue": "1",
+          "maxValue": "9223372036854775807",
+          "cache": 1,
+          "cycle": false
+        },
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "delivery_fee_rate_ranges",
+        "name": "rate_id",
+        "type": "bigint",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "delivery_fee_rate_ranges",
+        "name": "up_to_km",
+        "type": "numeric(6,2)",
+        "typeSchema": null,
+        "notNull": false,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "delivery_fee_rate_ranges",
+        "name": "fee",
+        "type": "numeric(10,2)",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "delivery_fee_rate_ranges",
+        "name": "created_at",
+        "type": "timestamp",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": "now()",
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "delivery_fee_rates",
+        "name": "id",
+        "type": "bigint",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": {
+          "type": "always",
+          "name": "delivery_fee_rates_id_seq",
+          "increment": "1",
+          "startWith": "1",
+          "minValue": "1",
+          "maxValue": "9223372036854775807",
+          "cache": 1,
+          "cycle": false
+        },
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "delivery_fee_rates",
+        "name": "organization_id",
+        "type": "bigint",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "delivery_fee_rates",
+        "name": "extra_fee_per_km",
+        "type": "numeric(10,2)",
+        "typeSchema": null,
+        "notNull": false,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "delivery_fee_rates",
+        "name": "created_at",
+        "type": "timestamp",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": "now()",
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "delivery_fee_rate_ranges",
+        "name": "delivery_fee_rate_ranges_rate_id_delivery_fee_rates_id_fkey",
+        "nameExplicit": false,
+        "columns": [
+          "rate_id"
+        ],
+        "schemaTo": "public",
+        "tableTo": "delivery_fee_rates",
+        "columnsTo": [
+          "id"
+        ],
+        "onUpdate": "NO ACTION",
+        "onDelete": "CASCADE",
+        "entityType": "fks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "delivery_fee_rates",
+        "name": "delivery_fee_rates_organization_id_organizations_id_fkey",
+        "nameExplicit": false,
+        "columns": [
+          "organization_id"
+        ],
+        "schemaTo": "public",
+        "tableTo": "organizations",
+        "columnsTo": [
+          "id"
+        ],
+        "onUpdate": "NO ACTION",
+        "onDelete": "CASCADE",
+        "entityType": "fks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "delivery_fee_rate_ranges",
+        "name": "delivery_fee_rate_ranges_pkey",
+        "columns": [
+          "id"
+        ],
+        "nameExplicit": false,
+        "entityType": "pks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "delivery_fee_rates",
+        "name": "delivery_fee_rates_pkey",
+        "columns": [
+          "id"
+        ],
+        "nameExplicit": false,
+        "entityType": "pks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "delivery_fee_rate_ranges",
+        "name": "delivery_fee_rate_ranges_rate_id_up_to_km_unique",
+        "nameExplicit": false,
+        "columns": [
+          "rate_id",
+          "up_to_km"
+        ],
+        "nullsNotDistinct": true,
+        "entityType": "uniques"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "delivery_fee_rates",
+        "name": "delivery_fee_rates_organization_id_key",
+        "nameExplicit": false,
+        "columns": [
+          "organization_id"
+        ],
+        "nullsNotDistinct": false,
+        "entityType": "uniques"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "delivery_fee_rate_ranges",
+        "name": "delivery_fee_rate_ranges_up_to_km_positive",
+        "value": "\"up_to_km\" > 0",
+        "entityType": "checks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "delivery_fee_rate_ranges",
+        "name": "delivery_fee_rate_ranges_fee_not_negative",
+        "value": "\"fee\" >= 0",
+        "entityType": "checks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "delivery_fee_rates",
+        "name": "delivery_fee_rates_extra_fee_per_km_not_negative",
+        "value": "\"extra_fee_per_km\" >= 0",
+        "entityType": "checks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "role_permissions",
+        "name": "role_permissions_permission_key_known",
+        "value": "\"permission_key\" IN ('organizations.view', 'delivery_fees.manage')",
+        "entityType": "checks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "user_permissions",
+        "name": "user_permissions_permission_key_known",
+        "value": "\"permission_key\" IN ('organizations.view', 'delivery_fees.manage')",
+        "entityType": "checks"
+      }
+    }
+  ]
+}

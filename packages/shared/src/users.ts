@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { RoleName, roleNameSchema } from './roles.js';
 
-const MIN_PASSWORD_LENGTH = 8;
+export const MIN_PASSWORD_LENGTH = 8;
 
 export const ASSIGNABLE_ROLES = [RoleName.Administrator, RoleName.Agent] as const;
 

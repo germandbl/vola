@@ -8,9 +8,11 @@ import {
   PAGE_SIZE,
   canManageOrganization,
   organizationTypeSchema,
+  permissionSchema,
   roleNameSchema,
   type AuthUser,
   type Paginated,
+  type Permission,
   type UserForm,
   type UserSummary,
 } from '@vola/shared';
@@ -20,8 +22,8 @@ import { getPageOffset, toPaginated } from '../common/pagination.js';
 import { DATABASE, type Database } from '../database/database.module.js';
 import { organizations } from '../organizations/organizations.schema.js';
 import { OrganizationsService } from '../organizations/organizations.service.js';
-import { roles } from '../roles/roles.schema.js';
-import { users } from './users.schema.js';
+import { rolePermissions, roles } from '../roles/roles.schema.js';
+import { userPermissions, users } from './users.schema.js';
 
 export type User = typeof users.$inferSelect;
 
@@ -45,11 +47,15 @@ export type AuthUserRow = {
   organizationType: string;
 };
 
-export function toAuthUser(row: AuthUserRow): AuthUser {
+export function toAuthUser(
+  row: AuthUserRow,
+  permissions: Permission[],
+): AuthUser {
   return {
     ...row,
     role: roleNameSchema.parse(row.role),
     organizationType: organizationTypeSchema.parse(row.organizationType),
+    permissions,
   };
 }
 
@@ -75,7 +81,26 @@ export class UsersService {
       .innerJoin(roles, eq(users.roleId, roles.id))
       .innerJoin(organizations, eq(users.organizationId, organizations.id))
       .where(eq(users.id, userId));
-    return toAuthUser(row);
+    return toAuthUser(row, await this.findPermissions(userId));
+  }
+
+  async findPermissions(userId: number): Promise<Permission[]> {
+    const rolePermissionRows = await this.database
+      .select({ permissionKey: rolePermissions.permissionKey })
+      .from(users)
+      .innerJoin(rolePermissions, eq(users.roleId, rolePermissions.roleId))
+      .where(eq(users.id, userId));
+    const userPermissionRows = await this.database
+      .select({ permissionKey: userPermissions.permissionKey })
+      .from(userPermissions)
+      .where(eq(userPermissions.userId, userId));
+
+    const permissionKeys = new Set(
+      [...rolePermissionRows, ...userPermissionRows].map(
+        (row) => row.permissionKey,
+      ),
+    );
+    return [...permissionKeys].map((key) => permissionSchema.parse(key));
   }
 
   async findPageByOrganization(

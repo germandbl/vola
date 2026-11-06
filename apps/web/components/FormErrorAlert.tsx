@@ -7,9 +7,9 @@ interface FormErrorAlertProps {
 
 export function FormErrorAlert({ message }: FormErrorAlertProps) {
   return (
-    <Alert className="border-border bg-muted">
+    <Alert variant="destructive" className="border-destructive">
       <CircleAlert />
-      <AlertDescription className="text-foreground">{message}</AlertDescription>
+      <AlertDescription>{message}</AlertDescription>
     </Alert>
   );
 }

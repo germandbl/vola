@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { organizationTypeSchema } from './organizations.js';
+import { permissionSchema } from './permissions.js';
 import { roleNameSchema } from './roles.js';
 
 export const loginSchema = z.object({
@@ -17,6 +18,7 @@ export const authUserSchema = z.object({
   role: roleNameSchema,
   organizationId: z.number(),
   organizationType: organizationTypeSchema,
+  permissions: z.array(permissionSchema),
 });
 
 export type AuthUser = z.infer<typeof authUserSchema>;

@@ -78,7 +78,13 @@ La paleta parte de azules suaves de cielo y se completa con azules profundos que
 | `borde` | `#5F82BD` | Bordes de campos y controles (3.4:1 o más sobre blanco y aire). |
 | `linea` | `#C9DAEE` | Separadores y bordes decorativos. No para controles. |
 
-### 4.4 Regla de oro: texto oscuro sobre azul claro
+### 4.4 Error
+
+| Token | Hex | Uso | Contraste |
+| --- | --- | --- | --- |
+| `error` | `#B42318` | Solo errores: mensajes de validación, avisos de error y borde de campos con error. Nunca como color de marca, fondo ni decoración. | 6.6:1 sobre `blanco`, 5.7:1 sobre `aire` |
+
+### 4.5 Regla de oro: texto oscuro sobre azul claro
 
 Los azules suaves **no aguantan texto blanco**. Todo texto sobre `cielo`, `maya`, `escarcha`, `nube`, `bruma` o `aire` va en `tinta` (o `tinta-suave` donde se indica). El texto blanco solo va sobre `tinta`, `marino` y `accion`.
 
@@ -91,7 +97,7 @@ Los azules suaves **no aguantan texto blanco**. Todo texto sobre `cielo`, `maya`
 | `marino` | `blanco` | 9.8:1 |
 | `accion` | `blanco` | 5.9:1 |
 
-### 4.5 Proporción
+### 4.6 Proporción
 
 - **Pantallas**: ~60% `aire` y `blanco`, 25% azules de marca, 15% `tinta` (texto, barra lateral y botones). `accion` solo en enlaces y foco.
 - **Calle** (mochilas, chalecos, cascos): `cielo` domina, logotipo grande en `tinta`, franja reflectiva para seguridad nocturna.
@@ -170,7 +176,7 @@ Píldoras horizontales de alto 8px y largos distintos, como estelas de algo que 
 - Fondo `blanco`, borde 1px `borde`, `radius-sm`, alto 44px, texto `cuerpo` en `tinta`.
 - Placeholder en `tinta-suave` con un ejemplo real ("Ej. Col. Palmira, casa 12").
 - Foco: borde `accion` de 2px.
-- Error: mensaje debajo en `pequeno`, qué pasó y qué hacer.
+- Error: borde y mensaje debajo en `error`, en `pequeno`: qué pasó y qué hacer.
 
 ### Tarjeta
 - Fondo `blanco`, borde 1px `linea`, `radius-md`, padding `space-4`.
@@ -205,7 +211,7 @@ Píldoras horizontales de alto 8px y largos distintos, como estelas de algo que 
 ## 13. Qué no hacer
 
 - Texto blanco sobre cualquier azul claro.
-- Mezclar la paleta con rojo o naranja de marca (son los colores de la competencia).
+- Mezclar la paleta con rojo o naranja de marca (son los colores de la competencia). El rojo `error` es solo para errores.
 - Usar `accion` como fondo; es solo para enlaces y foco.
 - Deformar, inclinar o cambiar el color del logotipo fuera de las reglas.
 - Comunicar un estado solo con color.
@@ -238,6 +244,9 @@ Píldoras horizontales de alto 8px y largos distintos, como estelas de algo que 
   --blanco: #FFFFFF;
   --borde: #5F82BD;
   --linea: #C9DAEE;
+
+  /* Error */
+  --error: #B42318;
 
   /* Tipografía */
   --font-sans: "Outfit", system-ui, -apple-system, "Segoe UI", sans-serif;
@@ -281,6 +290,7 @@ export const colors = {
   blanco: '#FFFFFF',
   borde: '#5F82BD',
   linea: '#C9DAEE',
+  error: '#B42318',
 } as const;
 
 export const spacing = { 1: 4, 2: 8, 4: 16, 6: 24, 10: 40 } as const;

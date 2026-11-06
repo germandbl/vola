@@ -1,7 +1,15 @@
 import { existsSync } from 'node:fs';
-import { OrganizationType, RoleName } from '@vola/shared';
+import {
+  OrganizationType,
+  RoleName,
+  type DeliveryFeeRateForm,
+} from '@vola/shared';
 import { hashPassword } from '../auth/passwords.js';
 import { countries } from '../countries/countries.schema.js';
+import {
+  deliveryFeeRateRanges,
+  deliveryFeeRates,
+} from '../delivery-fees/delivery-fees.schema.js';
 import { createDatabase, type Database } from '../database/database.module.js';
 import {
   driverMerchantAssignments,
@@ -10,7 +18,7 @@ import {
 import { organizations } from '../organizations/organizations.schema.js';
 import { roles } from '../roles/roles.schema.js';
 import { teamMembers, teams } from '../teams/teams.schema.js';
-import { users } from '../users/users.schema.js';
+import { userPermissions, users } from '../users/users.schema.js';
 import {
   PLATFORM_DRIVERS_MERCHANT_NAMES,
   SEED_ORGANIZATIONS,
@@ -80,6 +88,14 @@ async function insertUser(
       organizationId,
     })
     .returning({ id: users.id });
+  if (seedUser.permissions) {
+    await context.database.insert(userPermissions).values(
+      seedUser.permissions.map((permissionKey) => ({
+        userId: user.id,
+        permissionKey,
+      })),
+    );
+  }
   return user.id;
 }
 
@@ -93,6 +109,22 @@ async function insertDriver(
     .values({ userId, countryId })
     .returning({ id: drivers.id });
   return driver.id;
+}
+
+async function insertDeliveryFeeRate(
+  database: Database,
+  organizationId: number,
+  deliveryFeeRate: DeliveryFeeRateForm,
+): Promise<void> {
+  const [rate] = await database
+    .insert(deliveryFeeRates)
+    .values({ organizationId, extraFeePerKm: deliveryFeeRate.extraFeePerKm })
+    .returning({ id: deliveryFeeRates.id });
+  await database
+    .insert(deliveryFeeRateRanges)
+    .values(
+      deliveryFeeRate.ranges.map((range) => ({ rateId: rate.id, ...range })),
+    );
 }
 
 async function seedOrganization(
@@ -113,6 +145,13 @@ async function seedOrganization(
     organization.id,
     seedOrganization.teamNames,
   );
+  if (seedOrganization.deliveryFeeRate) {
+    await insertDeliveryFeeRate(
+      context.database,
+      organization.id,
+      seedOrganization.deliveryFeeRate,
+    );
+  }
 
   const driverIds: number[] = [];
   for (const seedUser of seedOrganization.users) {

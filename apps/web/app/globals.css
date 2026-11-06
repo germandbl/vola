@@ -24,6 +24,8 @@
   --color-borde: #5f82bd;
   --color-linea: #c9daee;
 
+  --color-error: #b42318;
+
   /* Los componentes de shadcn usan black y white para overlays. */
   --color-black: #0e1f3d;
   --color-white: #ffffff;
@@ -106,8 +108,7 @@
   --muted-foreground: var(--color-tinta-suave);
   --accent: var(--color-bruma);
   --accent-foreground: var(--color-tinta);
-  /* DESIGN.md no usa rojo: los errores se marcan con texto e ícono en tinta. */
-  --destructive: var(--color-tinta);
+  --destructive: var(--color-error);
   --border: var(--color-linea);
   --input: var(--color-borde);
   --ring: var(--color-accion);

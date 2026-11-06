@@ -70,7 +70,7 @@ export async function OrganizationUsersTable({
         </Table>
       </div>
       <ListPagination
-        basePath={`/organizaciones/${organizationId}`}
+        basePath={`/organizaciones/${organizationId}/usuarios`}
         page={usersPage.page}
         totalPages={usersPage.totalPages}
       />
