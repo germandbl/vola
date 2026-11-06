@@ -1,6 +1,10 @@
 "use server";
 
-import type { DeliveryFeeRateForm } from "@vola/shared";
+import type {
+  DeliveryFeeBasisForm,
+  DeliveryFeeRateForm,
+  OrderCountFeeRateForm,
+} from "@vola/shared";
 import { refresh } from "next/cache";
 import { z } from "zod";
 import { fetchWithSession } from "./api-fetch";
@@ -16,17 +20,17 @@ const apiValidationErrorSchema = z.object({
   ),
 });
 
-export interface DeliveryFeeRateSaveResult {
+export interface DeliveryFeeSaveResult {
   fieldErrors: FieldErrors;
   formError?: string;
   isSaved?: boolean;
 }
 
-async function toErrorResult(response: Response): Promise<DeliveryFeeRateSaveResult> {
+async function toErrorResult(response: Response): Promise<DeliveryFeeSaveResult> {
   if (response.status === HTTP_BAD_REQUEST) {
     const body = apiValidationErrorSchema.safeParse(await response.json());
     if (body.success) return { fieldErrors: toFieldErrors(body.data.issues) };
-    return { fieldErrors: {}, formError: "Solo los comercios tienen tarifa de envío." };
+    return { fieldErrors: {}, formError: "Revisá los datos y probá de nuevo." };
   }
   if (response.status === HTTP_FORBIDDEN) {
     return { fieldErrors: {}, formError: "No tenés permiso para cambiar tarifas de envío." };
@@ -34,19 +38,34 @@ async function toErrorResult(response: Response): Promise<DeliveryFeeRateSaveRes
   if (response.status === HTTP_NOT_FOUND) {
     return { fieldErrors: {}, formError: "No encontramos este comercio." };
   }
-  return { fieldErrors: {}, formError: "No pudimos guardar la tarifa. Probá de nuevo en un momento." };
+  return { fieldErrors: {}, formError: "No pudimos guardar. Probá de nuevo en un momento." };
+}
+
+async function saveToApi(path: string, body: unknown): Promise<DeliveryFeeSaveResult> {
+  const response = await fetchWithSession(path, { method: "PUT", body: JSON.stringify(body) });
+  if (!response.ok) return toErrorResult(response);
+
+  refresh();
+  return { fieldErrors: {}, isSaved: true };
 }
 
 export async function saveDeliveryFeeRate(
   organizationId: number,
   form: DeliveryFeeRateForm,
-): Promise<DeliveryFeeRateSaveResult> {
-  const response = await fetchWithSession(`/organizations/${organizationId}/delivery-fee-rate`, {
-    method: "PUT",
-    body: JSON.stringify(form),
-  });
-  if (!response.ok) return toErrorResult(response);
+): Promise<DeliveryFeeSaveResult> {
+  return saveToApi(`/organizations/${organizationId}/delivery-fee-rate`, form);
+}
 
-  refresh();
-  return { fieldErrors: {}, isSaved: true };
+export async function saveOrderCountFeeRate(
+  organizationId: number,
+  form: OrderCountFeeRateForm,
+): Promise<DeliveryFeeSaveResult> {
+  return saveToApi(`/organizations/${organizationId}/order-count-fee-rate`, form);
+}
+
+export async function saveDeliveryFeeBasis(
+  organizationId: number,
+  form: DeliveryFeeBasisForm,
+): Promise<DeliveryFeeSaveResult> {
+  return saveToApi(`/organizations/${organizationId}/delivery-fee-basis`, form);
 }

@@ -3,12 +3,14 @@ import {
   OrganizationType,
   RoleName,
   type DeliveryFeeRateForm,
+  type OrderCountFeeRateForm,
 } from '@vola/shared';
 import { hashPassword } from '../auth/passwords.js';
 import { countries } from '../countries/countries.schema.js';
 import {
   deliveryFeeRateRanges,
   deliveryFeeRates,
+  orderCountFeeRanges,
 } from '../delivery-fees/delivery-fees.schema.js';
 import { createDatabase, type Database } from '../database/database.module.js';
 import {
@@ -127,6 +129,18 @@ async function insertDeliveryFeeRate(
     );
 }
 
+async function insertOrderCountFeeRate(
+  database: Database,
+  organizationId: number,
+  orderCountFeeRate: OrderCountFeeRateForm,
+): Promise<void> {
+  await database
+    .insert(orderCountFeeRanges)
+    .values(
+      orderCountFeeRate.ranges.map((range) => ({ organizationId, ...range })),
+    );
+}
+
 async function seedOrganization(
   context: SeedContext,
   seedOrganization: SeedOrganization,
@@ -138,6 +152,7 @@ async function seedOrganization(
       name: seedOrganization.name,
       type: seedOrganization.type,
       countryId,
+      deliveryFeeBasis: seedOrganization.deliveryFeeBasis,
     })
     .returning({ id: organizations.id });
   const teamIds = await insertTeams(
@@ -150,6 +165,13 @@ async function seedOrganization(
       context.database,
       organization.id,
       seedOrganization.deliveryFeeRate,
+    );
+  }
+  if (seedOrganization.orderCountFeeRate) {
+    await insertOrderCountFeeRate(
+      context.database,
+      organization.id,
+      seedOrganization.orderCountFeeRate,
     );
   }
 

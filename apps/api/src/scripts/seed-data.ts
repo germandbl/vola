@@ -1,8 +1,10 @@
 import {
+  DeliveryFeeBasis,
   OrganizationType,
   Permission,
   RoleName,
   type DeliveryFeeRateForm,
+  type OrderCountFeeRateForm,
 } from '@vola/shared';
 
 export interface SeedUser {
@@ -21,6 +23,8 @@ export interface SeedOrganization {
   teamNames: string[];
   users: SeedUser[];
   deliveryFeeRate?: DeliveryFeeRateForm;
+  orderCountFeeRate?: OrderCountFeeRateForm;
+  deliveryFeeBasis?: DeliveryFeeBasis;
 }
 
 export const PLATFORM_DRIVERS_MERCHANT_NAMES = [
@@ -83,6 +87,7 @@ export const SEED_ORGANIZATIONS: SeedOrganization[] = [
   {
     name: 'Baleadas Doña Mary',
     type: OrganizationType.Merchant,
+    deliveryFeeBasis: DeliveryFeeBasis.Distance,
     deliveryFeeRate: {
       ranges: [
         { upToKm: 3, fee: 30 },
@@ -118,6 +123,7 @@ export const SEED_ORGANIZATIONS: SeedOrganization[] = [
   {
     name: 'Farmacia San Rafael',
     type: OrganizationType.Merchant,
+    deliveryFeeBasis: DeliveryFeeBasis.Distance,
     deliveryFeeRate: {
       ranges: [{ upToKm: 2, fee: 0 }],
       extraFeePerKm: 10,
@@ -150,6 +156,14 @@ export const SEED_ORGANIZATIONS: SeedOrganization[] = [
   {
     name: 'Panadería El Trigal',
     type: OrganizationType.Merchant,
+    deliveryFeeBasis: DeliveryFeeBasis.CompletedOrders,
+    orderCountFeeRate: {
+      ranges: [
+        { upToOrderCount: 100, fee: 30 },
+        { upToOrderCount: 300, fee: 25 },
+        { upToOrderCount: null, fee: 20 },
+      ],
+    },
     deliveryFeeRate: {
       ranges: [{ upToKm: 4, fee: 25 }],
       extraFeePerKm: 7.5,
@@ -187,6 +201,7 @@ export const SEED_ORGANIZATIONS: SeedOrganization[] = [
   {
     name: 'Pupusería La Ceibita',
     type: OrganizationType.Merchant,
+    deliveryFeeBasis: DeliveryFeeBasis.Distance,
     deliveryFeeRate: {
       ranges: [
         { upToKm: 3, fee: 1.5 },

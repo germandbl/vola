@@ -4,7 +4,7 @@ import {
   type DeliveryFeeRateForm,
 } from "@vola/shared";
 import { useState, useTransition, type FormEvent } from "react";
-import { saveDeliveryFeeRate, type DeliveryFeeRateSaveResult } from "@/lib/delivery-fee-actions";
+import { saveDeliveryFeeRate, type DeliveryFeeSaveResult } from "@/lib/delivery-fee-actions";
 import { toFieldErrors } from "@/lib/form-state";
 
 export interface RangeInput {
@@ -51,7 +51,7 @@ export function useDeliveryFeeRateForm(organizationId: number, initialRate: Deli
   const [extraFeePerKm, setExtraFeePerKm] = useState(
     initialRate.extraFeePerKm?.toString() ?? "",
   );
-  const [result, setResult] = useState<DeliveryFeeRateSaveResult>({ fieldErrors: {} });
+  const [result, setResult] = useState<DeliveryFeeSaveResult>({ fieldErrors: {} });
   const [isPending, startTransition] = useTransition();
 
   function addRange() {

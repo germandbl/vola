@@ -1,22 +1,46 @@
-import { z } from 'zod';
+import { z } from "zod";
+
+export const DeliveryFeeBasis = {
+  Distance: "distance",
+  CompletedOrders: "completed_orders",
+} as const;
+
+export type DeliveryFeeBasis =
+  (typeof DeliveryFeeBasis)[keyof typeof DeliveryFeeBasis];
+
+export const deliveryFeeBasisSchema = z.enum(DeliveryFeeBasis);
+
+export const deliveryFeeBasisFormSchema = z.object({
+  basis: z.enum(DeliveryFeeBasis, { error: "Elegí cómo se cobra el envío." }),
+});
+
+export type DeliveryFeeBasisForm = z.infer<typeof deliveryFeeBasisFormSchema>;
+
+export const deliveryFeeBasisSettingSchema = z.object({
+  basis: deliveryFeeBasisSchema.nullable(),
+});
+
+export type DeliveryFeeBasisSetting = z.infer<
+  typeof deliveryFeeBasisSettingSchema
+>;
 
 const MAX_DELIVERY_FEE = 1_000_000;
 const MAX_DISTANCE_KM = 500;
-const MAX_RANGES = 20;
+export const MAX_FEE_RANGES = 20;
 const HUNDREDTH = 0.01;
 const HUNDREDTHS_PER_UNIT = 100;
 
-const feeSchema = z
-  .number({ error: 'Escribí un monto.' })
-  .nonnegative('El monto no puede ser negativo.')
+export const feeAmountSchema = z
+  .number({ error: "Escribí un monto." })
+  .nonnegative("El monto no puede ser negativo.")
   .max(MAX_DELIVERY_FEE, `El monto no puede pasar de ${MAX_DELIVERY_FEE}.`)
-  .multipleOf(HUNDREDTH, 'Usá hasta dos decimales.');
+  .multipleOf(HUNDREDTH, "Usá hasta dos decimales.");
 
 const upToKmSchema = z
-  .number({ error: 'Escribí hasta qué km llega el rango.' })
-  .positive('Los km tienen que ser mayores que 0.')
+  .number({ error: "Escribí hasta qué km llega el rango." })
+  .positive("Los km tienen que ser mayores que 0.")
   .max(MAX_DISTANCE_KM, `Los km no pueden pasar de ${MAX_DISTANCE_KM}.`)
-  .multipleOf(HUNDREDTH, 'Usá hasta dos decimales.');
+  .multipleOf(HUNDREDTH, "Usá hasta dos decimales.");
 
 export const deliveryFeeRangeSchema = z.object({
   upToKm: z.number().nullable(),
@@ -41,13 +65,13 @@ function findRangeLimitError(
   const isLastRange = index === ranges.length - 1;
   if (isLastRange && !hasExtraFee) {
     if (upToKm === null) return undefined;
-    return 'Sin cobro por km extra, el último rango no lleva límite.';
+    return "Sin cobro por km extra, el último rango no lleva límite.";
   }
-  if (upToKm === null) return 'Escribí hasta qué km llega este rango.';
+  if (upToKm === null) return "Escribí hasta qué km llega este rango.";
 
   const previousUpToKm = index === 0 ? 0 : ranges[index - 1].upToKm;
   if (previousUpToKm !== null && upToKm <= previousUpToKm) {
-    return 'Tiene que ser mayor que el límite del rango anterior.';
+    return "Tiene que ser mayor que el límite del rango anterior.";
   }
   return undefined;
 }
@@ -56,11 +80,11 @@ export const deliveryFeeRateFormSchema = z
   .object({
     ranges: z
       .array(
-        z.object({ upToKm: upToKmSchema.nullable(), fee: feeSchema }),
+        z.object({ upToKm: upToKmSchema.nullable(), fee: feeAmountSchema }),
       )
-      .min(1, 'Agregá al menos un rango.')
-      .max(MAX_RANGES, `Podés agregar hasta ${MAX_RANGES} rangos.`),
-    extraFeePerKm: feeSchema.nullable(),
+      .min(1, "Agregá al menos un rango.")
+      .max(MAX_FEE_RANGES, `Podés agregar hasta ${MAX_FEE_RANGES} rangos.`),
+    extraFeePerKm: feeAmountSchema.nullable(),
   })
   .superRefine((form, context) => {
     const hasExtraFee = form.extraFeePerKm !== null;
@@ -68,9 +92,9 @@ export const deliveryFeeRateFormSchema = z
       const message = findRangeLimitError(form.ranges, index, hasExtraFee);
       if (!message) return;
       context.addIssue({
-        code: 'custom',
+        code: "custom",
         message,
-        path: ['ranges', index, 'upToKm'],
+        path: ["ranges", index, "upToKm"],
       });
     });
   });

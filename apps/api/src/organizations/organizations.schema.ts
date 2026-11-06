@@ -14,6 +14,11 @@ export const organizationType = pgEnum('organization_types', [
   'platform',
 ]);
 
+export const deliveryFeeBasis = pgEnum('delivery_fee_bases', [
+  'distance',
+  'completed_orders',
+]);
+
 export const organizations = pgTable(
   'organizations',
   {
@@ -26,6 +31,7 @@ export const organizations = pgTable(
       { onDelete: 'restrict' },
     ),
     type: organizationType('type').notNull(),
+    deliveryFeeBasis: deliveryFeeBasis('delivery_fee_basis'),
     createdAt: timestamp('created_at').notNull().defaultNow(),
   },
   (table) => [

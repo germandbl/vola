@@ -1,11 +1,15 @@
 import "server-only";
 import {
   countrySchema,
+  deliveryFeeBasisSettingSchema,
   deliveryFeeRateSchema,
+  orderCountFeeRateSchema,
   organizationSchema,
   userSummarySchema,
   type Country,
+  type DeliveryFeeBasisSetting,
   type DeliveryFeeRate,
+  type OrderCountFeeRate,
   type Organization,
   type Paginated,
   type UserSummary,
@@ -69,6 +73,20 @@ export function getDeliveryFeeRate(organizationId: number): Promise<DeliveryFeeR
   return getFromApi(
     `/organizations/${organizationId}/delivery-fee-rate`,
     deliveryFeeRateSchema,
+  );
+}
+
+export function getOrderCountFeeRate(organizationId: number): Promise<OrderCountFeeRate> {
+  return getFromApi(
+    `/organizations/${organizationId}/order-count-fee-rate`,
+    orderCountFeeRateSchema,
+  );
+}
+
+export function getDeliveryFeeBasis(organizationId: number): Promise<DeliveryFeeBasisSetting> {
+  return getFromApi(
+    `/organizations/${organizationId}/delivery-fee-basis`,
+    deliveryFeeBasisSettingSchema,
   );
 }
 

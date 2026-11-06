@@ -1,0 +1,286 @@
+{
+  "type": "diff",
+  "version": "9",
+  "dialect": "postgres",
+  "id": "63476094-51b9-488d-998b-00dd9de9195f",
+  "prevIds": [
+    "96afad7e-dafa-465e-91f1-f079d73f386b"
+  ],
+  "footprints": [
+    {
+      "statementType": "create_enum",
+      "statementTarget": [
+        "enum",
+        "public",
+        "delivery_fee_bases"
+      ],
+      "writes": [
+        "s|enum|public.delivery_fee_bases",
+        "n|enum|public.delivery_fee_bases",
+        "e|enum|public.delivery_fee_bases",
+        "n|type|public.delivery_fee_bases"
+      ],
+      "reads": [
+        "n|sch|public"
+      ]
+    },
+    {
+      "statementType": "create_table",
+      "statementTarget": [
+        "table",
+        "public",
+        "order_count_fee_ranges"
+      ],
+      "writes": [
+        "s|tbl|public.order_count_fee_ranges",
+        "n|tbl|public.order_count_fee_ranges",
+        "e|tbl|public.order_count_fee_ranges",
+        "n|rel|public.order_count_fee_ranges",
+        "n|type|public.order_count_fee_ranges",
+        "n|rel|public.order_count_fee_ranges_pkey",
+        "n|rel|public.order_count_fee_ranges_organization_id_up_to_order_count_unique"
+      ],
+      "reads": [
+        "n|sch|public"
+      ]
+    },
+    {
+      "statementType": "add_column",
+      "statementTarget": [
+        "column",
+        "public",
+        "organizations",
+        "delivery_fee_basis"
+      ],
+      "writes": [
+        "s|col|public.organizations.delivery_fee_basis",
+        "n|col|public.organizations.delivery_fee_basis",
+        "e|col|public.organizations.delivery_fee_basis"
+      ],
+      "reads": [
+        "n|tbl|public.organizations",
+        "n|sch|public",
+        "n|enum|public.delivery_fee_bases"
+      ]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "order_count_fee_ranges"
+      ],
+      "writes": [
+        "s|fk|public.order_count_fee_ranges.order_count_fee_ranges_organization_id_organizations_id_fkey",
+        "n|fk|public.order_count_fee_ranges.order_count_fee_ranges_organization_id_organizations_id_fkey",
+        "e|fk|public.order_count_fee_ranges.order_count_fee_ranges_organization_id_organizations_id_fkey",
+        "n|con|public.order_count_fee_ranges.order_count_fee_ranges_organization_id_organizations_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.order_count_fee_ranges",
+        "n|sch|public",
+        "n|tbl|public.organizations",
+        "n|sch|public",
+        "n|col|public.order_count_fee_ranges.organization_id",
+        "n|col|public.organizations.id",
+        "e|uniqueness|public.organizations.id"
+      ]
+    }
+  ],
+  "deltas": [
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "name": "order_count_fee_ranges",
+        "isRlsEnabled": false,
+        "entityType": "tables"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "name": "delivery_fee_bases",
+        "values": [
+          "distance",
+          "completed_orders"
+        ],
+        "entityType": "enums"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "order_count_fee_ranges",
+        "name": "id",
+        "type": "bigint",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": {
+          "type": "always",
+          "name": "order_count_fee_ranges_id_seq",
+          "increment": "1",
+          "startWith": "1",
+          "minValue": "1",
+          "maxValue": "9223372036854775807",
+          "cache": 1,
+          "cycle": false
+        },
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "order_count_fee_ranges",
+        "name": "organization_id",
+        "type": "bigint",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "order_count_fee_ranges",
+        "name": "up_to_order_count",
+        "type": "integer",
+        "typeSchema": null,
+        "notNull": false,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "order_count_fee_ranges",
+        "name": "fee",
+        "type": "numeric(10,2)",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "order_count_fee_ranges",
+        "name": "created_at",
+        "type": "timestamp",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": "now()",
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "organizations",
+        "name": "delivery_fee_basis",
+        "type": "delivery_fee_bases",
+        "typeSchema": "public",
+        "notNull": false,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "order_count_fee_ranges",
+        "name": "order_count_fee_ranges_organization_id_organizations_id_fkey",
+        "nameExplicit": false,
+        "columns": [
+          "organization_id"
+        ],
+        "schemaTo": "public",
+        "tableTo": "organizations",
+        "columnsTo": [
+          "id"
+        ],
+        "onUpdate": "NO ACTION",
+        "onDelete": "CASCADE",
+        "entityType": "fks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "order_count_fee_ranges",
+        "name": "order_count_fee_ranges_pkey",
+        "columns": [
+          "id"
+        ],
+        "nameExplicit": false,
+        "entityType": "pks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "order_count_fee_ranges",
+        "name": "order_count_fee_ranges_organization_id_up_to_order_count_unique",
+        "nameExplicit": false,
+        "columns": [
+          "organization_id",
+          "up_to_order_count"
+        ],
+        "nullsNotDistinct": true,
+        "entityType": "uniques"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "order_count_fee_ranges",
+        "name": "order_count_fee_ranges_up_to_order_count_positive",
+        "value": "\"up_to_order_count\" > 0",
+        "entityType": "checks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "order_count_fee_ranges",
+        "name": "order_count_fee_ranges_fee_not_negative",
+        "value": "\"fee\" >= 0",
+        "entityType": "checks"
+      }
+    }
+  ]
+}
