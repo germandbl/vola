@@ -1,4 +1,9 @@
-import { OrganizationType, RoleName } from '@vola/shared';
+import {
+  OrganizationType,
+  Permission,
+  RoleName,
+  type DeliveryFeeRateForm,
+} from '@vola/shared';
 
 export interface SeedUser {
   name: string;
@@ -6,6 +11,7 @@ export interface SeedUser {
   phoneNumber: string;
   role: RoleName;
   teamName?: string;
+  permissions?: Permission[];
 }
 
 export interface SeedOrganization {
@@ -14,6 +20,7 @@ export interface SeedOrganization {
   countryCode: string;
   teamNames: string[];
   users: SeedUser[];
+  deliveryFeeRate?: DeliveryFeeRateForm;
 }
 
 export const PLATFORM_DRIVERS_MERCHANT_NAMES = [
@@ -48,6 +55,10 @@ export const SEED_ORGANIZATIONS: SeedOrganization[] = [
         phoneNumber: '+50432987610',
         role: RoleName.Agent,
         teamName: 'Soporte a comercios',
+        permissions: [
+          Permission.ViewOrganizations,
+          Permission.ManageDeliveryFees,
+        ],
       },
       {
         name: 'Marvin Turcios',
@@ -72,6 +83,14 @@ export const SEED_ORGANIZATIONS: SeedOrganization[] = [
   {
     name: 'Baleadas Doña Mary',
     type: OrganizationType.Merchant,
+    deliveryFeeRate: {
+      ranges: [
+        { upToKm: 3, fee: 30 },
+        { upToKm: 6, fee: 45 },
+        { upToKm: null, fee: 60 },
+      ],
+      extraFeePerKm: null,
+    },
     countryCode: 'HN',
     teamNames: ['Cocina', 'Despacho'],
     users: [
@@ -99,6 +118,10 @@ export const SEED_ORGANIZATIONS: SeedOrganization[] = [
   {
     name: 'Farmacia San Rafael',
     type: OrganizationType.Merchant,
+    deliveryFeeRate: {
+      ranges: [{ upToKm: 2, fee: 0 }],
+      extraFeePerKm: 10,
+    },
     countryCode: 'HN',
     teamNames: ['Mostrador'],
     users: [
@@ -127,6 +150,10 @@ export const SEED_ORGANIZATIONS: SeedOrganization[] = [
   {
     name: 'Panadería El Trigal',
     type: OrganizationType.Merchant,
+    deliveryFeeRate: {
+      ranges: [{ upToKm: 4, fee: 25 }],
+      extraFeePerKm: 7.5,
+    },
     countryCode: 'HN',
     teamNames: ['Producción', 'Ventas'],
     users: [
@@ -160,6 +187,14 @@ export const SEED_ORGANIZATIONS: SeedOrganization[] = [
   {
     name: 'Pupusería La Ceibita',
     type: OrganizationType.Merchant,
+    deliveryFeeRate: {
+      ranges: [
+        { upToKm: 3, fee: 1.5 },
+        { upToKm: 6, fee: 2.5 },
+        { upToKm: null, fee: 3.5 },
+      ],
+      extraFeePerKm: null,
+    },
     countryCode: 'SV',
     teamNames: ['Cocina'],
     users: [

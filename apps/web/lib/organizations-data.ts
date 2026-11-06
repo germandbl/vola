@@ -1,14 +1,17 @@
 import "server-only";
 import {
   countrySchema,
+  deliveryFeeRateSchema,
   organizationSchema,
   userSummarySchema,
   type Country,
+  type DeliveryFeeRate,
   type Organization,
   type Paginated,
   type UserSummary,
 } from "@vola/shared";
 import { notFound, redirect } from "next/navigation";
+import { cache } from "react";
 import { z, type ZodType } from "zod";
 import { fetchWithSession } from "./api-fetch";
 
@@ -47,9 +50,10 @@ export function getOrganizationsPage(
   );
 }
 
-export function getOrganization(organizationId: number): Promise<Organization> {
+// El layout de pestañas y cada pestaña piden la misma organización; cache evita repetir la llamada en un mismo render.
+export const getOrganization = cache((organizationId: number): Promise<Organization> => {
   return getFromApi(`/organizations/${organizationId}`, organizationSchema);
-}
+});
 
 export function getOrganizationUsersPage(
   organizationId: number,
@@ -58,6 +62,13 @@ export function getOrganizationUsersPage(
   return getFromApi(
     `/organizations/${organizationId}/users?page=${page}`,
     paginatedSchema(userSummarySchema),
+  );
+}
+
+export function getDeliveryFeeRate(organizationId: number): Promise<DeliveryFeeRate> {
+  return getFromApi(
+    `/organizations/${organizationId}/delivery-fee-rate`,
+    deliveryFeeRateSchema,
   );
 }
 

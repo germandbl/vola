@@ -22,7 +22,7 @@ async function NewUserContent({ params }: Pick<NewUserPageProps, "params">) {
   return (
     <>
       <Button asChild variant="ghost" className="self-start">
-        <Link href={`/organizaciones/${organizationId}`}>
+        <Link href={`/organizaciones/${organizationId}/usuarios`}>
           <ArrowLeft data-icon="inline-start" />
           Volver a {organization.name}
         </Link>

@@ -1,6 +1,6 @@
 "use client";
 
-import { ASSIGNABLE_ROLES, RoleName, userFormSchema } from "@vola/shared";
+import { ASSIGNABLE_ROLES, MIN_PASSWORD_LENGTH, RoleName, userFormSchema } from "@vola/shared";
 import { useActionState } from "react";
 import { FormErrorAlert } from "@/components/FormErrorAlert";
 import { PasswordInput } from "@/components/PasswordInput";
@@ -76,6 +76,7 @@ export function UserForm({ action }: UserFormProps) {
             id="password"
             name="password"
             autoComplete="new-password"
+            placeholder={`Mínimo ${MIN_PASSWORD_LENGTH} caracteres`}
             defaultValue={state.values.password}
             aria-invalid={Boolean(errors.password)}
           />

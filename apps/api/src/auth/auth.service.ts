@@ -67,7 +67,10 @@ export class AuthService {
         ),
       );
     if (!result) return undefined;
-    return toAuthUser(result);
+    return toAuthUser(
+      result,
+      await this.usersService.findPermissions(result.id),
+    );
   }
 
   private async createSession(userId: number): Promise<string> {

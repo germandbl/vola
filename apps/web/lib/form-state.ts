@@ -17,7 +17,7 @@ interface ValidationIssue {
 export function toFieldErrors(issues: ValidationIssue[]): FieldErrors {
   const fieldErrors: FieldErrors = {};
   for (const issue of issues) {
-    const field = String(issue.path[0]);
+    const field = issue.path.map(String).join(".");
     fieldErrors[field] ??= issue.message;
   }
   return fieldErrors;

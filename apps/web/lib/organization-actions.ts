@@ -101,5 +101,5 @@ export async function createUser(
   );
   if (!response.ok) return toErrorState(response, values);
 
-  redirect(`/organizaciones/${organizationId}`);
+  redirect(`/organizaciones/${organizationId}/usuarios`);
 }

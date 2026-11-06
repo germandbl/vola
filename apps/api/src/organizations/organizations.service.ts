@@ -7,8 +7,8 @@ import {
 } from '@nestjs/common';
 import {
   PAGE_SIZE,
-  canManageAllOrganizations,
-  canManageOrganization,
+  canViewAllOrganizations,
+  canViewOrganization,
   RoleName,
   type AuthUser,
   type Organization,
@@ -28,6 +28,7 @@ const organizationColumns = {
   type: organizations.type,
   countryId: organizations.countryId,
   countryName: countries.name,
+  countryCurrency: countries.currency,
   createdAt: organizations.createdAt,
 };
 
@@ -37,6 +38,7 @@ type OrganizationRow = {
   type: Organization['type'];
   countryId: number | null;
   countryName: string | null;
+  countryCurrency: string | null;
   createdAt: Date;
 };
 
@@ -61,7 +63,7 @@ export class OrganizationsService {
     user: AuthUser,
     page: number,
   ): Promise<Paginated<Organization>> {
-    if (!canManageAllOrganizations(user)) {
+    if (!canViewAllOrganizations(user)) {
       throw new ForbiddenException('You cannot list all organizations');
     }
 
@@ -80,7 +82,7 @@ export class OrganizationsService {
     user: AuthUser,
     organizationId: number,
   ): Promise<Organization> {
-    if (!canManageOrganization(user, organizationId)) {
+    if (!canViewOrganization(user, organizationId)) {
       throw new ForbiddenException(
         `You cannot access organization ${organizationId}`,
       );

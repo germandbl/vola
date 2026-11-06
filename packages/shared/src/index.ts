@@ -5,3 +5,5 @@ export * from './pagination.js';
 export * from './roles.js';
 export * from './users.js';
 export * from './organization-access.js';
+export * from './delivery-fees.js';
+export * from './permissions.js';

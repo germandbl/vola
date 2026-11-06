@@ -18,7 +18,7 @@ export default function DashboardError({ retry }: DashboardErrorProps) {
   return (
     <Empty role="alert" className="border border-solid bg-card">
       <EmptyHeader>
-        <EmptyTitle className="text-lg font-semibold">No pudimos cargar tu panel</EmptyTitle>
+        <EmptyTitle className="text-lg font-semibold text-destructive">No pudimos cargar tu panel</EmptyTitle>
         <EmptyDescription>
           Puede ser un problema de conexión. Probá de nuevo en un momento.
         </EmptyDescription>

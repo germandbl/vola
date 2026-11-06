@@ -9,6 +9,8 @@ erDiagram
   organizations ||--o{ users : "tiene"
   organizations ||--o{ teams : "tiene"
   organizations ||--o{ driver_merchant_assignments : "recibe"
+  organizations ||--o| delivery_fee_rates : "cobra"
+  delivery_fee_rates ||--o{ delivery_fee_rate_ranges : "tiene"
   roles ||--o{ users : "asigna"
   roles ||--o{ role_permissions : "tiene"
   users ||--o{ user_permissions : "tiene"
@@ -83,6 +85,19 @@ erDiagram
     bigint team_id FK
     timestamp created_at
   }
+  delivery_fee_rates {
+    bigint id PK
+    bigint organization_id FK, UK
+    numeric extra_fee_per_km
+    timestamp created_at
+  }
+  delivery_fee_rate_ranges {
+    bigint id PK
+    bigint rate_id FK
+    numeric up_to_km
+    numeric fee
+    timestamp created_at
+  }
   sessions {
     bigint id PK
     bigint user_id FK
@@ -93,8 +108,8 @@ erDiagram
 ```
 
 Relaciones:
-- Uno a muchos: un país tiene muchas organizaciones y muchos motoristas; una organización tiene muchos usuarios y equipos; un rol tiene muchos usuarios y permisos; un usuario tiene muchos permisos y sesiones.
-- Uno a uno: un usuario puede ser un motorista.
+- Uno a muchos: un país tiene muchas organizaciones y muchos motoristas; una organización tiene muchos usuarios y equipos; un rol tiene muchos usuarios y permisos; un usuario tiene muchos permisos y sesiones; una tarifa de envío tiene muchos rangos.
+- Uno a uno: un usuario puede ser un motorista; un comercio puede tener una tarifa de envío.
 - Muchos a muchos: motoristas y comercios, a través de driver_merchant_assignments; usuarios y equipos, a través de team_members.
 
 ## Diccionario de datos
@@ -127,7 +142,7 @@ Todas las tablas tienen `id` como llave primaria (bigint generado por la base) y
 - Llaves foráneas: role_id → roles. Al borrar el rol: se borran sus permisos.
 - NOT NULL: role_id, permission_key.
 - UNIQUE: role_id con permission_key.
-- CHECK: ninguno.
+- CHECK: permission_key solo puede ser organizations.view o delivery_fees.manage.
 
 ### users
 
@@ -141,7 +156,7 @@ Todas las tablas tienen `id` como llave primaria (bigint generado por la base) y
 - Llaves foráneas: user_id → users. Al borrar el usuario: se borran sus permisos.
 - NOT NULL: user_id, permission_key.
 - UNIQUE: user_id con permission_key.
-- CHECK: ninguno.
+- CHECK: permission_key solo puede ser organizations.view o delivery_fees.manage.
 
 ### drivers
 
@@ -170,6 +185,20 @@ Todas las tablas tienen `id` como llave primaria (bigint generado por la base) y
 - NOT NULL: user_id, team_id.
 - UNIQUE: team_id con user_id.
 - CHECK: ninguno.
+
+### delivery_fee_rates
+
+- Llaves foráneas: organization_id → organizations. Al borrar la organización: se borra su tarifa.
+- NOT NULL: organization_id. extra_fee_per_km puede ser nulo: sin cobro por km extra, el último rango no tiene límite.
+- UNIQUE: organization_id.
+- CHECK: extra_fee_per_km no puede ser negativo.
+
+### delivery_fee_rate_ranges
+
+- Llaves foráneas: rate_id → delivery_fee_rates. Al borrar la tarifa: se borran sus rangos.
+- NOT NULL: rate_id, fee. up_to_km puede ser nulo: es el último rango, sin límite de km.
+- UNIQUE: rate_id con up_to_km, contando los nulos como iguales (solo un rango sin límite por tarifa).
+- CHECK: up_to_km mayor que 0. fee no puede ser negativo.
 
 ### sessions
 

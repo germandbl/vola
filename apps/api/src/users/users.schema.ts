@@ -50,5 +50,11 @@ export const userPermissions = pgTable(
     permissionKey: varchar('permission_key').notNull(),
     createdAt: timestamp('created_at').notNull().defaultNow(),
   },
-  (table) => [unique().on(table.userId, table.permissionKey)],
+  (table) => [
+    unique().on(table.userId, table.permissionKey),
+    check(
+      'user_permissions_permission_key_known',
+      sql`${table.permissionKey} IN ('organizations.view', 'delivery_fees.manage')`,
+    ),
+  ],
 );

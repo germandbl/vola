@@ -1,11 +1,11 @@
-import { RoleName, canManageAllOrganizations, type AuthUser } from "@vola/shared";
+import { RoleName, canViewAllOrganizations, type AuthUser } from "@vola/shared";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getCurrentUser } from "@/lib/current-user";
 import { SidebarNav, type NavItem } from "./SidebarNav";
 
 function getNavItems(user: AuthUser): NavItem[] {
   const items: NavItem[] = [{ href: "/", label: "Inicio", icon: "home" }];
-  if (canManageAllOrganizations(user)) {
+  if (canViewAllOrganizations(user)) {
     items.push({ href: "/organizaciones", label: "Organizaciones", icon: "organizations" });
     return items;
   }

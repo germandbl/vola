@@ -27,6 +27,7 @@ export const organizationSchema = z.object({
   type: organizationTypeSchema,
   countryId: z.number().nullable(),
   countryName: z.string().nullable(),
+  countryCurrency: z.string().nullable(),
   createdAt: z.string(),
 });
 
