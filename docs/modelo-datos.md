@@ -10,6 +10,7 @@ erDiagram
   organizations ||--o{ teams : "tiene"
   organizations ||--o{ driver_merchant_assignments : "recibe"
   organizations ||--o| delivery_fee_rates : "cobra"
+  organizations ||--o{ order_count_fee_ranges : "cobra"
   delivery_fee_rates ||--o{ delivery_fee_rate_ranges : "tiene"
   roles ||--o{ users : "asigna"
   roles ||--o{ role_permissions : "tiene"
@@ -32,6 +33,7 @@ erDiagram
     varchar name
     bigint country_id FK
     organization_types type
+    delivery_fee_bases delivery_fee_basis
     timestamp created_at
   }
   roles {
@@ -98,6 +100,13 @@ erDiagram
     numeric fee
     timestamp created_at
   }
+  order_count_fee_ranges {
+    bigint id PK
+    bigint organization_id FK
+    integer up_to_order_count
+    numeric fee
+    timestamp created_at
+  }
   sessions {
     bigint id PK
     bigint user_id FK
@@ -108,7 +117,7 @@ erDiagram
 ```
 
 Relaciones:
-- Uno a muchos: un país tiene muchas organizaciones y muchos motoristas; una organización tiene muchos usuarios y equipos; un rol tiene muchos usuarios y permisos; un usuario tiene muchos permisos y sesiones; una tarifa de envío tiene muchos rangos.
+- Uno a muchos: un país tiene muchas organizaciones y muchos motoristas; una organización tiene muchos usuarios y equipos; un rol tiene muchos usuarios y permisos; un usuario tiene muchos permisos y sesiones; una tarifa de envío tiene muchos rangos; un comercio tiene muchos rangos de tarifa por cantidad de pedidos.
 - Uno a uno: un usuario puede ser un motorista; un comercio puede tener una tarifa de envío.
 - Muchos a muchos: motoristas y comercios, a través de driver_merchant_assignments; usuarios y equipos, a través de team_members.
 
@@ -126,9 +135,9 @@ Todas las tablas tienen `id` como llave primaria (bigint generado por la base) y
 ### organizations
 
 - Llaves foráneas: country_id → countries. Al borrar el país: se impide si tiene organizaciones.
-- NOT NULL: name, type. country_id puede ser nulo.
+- NOT NULL: name, type. country_id puede ser nulo. delivery_fee_basis puede ser nulo: el comercio todavía no eligió cómo cobra el envío.
 - UNIQUE: ninguna.
-- CHECK: name no puede estar vacío. type solo puede ser merchant o platform.
+- CHECK: name no puede estar vacío. type solo puede ser merchant o platform. delivery_fee_basis solo puede ser distance o completed_orders.
 
 ### roles
 
@@ -199,6 +208,13 @@ Todas las tablas tienen `id` como llave primaria (bigint generado por la base) y
 - NOT NULL: rate_id, fee. up_to_km puede ser nulo: es el último rango, sin límite de km.
 - UNIQUE: rate_id con up_to_km, contando los nulos como iguales (solo un rango sin límite por tarifa).
 - CHECK: up_to_km mayor que 0. fee no puede ser negativo.
+
+### order_count_fee_ranges
+
+- Llaves foráneas: organization_id → organizations. Al borrar la organización: se borran sus rangos.
+- NOT NULL: organization_id, fee. up_to_order_count puede ser nulo: es el último rango, cubre todos los pedidos que siguen en el mes.
+- UNIQUE: organization_id con up_to_order_count, contando los nulos como iguales (solo un rango sin límite por comercio).
+- CHECK: up_to_order_count mayor que 0. fee no puede ser negativo.
 
 ### sessions
 

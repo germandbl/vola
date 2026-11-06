@@ -1,20 +1,12 @@
+import { Inject, Injectable } from '@nestjs/common';
 import {
-  BadRequestException,
-  ForbiddenException,
-  Inject,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
-import {
-  OrganizationType,
-  canManageDeliveryFees,
   type AuthUser,
   type DeliveryFeeRate,
   type DeliveryFeeRateForm,
 } from '@vola/shared';
 import { asc, eq } from 'drizzle-orm';
 import { DATABASE, type Database } from '../database/database.module.js';
-import { organizations } from '../organizations/organizations.schema.js';
+import { DeliveryFeeAccessService } from './delivery-fee-access.service.js';
 import {
   deliveryFeeRateRanges,
   deliveryFeeRates,
@@ -22,22 +14,21 @@ import {
 
 const UNCONFIGURED_RATE: DeliveryFeeRate = { ranges: [], extraFeePerKm: null };
 
-function assertCanManageDeliveryFees(user: AuthUser): void {
-  if (!canManageDeliveryFees(user)) {
-    throw new ForbiddenException('You cannot manage delivery fee rates');
-  }
-}
-
 @Injectable()
 export class DeliveryFeesService {
-  constructor(@Inject(DATABASE) private readonly database: Database) {}
+  constructor(
+    @Inject(DATABASE) private readonly database: Database,
+    private readonly deliveryFeeAccessService: DeliveryFeeAccessService,
+  ) {}
 
   async findRate(
     user: AuthUser,
     organizationId: number,
   ): Promise<DeliveryFeeRate> {
-    assertCanManageDeliveryFees(user);
-    await this.assertIsMerchant(organizationId);
+    await this.deliveryFeeAccessService.assertCanManageMerchantFees(
+      user,
+      organizationId,
+    );
     return this.findRateByOrganizationId(organizationId);
   }
 
@@ -46,8 +37,10 @@ export class DeliveryFeesService {
     organizationId: number,
     form: DeliveryFeeRateForm,
   ): Promise<DeliveryFeeRate> {
-    assertCanManageDeliveryFees(user);
-    await this.assertIsMerchant(organizationId);
+    await this.deliveryFeeAccessService.assertCanManageMerchantFees(
+      user,
+      organizationId,
+    );
 
     await this.database.transaction(async (transaction) => {
       const [rate] = await transaction
@@ -66,6 +59,14 @@ export class DeliveryFeesService {
         .values(form.ranges.map((range) => ({ rateId: rate.id, ...range })));
     });
     return this.findRateByOrganizationId(organizationId);
+  }
+
+  async hasRate(organizationId: number): Promise<boolean> {
+    const rateCount = await this.database.$count(
+      deliveryFeeRates,
+      eq(deliveryFeeRates.organizationId, organizationId),
+    );
+    return rateCount > 0;
   }
 
   private async findRateByOrganizationId(
@@ -90,20 +91,5 @@ export class DeliveryFeesService {
       .where(eq(deliveryFeeRateRanges.rateId, rate.id))
       .orderBy(asc(deliveryFeeRateRanges.upToKm));
     return { ranges, extraFeePerKm: rate.extraFeePerKm };
-  }
-
-  private async assertIsMerchant(organizationId: number): Promise<void> {
-    const [organization] = await this.database
-      .select({ type: organizations.type })
-      .from(organizations)
-      .where(eq(organizations.id, organizationId));
-    if (!organization) {
-      throw new NotFoundException(`Organization ${organizationId} not found`);
-    }
-    if (organization.type !== OrganizationType.Merchant) {
-      throw new BadRequestException(
-        `Organization ${organizationId} is not a merchant; only merchants have delivery fee rates`,
-      );
-    }
   }
 }

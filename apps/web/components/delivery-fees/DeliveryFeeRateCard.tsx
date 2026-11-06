@@ -1,10 +1,10 @@
-import type { DeliveryFeeRange, Organization } from "@vola/shared";
+import type { DeliveryFeeRange, DeliveryFeeRate, Organization } from "@vola/shared";
 import { Pencil } from "lucide-react";
 import Link from "next/link";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardAction, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatMoney } from "@/lib/labels";
-import { getDeliveryFeeRate } from "@/lib/organizations-data";
 
 function describeRangeDistance(ranges: DeliveryFeeRange[], index: number): string {
   const fromKm = index === 0 ? 0 : ranges[index - 1].upToKm;
@@ -16,10 +16,11 @@ function describeRangeDistance(ranges: DeliveryFeeRange[], index: number): strin
 
 interface DeliveryFeeRateCardProps {
   organization: Organization;
+  rate: DeliveryFeeRate;
+  isActive: boolean;
 }
 
-export async function DeliveryFeeRateCard({ organization }: DeliveryFeeRateCardProps) {
-  const rate = await getDeliveryFeeRate(organization.id);
+export function DeliveryFeeRateCard({ organization, rate, isActive }: DeliveryFeeRateCardProps) {
   const isConfigured = rate.ranges.length > 0;
   const lastUpToKm = rate.ranges.at(-1)?.upToKm;
   const currency = organization.countryCurrency;
@@ -27,7 +28,10 @@ export async function DeliveryFeeRateCard({ organization }: DeliveryFeeRateCardP
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-lg font-semibold">Tarifa de envío</CardTitle>
+        <CardTitle className="flex items-center gap-2 text-lg font-semibold">
+          Tarifa por distancia
+          {isActive && <Badge variant="secondary">Activa</Badge>}
+        </CardTitle>
         <CardAction>
           <Button asChild variant="outline">
             <Link href={`/organizaciones/${organization.id}/tarifa-envio`}>
@@ -40,7 +44,7 @@ export async function DeliveryFeeRateCard({ organization }: DeliveryFeeRateCardP
       <CardContent>
         {!isConfigured && (
           <p className="text-sm text-muted-foreground">
-            Este comercio todavía no tiene tarifa. Configurala para poder cobrar los envíos.
+            Este comercio todavía no tiene tarifa por distancia.
           </p>
         )}
         {isConfigured && (

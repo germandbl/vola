@@ -12,7 +12,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { getDeliveryFeeRate, getOrganization } from "@/lib/organizations-data";
 import { readIdParam } from "@/lib/route-params";
 
-export const metadata: Metadata = { title: "Tarifa de envío · Volá!" };
+export const metadata: Metadata = { title: "Tarifa por distancia · Volá!" };
 
 type DeliveryFeeRatePageProps = PageProps<"/organizaciones/[organizationId]/tarifa-envio">;
 
@@ -31,7 +31,7 @@ async function DeliveryFeeRateContent({ params }: Pick<DeliveryFeeRatePageProps,
         </Link>
       </Button>
       <PageHeader
-        title="Tarifa de envío"
+        title="Tarifa por distancia"
         description={`Lo que ${organization.name} cobra por envío según la distancia del pedido.`}
       />
       <Card>

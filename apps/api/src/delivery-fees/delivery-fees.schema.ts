@@ -2,6 +2,7 @@ import { sql } from 'drizzle-orm';
 import {
   bigint,
   check,
+  integer,
   numeric,
   pgTable,
   timestamp,
@@ -55,5 +56,29 @@ export const deliveryFeeRateRanges = pgTable(
       sql`${table.upToKm} > 0`,
     ),
     check('delivery_fee_rate_ranges_fee_not_negative', sql`${table.fee} >= 0`),
+  ],
+);
+
+export const orderCountFeeRanges = pgTable(
+  'order_count_fee_ranges',
+  {
+    id: bigint('id', { mode: 'number' })
+      .primaryKey()
+      .generatedAlwaysAsIdentity(),
+    organizationId: bigint('organization_id', { mode: 'number' })
+      .notNull()
+      .references(() => organizations.id, { onDelete: 'cascade' }),
+    upToOrderCount: integer('up_to_order_count'),
+    fee: numeric('fee', { precision: 10, scale: 2, mode: 'number' }).notNull(),
+    createdAt: timestamp('created_at').notNull().defaultNow(),
+  },
+  (table) => [
+    // Con NULLS NOT DISTINCT, un comercio solo puede tener un rango sin límite.
+    unique().on(table.organizationId, table.upToOrderCount).nullsNotDistinct(),
+    check(
+      'order_count_fee_ranges_up_to_order_count_positive',
+      sql`${table.upToOrderCount} > 0`,
+    ),
+    check('order_count_fee_ranges_fee_not_negative', sql`${table.fee} >= 0`),
   ],
 );
