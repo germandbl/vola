@@ -1,5 +1,7 @@
 import "server-only";
 import {
+  branchSchema,
+  branchSummarySchema,
   countrySchema,
   deliveryFeeBasisSettingSchema,
   deliveryFeeRateSchema,
@@ -7,6 +9,8 @@ import {
   orderCountFeeRateSchema,
   organizationSchema,
   userSummarySchema,
+  type Branch,
+  type BranchSummary,
   type Country,
   type DeliveryFeeBasisSetting,
   type DeliveryFeeRate,
@@ -78,6 +82,14 @@ export function getMerchants(organizationId: number): Promise<Merchant[]> {
 export const getMerchant = cache((merchantId: number): Promise<Merchant> => {
   return getFromApi(`/merchants/${merchantId}`, merchantSchema);
 });
+
+export function getBranches(merchantId: number): Promise<BranchSummary[]> {
+  return getFromApi(`/merchants/${merchantId}/branches`, z.array(branchSummarySchema));
+}
+
+export function getBranch(branchId: number): Promise<Branch> {
+  return getFromApi(`/branches/${branchId}`, branchSchema);
+}
 
 export function getDeliveryFeeRate(merchantId: number): Promise<DeliveryFeeRate> {
   return getFromApi(

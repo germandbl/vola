@@ -41,33 +41,35 @@ export function OrganizationForm({
     <form action={formAction} onSubmit={validateBeforeSubmit} noValidate>
       <FieldGroup>
         {state.formError && <FormErrorAlert message={state.formError} />}
-        <Field data-invalid={Boolean(errors.name)}>
-          <FieldLabel htmlFor="name">Nombre</FieldLabel>
-          <Input
-            id="name"
-            name="name"
-            placeholder="Ej. Baleadas Doña Mary"
-            defaultValue={state.values.name ?? organization?.name}
-            aria-invalid={Boolean(errors.name)}
-          />
-          <FieldError>{errors.name}</FieldError>
-        </Field>
-        <Field data-invalid={Boolean(errors.countryId)}>
-          <FieldLabel htmlFor="countryId">País</FieldLabel>
-          <Select name="countryId" defaultValue={defaultCountryId}>
-            <SelectTrigger id="countryId" className="w-full" aria-invalid={Boolean(errors.countryId)}>
-              <SelectValue placeholder="Elegí un país" />
-            </SelectTrigger>
-            <SelectContent>
-              {countries.map((country) => (
-                <SelectItem key={country.id} value={country.id.toString()}>
-                  {country.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <FieldError>{errors.countryId}</FieldError>
-        </Field>
+        <div className="grid gap-7 md:grid-cols-2">
+          <Field data-invalid={Boolean(errors.name)}>
+            <FieldLabel htmlFor="name">Nombre</FieldLabel>
+            <Input
+              id="name"
+              name="name"
+              placeholder="Ej. Baleadas Doña Mary"
+              defaultValue={state.values.name ?? organization?.name}
+              aria-invalid={Boolean(errors.name)}
+            />
+            <FieldError>{errors.name}</FieldError>
+          </Field>
+          <Field data-invalid={Boolean(errors.countryId)}>
+            <FieldLabel htmlFor="countryId">País</FieldLabel>
+            <Select name="countryId" defaultValue={defaultCountryId}>
+              <SelectTrigger id="countryId" className="w-full" aria-invalid={Boolean(errors.countryId)}>
+                <SelectValue placeholder="Elegí un país" />
+              </SelectTrigger>
+              <SelectContent>
+                {countries.map((country) => (
+                  <SelectItem key={country.id} value={country.id.toString()}>
+                    {country.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <FieldError>{errors.countryId}</FieldError>
+          </Field>
+        </div>
         <div className="flex items-center gap-4">
           <Button type="submit" disabled={isPending}>
             {isPending && <Spinner data-icon="inline-start" />}

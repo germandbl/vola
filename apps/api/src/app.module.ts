@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller.js';
 import { AppService } from './app.service.js';
 import { AuthModule } from './auth/auth.module.js';
+import { BranchesModule } from './branches/branches.module.js';
 import { CountriesModule } from './countries/countries.module.js';
 import { DeliveryFeesModule } from './delivery-fees/delivery-fees.module.js';
 import { DatabaseModule } from './database/database.module.js';
@@ -13,6 +14,7 @@ import { UsersModule } from './users/users.module.js';
   imports: [
     DatabaseModule,
     AuthModule,
+    BranchesModule,
     CountriesModule,
     DeliveryFeesModule,
     MerchantsModule,

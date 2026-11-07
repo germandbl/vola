@@ -13,7 +13,10 @@ import { readIdParam } from "@/lib/route-params";
 type MerchantLayoutProps = LayoutProps<"/organizaciones/[organizationId]/comercios/[merchantId]">;
 
 function getTabs(merchantPath: string, user: AuthUser): SectionTab[] {
-  const tabs: SectionTab[] = [{ href: merchantPath, label: "General" }];
+  const tabs: SectionTab[] = [
+    { href: merchantPath, label: "General" },
+    { href: `${merchantPath}/sucursales`, label: "Sucursales" },
+  ];
   if (canManageDeliveryFees(user)) {
     tabs.push({ href: `${merchantPath}/tarifas`, label: "Tarifas y cobros" });
   }
@@ -56,7 +59,7 @@ function MerchantHeaderSkeleton() {
 
 export default function MerchantLayout({ children, params }: MerchantLayoutProps) {
   return (
-    <div className="mx-auto flex max-w-3xl flex-col gap-6">
+    <div className="flex flex-col gap-6">
       <Suspense fallback={<MerchantHeaderSkeleton />}>
         <MerchantHeader params={params} />
       </Suspense>

@@ -12,6 +12,8 @@ erDiagram
   organizations ||--o{ merchants : "tiene"
   merchants ||--o| delivery_fee_rates : "cobra"
   merchants ||--o{ order_count_fee_ranges : "cobra"
+  merchants ||--o{ branches : "tiene"
+  branches ||--o{ branch_opening_hours : "abre"
   delivery_fee_rates ||--o{ delivery_fee_rate_ranges : "tiene"
   roles ||--o{ users : "asigna"
   roles ||--o{ role_permissions : "tiene"
@@ -117,6 +119,24 @@ erDiagram
     numeric fee
     timestamp created_at
   }
+  branches {
+    bigint id PK
+    bigint merchant_id FK
+    varchar name
+    varchar address
+    numeric latitude
+    numeric longitude
+    timestamp created_at
+  }
+  branch_opening_hours {
+    bigint id PK
+    bigint branch_id FK
+    days_of_week day
+    boolean is_open
+    time opens_at
+    time closes_at
+    timestamp created_at
+  }
   sessions {
     bigint id PK
     bigint user_id FK
@@ -127,7 +147,7 @@ erDiagram
 ```
 
 Relaciones:
-- Uno a muchos: un país tiene muchas organizaciones y muchos motoristas; una organización tiene muchos usuarios, equipos y comercios; un rol tiene muchos usuarios y permisos; un usuario tiene muchos permisos y sesiones; una tarifa de envío tiene muchos rangos; un comercio tiene muchos rangos de tarifa por cantidad de pedidos.
+- Uno a muchos: un país tiene muchas organizaciones y muchos motoristas; una organización tiene muchos usuarios, equipos y comercios; un rol tiene muchos usuarios y permisos; un usuario tiene muchos permisos y sesiones; una tarifa de envío tiene muchos rangos; un comercio tiene muchos rangos de tarifa por cantidad de pedidos y muchas sucursales; una sucursal tiene un horario por cada día de la semana.
 - Uno a uno: un usuario puede ser un motorista; un comercio puede tener una tarifa de envío.
 - Muchos a muchos: motoristas y comercios, a través de driver_merchant_assignments; usuarios y equipos, a través de team_members.
 
@@ -232,6 +252,20 @@ Todas las tablas tienen `id` como llave primaria (bigint generado por la base) y
 - NOT NULL: merchant_id, fee. up_to_order_count puede ser nulo: es el último rango, cubre todos los pedidos que siguen en el mes.
 - UNIQUE: merchant_id con up_to_order_count, contando los nulos como iguales (solo un rango sin límite por comercio).
 - CHECK: up_to_order_count mayor que 0. fee no puede ser negativo.
+
+### branches
+
+- Llaves foráneas: merchant_id → merchants. Al borrar el comercio: se borran sus sucursales.
+- NOT NULL: merchant_id, name, address, latitude, longitude.
+- UNIQUE: merchant_id con name.
+- CHECK: name y address no pueden estar vacíos. latitude va de -90 a 90 y longitude de -180 a 180.
+
+### branch_opening_hours
+
+- Llaves foráneas: branch_id → branches. Al borrar la sucursal: se borra su horario.
+- NOT NULL: branch_id, day, is_open. opens_at y closes_at pueden ser nulos: un día cerrado no lleva horas.
+- UNIQUE: branch_id con day.
+- CHECK: day solo puede ser un día de lunes a domingo. Un día abierto lleva opens_at y closes_at, con closes_at después de opens_at; un día cerrado no lleva ninguna de las dos.
 
 ### sessions
 

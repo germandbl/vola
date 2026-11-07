@@ -23,7 +23,7 @@ async function NewOrganizationForm() {
 
 export default function NewOrganizationPage() {
   return (
-    <div className="mx-auto flex max-w-xl flex-col gap-6">
+    <div className="flex flex-col gap-6">
       <PageHeader title="Crear organización" />
       <Card>
         <CardContent>

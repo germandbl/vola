@@ -7,5 +7,6 @@ import { MerchantsService } from './merchants.service.js';
   imports: [OrganizationsModule],
   controllers: [MerchantsController],
   providers: [MerchantsService],
+  exports: [MerchantsService],
 })
 export class MerchantsModule {}

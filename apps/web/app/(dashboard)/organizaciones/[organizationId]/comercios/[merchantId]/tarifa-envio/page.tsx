@@ -51,7 +51,7 @@ async function DeliveryFeeRateContent({ params }: Pick<DeliveryFeeRatePageProps,
 
 export default function DeliveryFeeRatePage({ params }: DeliveryFeeRatePageProps) {
   return (
-    <div className="mx-auto flex max-w-3xl flex-col gap-6">
+    <div className="flex flex-col gap-6">
       <Suspense fallback={<TableSkeleton />}>
         <DeliveryFeeRateContent params={params} />
       </Suspense>

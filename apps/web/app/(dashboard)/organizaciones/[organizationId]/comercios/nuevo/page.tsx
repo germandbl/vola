@@ -43,7 +43,7 @@ async function NewMerchantContent({ params }: Pick<NewMerchantPageProps, "params
 
 export default function NewMerchantPage({ params }: NewMerchantPageProps) {
   return (
-    <div className="mx-auto flex max-w-xl flex-col gap-6">
+    <div className="flex flex-col gap-6">
       <Suspense fallback={<TableSkeleton />}>
         <NewMerchantContent params={params} />
       </Suspense>

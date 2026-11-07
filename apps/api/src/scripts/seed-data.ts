@@ -1,9 +1,13 @@
 import {
+  DAYS_OF_WEEK,
+  DayOfWeek,
   DeliveryFeeBasis,
   OrganizationType,
   Permission,
   RoleName,
+  type BranchForm,
   type DeliveryFeeRateForm,
+  type OpeningHours,
   type OrderCountFeeRateForm,
 } from '@vola/shared';
 
@@ -24,6 +28,7 @@ export interface SeedMerchant {
   deliveryFeeBasis?: DeliveryFeeBasis;
   deliveryFeeRate?: DeliveryFeeRateForm;
   orderCountFeeRate?: OrderCountFeeRateForm;
+  branches?: BranchForm[];
 }
 
 export interface SeedOrganization {
@@ -33,6 +38,19 @@ export interface SeedOrganization {
   teamNames: string[];
   users: SeedUser[];
   merchants: SeedMerchant[];
+}
+
+function createOpeningHours(
+  opensAt: string,
+  closesAt: string,
+  closedDays: DayOfWeek[] = [],
+): OpeningHours[] {
+  return DAYS_OF_WEEK.map((day) => {
+    if (closedDays.includes(day)) {
+      return { day, isOpen: false, opensAt: null, closesAt: null };
+    }
+    return { day, isOpen: true, opensAt, closesAt };
+  });
 }
 
 export const PLATFORM_DRIVERS_MERCHANT_NAMES = [
@@ -105,6 +123,24 @@ export const SEED_ORGANIZATIONS: SeedOrganization[] = [
         contactName: 'María Elena Banegas',
         contactEmail: 'maria.banegas@baleadasdonamary.hn',
         contactPhone: '+50499614402',
+        branches: [
+          {
+            name: 'Col. Palmira',
+            address: 'Col. Palmira, avenida República de Chile, Tegucigalpa',
+            latitude: 14.098915,
+            longitude: -87.190721,
+            openingHours: createOpeningHours('07:00', '20:00'),
+          },
+          {
+            name: 'Col. Kennedy',
+            address: 'Col. Kennedy, bulevar Kennedy, Tegucigalpa',
+            latitude: 14.059627,
+            longitude: -87.177145,
+            openingHours: createOpeningHours('07:00', '19:00', [
+              DayOfWeek.Sunday,
+            ]),
+          },
+        ],
         deliveryFeeBasis: DeliveryFeeBasis.Distance,
         deliveryFeeRate: {
           ranges: [
@@ -155,6 +191,15 @@ export const SEED_ORGANIZATIONS: SeedOrganization[] = [
         contactName: 'Gabriela Maradiaga',
         contactEmail: 'gabriela.maradiaga@farmaciasanrafael.hn',
         contactPhone: '+50432215508',
+        branches: [
+          {
+            name: 'Barrio Abajo',
+            address: 'Barrio Abajo, calle La Fuente, Tegucigalpa',
+            latitude: 14.106402,
+            longitude: -87.204338,
+            openingHours: createOpeningHours('08:00', '21:00'),
+          },
+        ],
         deliveryFeeBasis: DeliveryFeeBasis.Distance,
         deliveryFeeRate: {
           ranges: [{ upToKm: 2, fee: 0 }],

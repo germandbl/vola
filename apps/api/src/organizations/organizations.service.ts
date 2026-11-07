@@ -29,6 +29,7 @@ const organizationColumns = {
   type: organizations.type,
   countryId: organizations.countryId,
   countryName: countries.name,
+  countryCode: countries.code,
   countryCurrency: countries.currency,
   createdAt: organizations.createdAt,
 };
@@ -39,6 +40,7 @@ type OrganizationRow = {
   type: Organization['type'];
   countryId: number | null;
   countryName: string | null;
+  countryCode: string | null;
   countryCurrency: string | null;
   createdAt: Date;
 };

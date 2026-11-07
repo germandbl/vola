@@ -9,6 +9,7 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@vis.gl/react-google-maps": "^1.10.2",
     "@vola/shared": "workspace:*",
     "class-variance-authority": "^0.7.1",
     "cn": "^0.5.1",
