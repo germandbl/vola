@@ -66,9 +66,7 @@ export class DeliveryFeesService {
     return rateCount > 0;
   }
 
-  private async findRateByMerchantId(
-    merchantId: number,
-  ): Promise<DeliveryFeeRate> {
+  async findRateByMerchantId(merchantId: number): Promise<DeliveryFeeRate> {
     const [rate] = await this.database
       .select({
         id: deliveryFeeRates.id,

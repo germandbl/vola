@@ -1,6 +1,6 @@
 "use client";
 
-import { Building2, House, type LucideIcon } from "lucide-react";
+import { Building2, House, ReceiptText, type LucideIcon } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -11,7 +11,7 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 
-export type NavIcon = "home" | "organizations";
+export type NavIcon = "home" | "orders" | "organizations";
 
 export interface NavItem {
   href: string;
@@ -21,6 +21,7 @@ export interface NavItem {
 
 const NAV_ICON: Record<NavIcon, LucideIcon> = {
   home: House,
+  orders: ReceiptText,
   organizations: Building2,
 };
 

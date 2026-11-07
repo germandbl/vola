@@ -188,11 +188,11 @@ Píldoras horizontales de alto 8px y largos distintos, como estelas de algo que 
 
 | Estado | Texto del chip |
 | --- | --- |
-| Nuevo | "Nuevo" |
+| Nueva | "Nueva" |
 | Preparando | "Preparando" |
 | En camino | "Va volando" |
-| Entregado | "Entregado" |
-| Cancelado | "Cancelado" |
+| Entregada | "Entregada" |
+| Cancelada | "Cancelada" |
 
 ### Barra lateral (web de comercios y superadmins)
 - Fondo `tinta`, texto e íconos `blanco`.

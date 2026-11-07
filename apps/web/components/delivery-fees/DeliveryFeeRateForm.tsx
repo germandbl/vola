@@ -18,7 +18,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { Switch } from "@/components/ui/switch";
 import { useDeliveryFeeRateForm, type RangeInput } from "@/hooks/use-delivery-fee-rate-form";
 import { DeliveryFeeRangeFields } from "./DeliveryFeeRangeFields";
-import { MoneyInput } from "./MoneyInput";
+import { MoneyInput } from "@/components/MoneyInput";
 
 function getFromKm(ranges: RangeInput[], index: number): string {
   if (index === 0) return "0";

@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import type { RangeInput } from "@/hooks/use-delivery-fee-rate-form";
-import { MoneyInput } from "./MoneyInput";
+import { MoneyInput } from "@/components/MoneyInput";
 
 interface DeliveryFeeRangeFieldsProps {
   range: RangeInput;

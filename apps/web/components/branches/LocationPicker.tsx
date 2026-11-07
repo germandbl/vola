@@ -2,8 +2,12 @@
 
 import { APIProvider, Map, type MapCameraChangedEvent } from "@vis.gl/react-google-maps";
 import { MapPin } from "lucide-react";
-import { useEffect, useState } from "react";
 import { FormErrorAlert } from "@/components/FormErrorAlert";
+import {
+  MAP_AUTH_FAILURE_MESSAGE,
+  MISSING_MAPS_KEY_MESSAGE,
+  useMapAuthFailure,
+} from "@/hooks/use-map-auth-failure";
 import type { Coordinates } from "@/lib/map-defaults";
 
 const DEFAULT_ZOOM = 16;
@@ -19,36 +23,14 @@ interface LocationPickerProps {
   onChange: (location: Coordinates) => void;
 }
 
-declare global {
-  interface Window {
-    gm_authFailure?: () => void;
-  }
-}
-
-// Google llama a window.gm_authFailure cuando rechaza la API key; sin esto solo muestra su error en inglés.
-function useMapAuthFailure(): boolean {
-  const [hasAuthFailed, setHasAuthFailed] = useState(false);
-  useEffect(() => {
-    window.gm_authFailure = () => setHasAuthFailed(true);
-    return () => {
-      delete window.gm_authFailure;
-    };
-  }, []);
-  return hasAuthFailed;
-}
-
 export function LocationPicker({ initialLocation, location, onChange }: LocationPickerProps) {
   const hasAuthFailed = useMapAuthFailure();
   const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
   if (hasAuthFailed) {
-    return (
-      <FormErrorAlert message="Google Maps rechazó la API key. Revisá en Google Cloud que la key tenga Maps JavaScript API, facturación activa y este dominio permitido." />
-    );
+    return <FormErrorAlert message={MAP_AUTH_FAILURE_MESSAGE} />;
   }
   if (!apiKey) {
-    return (
-      <FormErrorAlert message="El mapa no está configurado. Agregá NEXT_PUBLIC_GOOGLE_MAPS_API_KEY al panel." />
-    );
+    return <FormErrorAlert message={MISSING_MAPS_KEY_MESSAGE} />;
   }
 
   function updateLocation(event: MapCameraChangedEvent) {

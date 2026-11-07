@@ -13,5 +13,6 @@ import { OrderCountFeesService } from './order-count-fees.service.js';
     DeliveryFeesService,
     OrderCountFeesService,
   ],
+  exports: [DeliveryFeesService, OrderCountFeesService],
 })
 export class DeliveryFeesModule {}

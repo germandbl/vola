@@ -56,9 +56,7 @@ export class OrderCountFeesService {
     return rangeCount > 0;
   }
 
-  private async findRateByMerchantId(
-    merchantId: number,
-  ): Promise<OrderCountFeeRate> {
+  async findRateByMerchantId(merchantId: number): Promise<OrderCountFeeRate> {
     // En Postgres, ASC deja los NULL al final: el rango sin límite queda último.
     const ranges = await this.database
       .select({

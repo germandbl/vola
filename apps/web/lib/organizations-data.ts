@@ -6,7 +6,9 @@ import {
   deliveryFeeBasisSettingSchema,
   deliveryFeeRateSchema,
   merchantSchema,
+  orderBranchOptionSchema,
   orderCountFeeRateSchema,
+  orderSummarySchema,
   organizationSchema,
   userSummarySchema,
   type Branch,
@@ -15,7 +17,9 @@ import {
   type DeliveryFeeBasisSetting,
   type DeliveryFeeRate,
   type Merchant,
+  type OrderBranchOption,
   type OrderCountFeeRate,
+  type OrderSummary,
   type Organization,
   type Paginated,
   type UserSummary,
@@ -127,4 +131,12 @@ export async function getOrganizationMerchant(
   // La URL trae los dos ids; si el comercio es de otra organización, la ruta no existe.
   if (merchant.organizationId !== organization.id) notFound();
   return { organization, merchant };
+}
+
+export function getOrdersPage(page: number): Promise<Paginated<OrderSummary>> {
+  return getFromApi(`/orders?page=${page}`, paginatedSchema(orderSummarySchema));
+}
+
+export function getOrderBranchOptions(): Promise<OrderBranchOption[]> {
+  return getFromApi("/orders/branch-options", z.array(orderBranchOptionSchema));
 }
