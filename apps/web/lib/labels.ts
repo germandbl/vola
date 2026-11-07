@@ -1,8 +1,18 @@
-import { OrganizationType, RoleName } from "@vola/shared";
+import { DayOfWeek, OrganizationType, RoleName } from "@vola/shared";
 
 export const ORGANIZATION_TYPE_LABEL: Record<OrganizationType, string> = {
   [OrganizationType.Merchant]: "Cliente",
   [OrganizationType.Platform]: "Plataforma",
+};
+
+export const DAY_OF_WEEK_LABEL: Record<DayOfWeek, string> = {
+  [DayOfWeek.Monday]: "Lunes",
+  [DayOfWeek.Tuesday]: "Martes",
+  [DayOfWeek.Wednesday]: "Miércoles",
+  [DayOfWeek.Thursday]: "Jueves",
+  [DayOfWeek.Friday]: "Viernes",
+  [DayOfWeek.Saturday]: "Sábado",
+  [DayOfWeek.Sunday]: "Domingo",
 };
 
 export const ROLE_LABEL: Record<RoleName, string> = {

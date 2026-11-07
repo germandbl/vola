@@ -49,7 +49,7 @@ function OrganizationHeaderSkeleton() {
 
 export default function OrganizationLayout({ children, params }: OrganizationLayoutProps) {
   return (
-    <div className="mx-auto flex max-w-5xl flex-col gap-6">
+    <div className="flex flex-col gap-6">
       <Suspense fallback={<OrganizationHeaderSkeleton />}>
         <OrganizationHeader params={params} />
       </Suspense>

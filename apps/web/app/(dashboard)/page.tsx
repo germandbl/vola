@@ -4,7 +4,7 @@ import { WelcomeEmptyState } from "@/components/dashboard/WelcomeEmptyState";
 
 export default function HomePage() {
   return (
-    <div className="mx-auto flex max-w-5xl flex-col gap-6">
+    <div className="flex flex-col gap-6">
       <Suspense fallback={<GreetingSkeleton />}>
         <Greeting />
       </Suspense>

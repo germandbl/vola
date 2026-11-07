@@ -2,10 +2,12 @@ import { existsSync } from 'node:fs';
 import {
   OrganizationType,
   RoleName,
+  type BranchForm,
   type DeliveryFeeRateForm,
   type OrderCountFeeRateForm,
 } from '@vola/shared';
 import { hashPassword } from '../auth/passwords.js';
+import { branchOpeningHours, branches } from '../branches/branches.schema.js';
 import { countries } from '../countries/countries.schema.js';
 import {
   deliveryFeeRateRanges,
@@ -143,12 +145,32 @@ async function insertOrderCountFeeRate(
     );
 }
 
+async function insertBranch(
+  database: Database,
+  merchantId: number,
+  branchForm: BranchForm,
+): Promise<void> {
+  const { openingHours, ...branchData } = branchForm;
+  const [branch] = await database
+    .insert(branches)
+    .values({ ...branchData, merchantId })
+    .returning({ id: branches.id });
+  await database
+    .insert(branchOpeningHours)
+    .values(openingHours.map((hours) => ({ ...hours, branchId: branch.id })));
+}
+
 async function insertMerchant(
   database: Database,
   organizationId: number,
   seedMerchant: SeedMerchant,
 ): Promise<void> {
-  const { deliveryFeeRate, orderCountFeeRate, ...merchantData } = seedMerchant;
+  const {
+    deliveryFeeRate,
+    orderCountFeeRate,
+    branches: seedBranches = [],
+    ...merchantData
+  } = seedMerchant;
   const [merchant] = await database
     .insert(merchants)
     .values({ ...merchantData, organizationId })
@@ -158,6 +180,9 @@ async function insertMerchant(
   }
   if (orderCountFeeRate) {
     await insertOrderCountFeeRate(database, merchant.id, orderCountFeeRate);
+  }
+  for (const branchForm of seedBranches) {
+    await insertBranch(database, merchant.id, branchForm);
   }
 }
 

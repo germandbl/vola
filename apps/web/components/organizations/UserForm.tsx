@@ -32,72 +32,74 @@ export function UserForm({ action }: UserFormProps) {
     <form action={formAction} onSubmit={validateBeforeSubmit} noValidate>
       <FieldGroup>
         {state.formError && <FormErrorAlert message={state.formError} />}
-        <Field data-invalid={Boolean(errors.name)}>
-          <FieldLabel htmlFor="name">Nombre</FieldLabel>
-          <Input
-            id="name"
-            name="name"
-            autoComplete="off"
-            placeholder="Ej. Karla Mejía"
-            defaultValue={state.values.name}
-            aria-invalid={Boolean(errors.name)}
-          />
-          <FieldError>{errors.name}</FieldError>
-        </Field>
-        <Field data-invalid={Boolean(errors.email)}>
-          <FieldLabel htmlFor="email">Email</FieldLabel>
-          <Input
-            id="email"
-            name="email"
-            type="email"
-            autoComplete="off"
-            placeholder="Ej. karla.mejia@minegocio.com"
-            defaultValue={state.values.email}
-            aria-invalid={Boolean(errors.email)}
-          />
-          <FieldError>{errors.email}</FieldError>
-        </Field>
-        <Field data-invalid={Boolean(errors.phoneNumber)}>
-          <FieldLabel htmlFor="phoneNumber">Teléfono</FieldLabel>
-          <Input
-            id="phoneNumber"
-            name="phoneNumber"
-            type="tel"
-            autoComplete="off"
-            placeholder="Ej. +504 9999 8888"
-            defaultValue={state.values.phoneNumber}
-            aria-invalid={Boolean(errors.phoneNumber)}
-          />
-          <FieldError>{errors.phoneNumber}</FieldError>
-        </Field>
-        <Field data-invalid={Boolean(errors.password)}>
-          <FieldLabel htmlFor="password">Contraseña</FieldLabel>
-          <PasswordInput
-            id="password"
-            name="password"
-            autoComplete="new-password"
-            placeholder={`Mínimo ${MIN_PASSWORD_LENGTH} caracteres`}
-            defaultValue={state.values.password}
-            aria-invalid={Boolean(errors.password)}
-          />
-          <FieldError>{errors.password}</FieldError>
-        </Field>
-        <Field data-invalid={Boolean(errors.role)}>
-          <FieldLabel htmlFor="role">Rol</FieldLabel>
-          <Select name="role" defaultValue={state.values.role ?? RoleName.Agent}>
-            <SelectTrigger id="role" className="w-full" aria-invalid={Boolean(errors.role)}>
-              <SelectValue placeholder="Elegí un rol" />
-            </SelectTrigger>
-            <SelectContent>
-              {ASSIGNABLE_ROLES.map((role) => (
-                <SelectItem key={role} value={role}>
-                  {ROLE_LABEL[role]}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <FieldError>{errors.role}</FieldError>
-        </Field>
+        <div className="grid gap-7 md:grid-cols-2">
+          <Field data-invalid={Boolean(errors.name)}>
+            <FieldLabel htmlFor="name">Nombre</FieldLabel>
+            <Input
+              id="name"
+              name="name"
+              autoComplete="off"
+              placeholder="Ej. Karla Mejía"
+              defaultValue={state.values.name}
+              aria-invalid={Boolean(errors.name)}
+            />
+            <FieldError>{errors.name}</FieldError>
+          </Field>
+          <Field data-invalid={Boolean(errors.email)}>
+            <FieldLabel htmlFor="email">Email</FieldLabel>
+            <Input
+              id="email"
+              name="email"
+              type="email"
+              autoComplete="off"
+              placeholder="Ej. karla.mejia@minegocio.com"
+              defaultValue={state.values.email}
+              aria-invalid={Boolean(errors.email)}
+            />
+            <FieldError>{errors.email}</FieldError>
+          </Field>
+          <Field data-invalid={Boolean(errors.phoneNumber)}>
+            <FieldLabel htmlFor="phoneNumber">Teléfono</FieldLabel>
+            <Input
+              id="phoneNumber"
+              name="phoneNumber"
+              type="tel"
+              autoComplete="off"
+              placeholder="Ej. +504 9999 8888"
+              defaultValue={state.values.phoneNumber}
+              aria-invalid={Boolean(errors.phoneNumber)}
+            />
+            <FieldError>{errors.phoneNumber}</FieldError>
+          </Field>
+          <Field data-invalid={Boolean(errors.password)}>
+            <FieldLabel htmlFor="password">Contraseña</FieldLabel>
+            <PasswordInput
+              id="password"
+              name="password"
+              autoComplete="new-password"
+              placeholder={`Mínimo ${MIN_PASSWORD_LENGTH} caracteres`}
+              defaultValue={state.values.password}
+              aria-invalid={Boolean(errors.password)}
+            />
+            <FieldError>{errors.password}</FieldError>
+          </Field>
+          <Field data-invalid={Boolean(errors.role)}>
+            <FieldLabel htmlFor="role">Rol</FieldLabel>
+            <Select name="role" defaultValue={state.values.role ?? RoleName.Agent}>
+              <SelectTrigger id="role" className="w-full" aria-invalid={Boolean(errors.role)}>
+                <SelectValue placeholder="Elegí un rol" />
+              </SelectTrigger>
+              <SelectContent>
+                {ASSIGNABLE_ROLES.map((role) => (
+                  <SelectItem key={role} value={role}>
+                    {ROLE_LABEL[role]}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <FieldError>{errors.role}</FieldError>
+          </Field>
+        </div>
         <Button type="submit" disabled={isPending} className="self-start">
           {isPending && <Spinner data-icon="inline-start" />}
           {isPending ? "Creando usuario…" : "Crear usuario"}

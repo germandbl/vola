@@ -1,0 +1,540 @@
+{
+  "type": "diff",
+  "version": "9",
+  "dialect": "postgres",
+  "id": "f25c48cf-82bd-4455-9ea5-eb07f9a6dd7c",
+  "prevIds": [
+    "959b2b6a-d201-4459-b26b-cde109920dd5"
+  ],
+  "footprints": [
+    {
+      "statementType": "create_enum",
+      "statementTarget": [
+        "enum",
+        "public",
+        "days_of_week"
+      ],
+      "writes": [
+        "s|enum|public.days_of_week",
+        "n|enum|public.days_of_week",
+        "e|enum|public.days_of_week",
+        "n|type|public.days_of_week"
+      ],
+      "reads": [
+        "n|sch|public"
+      ]
+    },
+    {
+      "statementType": "create_table",
+      "statementTarget": [
+        "table",
+        "public",
+        "branch_opening_hours"
+      ],
+      "writes": [
+        "s|tbl|public.branch_opening_hours",
+        "n|tbl|public.branch_opening_hours",
+        "e|tbl|public.branch_opening_hours",
+        "n|rel|public.branch_opening_hours",
+        "n|type|public.branch_opening_hours",
+        "n|rel|public.branch_opening_hours_pkey",
+        "n|rel|public.branch_opening_hours_branch_id_day_unique"
+      ],
+      "reads": [
+        "n|sch|public",
+        "n|enum|public.days_of_week"
+      ]
+    },
+    {
+      "statementType": "create_table",
+      "statementTarget": [
+        "table",
+        "public",
+        "branches"
+      ],
+      "writes": [
+        "s|tbl|public.branches",
+        "n|tbl|public.branches",
+        "e|tbl|public.branches",
+        "n|rel|public.branches",
+        "n|type|public.branches",
+        "n|rel|public.branches_pkey",
+        "n|rel|public.branches_merchant_id_name_unique"
+      ],
+      "reads": [
+        "n|sch|public"
+      ]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "branch_opening_hours"
+      ],
+      "writes": [
+        "s|fk|public.branch_opening_hours.branch_opening_hours_branch_id_branches_id_fkey",
+        "n|fk|public.branch_opening_hours.branch_opening_hours_branch_id_branches_id_fkey",
+        "e|fk|public.branch_opening_hours.branch_opening_hours_branch_id_branches_id_fkey",
+        "n|con|public.branch_opening_hours.branch_opening_hours_branch_id_branches_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.branch_opening_hours",
+        "n|sch|public",
+        "n|tbl|public.branches",
+        "n|sch|public",
+        "n|col|public.branch_opening_hours.branch_id",
+        "n|col|public.branches.id",
+        "e|uniqueness|public.branches.id"
+      ]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "branches"
+      ],
+      "writes": [
+        "s|fk|public.branches.branches_merchant_id_merchants_id_fkey",
+        "n|fk|public.branches.branches_merchant_id_merchants_id_fkey",
+        "e|fk|public.branches.branches_merchant_id_merchants_id_fkey",
+        "n|con|public.branches.branches_merchant_id_merchants_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.branches",
+        "n|sch|public",
+        "n|tbl|public.merchants",
+        "n|sch|public",
+        "n|col|public.branches.merchant_id",
+        "n|col|public.merchants.id",
+        "e|uniqueness|public.merchants.id"
+      ]
+    }
+  ],
+  "deltas": [
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "name": "branch_opening_hours",
+        "isRlsEnabled": false,
+        "entityType": "tables"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "name": "branches",
+        "isRlsEnabled": false,
+        "entityType": "tables"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "name": "days_of_week",
+        "values": [
+          "monday",
+          "tuesday",
+          "wednesday",
+          "thursday",
+          "friday",
+          "saturday",
+          "sunday"
+        ],
+        "entityType": "enums"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "branch_opening_hours",
+        "name": "id",
+        "type": "bigint",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": {
+          "type": "always",
+          "name": "branch_opening_hours_id_seq",
+          "increment": "1",
+          "startWith": "1",
+          "minValue": "1",
+          "maxValue": "9223372036854775807",
+          "cache": 1,
+          "cycle": false
+        },
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "branch_opening_hours",
+        "name": "branch_id",
+        "type": "bigint",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "branch_opening_hours",
+        "name": "day",
+        "type": "days_of_week",
+        "typeSchema": "public",
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "branch_opening_hours",
+        "name": "is_open",
+        "type": "boolean",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "branch_opening_hours",
+        "name": "opens_at",
+        "type": "time",
+        "typeSchema": null,
+        "notNull": false,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "branch_opening_hours",
+        "name": "closes_at",
+        "type": "time",
+        "typeSchema": null,
+        "notNull": false,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "branch_opening_hours",
+        "name": "created_at",
+        "type": "timestamp",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": "now()",
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "branches",
+        "name": "id",
+        "type": "bigint",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": {
+          "type": "always",
+          "name": "branches_id_seq",
+          "increment": "1",
+          "startWith": "1",
+          "minValue": "1",
+          "maxValue": "9223372036854775807",
+          "cache": 1,
+          "cycle": false
+        },
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "branches",
+        "name": "merchant_id",
+        "type": "bigint",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "branches",
+        "name": "name",
+        "type": "varchar",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "branches",
+        "name": "address",
+        "type": "varchar",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "branches",
+        "name": "latitude",
+        "type": "numeric(9,6)",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "branches",
+        "name": "longitude",
+        "type": "numeric(9,6)",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "branches",
+        "name": "created_at",
+        "type": "timestamp",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": "now()",
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "branch_opening_hours",
+        "name": "branch_opening_hours_branch_id_branches_id_fkey",
+        "nameExplicit": false,
+        "columns": [
+          "branch_id"
+        ],
+        "schemaTo": "public",
+        "tableTo": "branches",
+        "columnsTo": [
+          "id"
+        ],
+        "onUpdate": "NO ACTION",
+        "onDelete": "CASCADE",
+        "entityType": "fks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "branches",
+        "name": "branches_merchant_id_merchants_id_fkey",
+        "nameExplicit": false,
+        "columns": [
+          "merchant_id"
+        ],
+        "schemaTo": "public",
+        "tableTo": "merchants",
+        "columnsTo": [
+          "id"
+        ],
+        "onUpdate": "NO ACTION",
+        "onDelete": "CASCADE",
+        "entityType": "fks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "branch_opening_hours",
+        "name": "branch_opening_hours_pkey",
+        "columns": [
+          "id"
+        ],
+        "nameExplicit": false,
+        "entityType": "pks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "branches",
+        "name": "branches_pkey",
+        "columns": [
+          "id"
+        ],
+        "nameExplicit": false,
+        "entityType": "pks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "branch_opening_hours",
+        "name": "branch_opening_hours_branch_id_day_unique",
+        "nameExplicit": false,
+        "columns": [
+          "branch_id",
+          "day"
+        ],
+        "nullsNotDistinct": false,
+        "entityType": "uniques"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "branches",
+        "name": "branches_merchant_id_name_unique",
+        "nameExplicit": false,
+        "columns": [
+          "merchant_id",
+          "name"
+        ],
+        "nullsNotDistinct": false,
+        "entityType": "uniques"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "branch_opening_hours",
+        "name": "branch_opening_hours_consistent",
+        "value": "(\"is_open\" AND \"opens_at\" IS NOT NULL AND \"closes_at\" IS NOT NULL AND \"closes_at\" > \"opens_at\")\n        OR (NOT \"is_open\" AND \"opens_at\" IS NULL AND \"closes_at\" IS NULL)",
+        "entityType": "checks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "branches",
+        "name": "branches_name_not_blank",
+        "value": "btrim(\"name\") <> ''",
+        "entityType": "checks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "branches",
+        "name": "branches_address_not_blank",
+        "value": "btrim(\"address\") <> ''",
+        "entityType": "checks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "branches",
+        "name": "branches_latitude_in_range",
+        "value": "\"latitude\" BETWEEN -90 AND 90",
+        "entityType": "checks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "branches",
+        "name": "branches_longitude_in_range",
+        "value": "\"longitude\" BETWEEN -180 AND 180",
+        "entityType": "checks"
+      }
+    }
+  ]
+}

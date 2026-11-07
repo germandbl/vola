@@ -33,18 +33,20 @@ export async function MerchantFeesSection({
         hasDistanceRate={distanceRate.ranges.length > 0}
         hasOrderCountRate={orderCountRate.ranges.length > 0}
       />
-      <DeliveryFeeRateCard
-        editHref={`${merchantPath}/tarifa-envio`}
-        currency={currency}
-        rate={distanceRate}
-        isActive={basis === DeliveryFeeBasis.Distance}
-      />
-      <OrderCountFeeRateCard
-        editHref={`${merchantPath}/tarifa-pedidos`}
-        currency={currency}
-        rate={orderCountRate}
-        isActive={basis === DeliveryFeeBasis.CompletedOrders}
-      />
+      <div className="grid gap-6 lg:grid-cols-2">
+        <DeliveryFeeRateCard
+          editHref={`${merchantPath}/tarifa-envio`}
+          currency={currency}
+          rate={distanceRate}
+          isActive={basis === DeliveryFeeBasis.Distance}
+        />
+        <OrderCountFeeRateCard
+          editHref={`${merchantPath}/tarifa-pedidos`}
+          currency={currency}
+          rate={orderCountRate}
+          isActive={basis === DeliveryFeeBasis.CompletedOrders}
+        />
+      </div>
     </div>
   );
 }
