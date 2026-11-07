@@ -29,6 +29,11 @@ export function canViewAllOrganizations(user: AuthUser): boolean {
   return hasPlatformPermission(user, Permission.ViewOrganizations);
 }
 
+function isClientOfficeUser(user: AuthUser): boolean {
+  if (user.organizationType !== OrganizationType.Merchant) return false;
+  return user.role !== RoleName.Driver;
+}
+
 export function canViewOrganization(
   user: AuthUser,
   organizationId: number,
@@ -40,6 +45,33 @@ export function canViewOrganization(
 export function canManageMerchants(user: AuthUser): boolean {
   if (user.role === RoleName.Superadmin) return true;
   return hasPlatformPermission(user, Permission.ManageMerchants);
+}
+
+export function canCreateOrders(
+  user: AuthUser,
+  organizationId: number,
+): boolean {
+  if (user.role === RoleName.Superadmin) return true;
+  if (hasPlatformPermission(user, Permission.CreateOrders)) return true;
+  if (user.organizationId !== organizationId) return false;
+  if (user.role === RoleName.Administrator) return true;
+  if (user.role !== RoleName.Agent) return false;
+  return user.permissions.includes(Permission.CreateOrders);
+}
+
+export function canCreateOrdersForAnyOrganization(user: AuthUser): boolean {
+  if (user.role === RoleName.Superadmin) return true;
+  return hasPlatformPermission(user, Permission.CreateOrders);
+}
+
+export function canViewAllOrders(user: AuthUser): boolean {
+  if (canViewAllOrganizations(user)) return true;
+  return canCreateOrdersForAnyOrganization(user);
+}
+
+export function canViewOrders(user: AuthUser): boolean {
+  if (canViewAllOrders(user)) return true;
+  return isClientOfficeUser(user);
 }
 
 export function canManageDeliveryFees(user: AuthUser): boolean {

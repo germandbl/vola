@@ -41,7 +41,7 @@ export const rolePermissions = pgTable(
     unique().on(table.roleId, table.permissionKey),
     check(
       'role_permissions_permission_key_known',
-      sql`${table.permissionKey} IN ('organizations.view', 'delivery_fees.manage', 'merchants.manage')`,
+      sql`${table.permissionKey} IN ('organizations.view', 'delivery_fees.manage', 'merchants.manage', 'orders.create')`,
     ),
   ],
 );

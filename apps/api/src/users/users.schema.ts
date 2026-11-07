@@ -54,7 +54,7 @@ export const userPermissions = pgTable(
     unique().on(table.userId, table.permissionKey),
     check(
       'user_permissions_permission_key_known',
-      sql`${table.permissionKey} IN ('organizations.view', 'delivery_fees.manage', 'merchants.manage')`,
+      sql`${table.permissionKey} IN ('organizations.view', 'delivery_fees.manage', 'merchants.manage', 'orders.create')`,
     ),
   ],
 );

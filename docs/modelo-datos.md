@@ -14,6 +14,11 @@ erDiagram
   merchants ||--o{ order_count_fee_ranges : "cobra"
   merchants ||--o{ branches : "tiene"
   branches ||--o{ branch_opening_hours : "abre"
+  organizations ||--o{ customers : "tiene"
+  customers ||--o{ orders : "pide"
+  branches ||--o{ orders : "despacha"
+  users ||--o{ orders : "crea"
+  orders ||--o{ order_items : "lleva"
   delivery_fee_rates ||--o{ delivery_fee_rate_ranges : "tiene"
   roles ||--o{ users : "asigna"
   roles ||--o{ role_permissions : "tiene"
@@ -137,6 +142,39 @@ erDiagram
     time closes_at
     timestamp created_at
   }
+  customers {
+    bigint id PK
+    bigint organization_id FK
+    varchar name
+    varchar phone_number
+    timestamp created_at
+  }
+  orders {
+    bigint id PK
+    bigint organization_id FK
+    bigint branch_id FK
+    bigint customer_id FK
+    bigint created_by_user_id FK
+    order_statuses status
+    varchar delivery_address
+    numeric delivery_latitude
+    numeric delivery_longitude
+    numeric subtotal
+    numeric customer_delivery_fee
+    numeric total
+    numeric vola_delivery_fee
+    delivery_fee_bases delivery_fee_basis
+    numeric distance_km
+    timestamp created_at
+  }
+  order_items {
+    bigint id PK
+    bigint order_id FK
+    varchar name
+    integer quantity
+    numeric unit_price
+    timestamp created_at
+  }
   sessions {
     bigint id PK
     bigint user_id FK
@@ -147,7 +185,7 @@ erDiagram
 ```
 
 Relaciones:
-- Uno a muchos: un país tiene muchas organizaciones y muchos motoristas; una organización tiene muchos usuarios, equipos y comercios; un rol tiene muchos usuarios y permisos; un usuario tiene muchos permisos y sesiones; una tarifa de envío tiene muchos rangos; un comercio tiene muchos rangos de tarifa por cantidad de pedidos y muchas sucursales; una sucursal tiene un horario por cada día de la semana.
+- Uno a muchos: un país tiene muchas organizaciones y muchos motoristas; una organización tiene muchos usuarios, equipos y comercios; un rol tiene muchos usuarios y permisos; un usuario tiene muchos permisos y sesiones; una tarifa de envío tiene muchos rangos; un comercio tiene muchos rangos de tarifa por cantidad de pedidos y muchas sucursales; una sucursal tiene un horario por cada día de la semana; una organización tiene muchos clientes; un cliente, una sucursal y un usuario tienen muchos pedidos; un pedido tiene muchos productos.
 - Uno a uno: un usuario puede ser un motorista; un comercio puede tener una tarifa de envío.
 - Muchos a muchos: motoristas y comercios, a través de driver_merchant_assignments; usuarios y equipos, a través de team_members.
 
@@ -181,7 +219,7 @@ Todas las tablas tienen `id` como llave primaria (bigint generado por la base) y
 - Llaves foráneas: role_id → roles. Al borrar el rol: se borran sus permisos.
 - NOT NULL: role_id, permission_key.
 - UNIQUE: role_id con permission_key.
-- CHECK: permission_key solo puede ser organizations.view, delivery_fees.manage o merchants.manage.
+- CHECK: permission_key solo puede ser organizations.view, delivery_fees.manage, merchants.manage u orders.create.
 
 ### users
 
@@ -195,7 +233,7 @@ Todas las tablas tienen `id` como llave primaria (bigint generado por la base) y
 - Llaves foráneas: user_id → users. Al borrar el usuario: se borran sus permisos.
 - NOT NULL: user_id, permission_key.
 - UNIQUE: user_id con permission_key.
-- CHECK: permission_key solo puede ser organizations.view, delivery_fees.manage o merchants.manage.
+- CHECK: permission_key solo puede ser organizations.view, delivery_fees.manage, merchants.manage u orders.create.
 
 ### drivers
 
@@ -266,6 +304,27 @@ Todas las tablas tienen `id` como llave primaria (bigint generado por la base) y
 - NOT NULL: branch_id, day, is_open. opens_at y closes_at pueden ser nulos: un día cerrado no lleva horas.
 - UNIQUE: branch_id con day.
 - CHECK: day solo puede ser un día de lunes a domingo. Un día abierto lleva opens_at y closes_at, con closes_at después de opens_at; un día cerrado no lleva ninguna de las dos.
+
+### customers
+
+- Llaves foráneas: organization_id → organizations. Al borrar la organización: se borran sus clientes.
+- NOT NULL: organization_id, name, phone_number.
+- UNIQUE: organization_id con phone_number. Un cliente se reconoce por su teléfono dentro de la organización.
+- CHECK: name y phone_number no pueden estar vacíos.
+
+### orders
+
+- Llaves foráneas: organization_id → organizations, branch_id → branches, customer_id → customers y created_by_user_id → users. Al borrar cualquiera de ellos: se impide si tiene pedidos.
+- NOT NULL: todo menos distance_km, que solo se llena cuando el costo de Volá! se calculó por distancia.
+- UNIQUE: ninguna.
+- CHECK: status solo puede ser new, preparing, on_the_way, delivered o cancelled. delivery_address no puede estar vacía. Los montos no pueden ser negativos. total es subtotal más customer_delivery_fee.
+
+### order_items
+
+- Llaves foráneas: order_id → orders. Al borrar el pedido: se borran sus productos.
+- NOT NULL: order_id, name, quantity, unit_price.
+- UNIQUE: ninguna.
+- CHECK: name no puede estar vacío. quantity mayor que 0. unit_price no puede ser negativo.
 
 ### sessions
 
