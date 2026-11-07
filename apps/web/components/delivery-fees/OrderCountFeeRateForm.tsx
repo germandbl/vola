@@ -26,17 +26,17 @@ function getFromOrder(ranges: OrderCountRangeInput[], index: number): string {
 }
 
 interface OrderCountFeeRateFormProps {
-  organizationId: number;
+  merchantId: number;
   currency: string | null;
   initialRate: OrderCountFeeRate;
 }
 
 export function OrderCountFeeRateForm({
-  organizationId,
+  merchantId,
   currency,
   initialRate,
 }: OrderCountFeeRateFormProps) {
-  const form = useOrderCountFeeRateForm(organizationId, initialRate);
+  const form = useOrderCountFeeRateForm(merchantId, initialRate);
   const { fieldErrors, formError, isSaved } = form.result;
   const lastIndex = form.ranges.length - 1;
 

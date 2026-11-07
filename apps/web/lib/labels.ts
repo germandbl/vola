@@ -1,7 +1,7 @@
 import { OrganizationType, RoleName } from "@vola/shared";
 
 export const ORGANIZATION_TYPE_LABEL: Record<OrganizationType, string> = {
-  [OrganizationType.Merchant]: "Comercio",
+  [OrganizationType.Merchant]: "Cliente",
   [OrganizationType.Platform]: "Plataforma",
 };
 

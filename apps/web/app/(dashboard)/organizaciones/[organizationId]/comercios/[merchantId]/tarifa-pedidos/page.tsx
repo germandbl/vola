@@ -1,43 +1,45 @@
-import { OrganizationType } from "@vola/shared";
 import { ArrowLeft } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { PageHeader } from "@/components/PageHeader";
 import { TableSkeleton } from "@/components/TableSkeleton";
 import { OrderCountFeeRateForm } from "@/components/delivery-fees/OrderCountFeeRateForm";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { getOrderCountFeeRate, getOrganization } from "@/lib/organizations-data";
+import { getOrderCountFeeRate, getOrganizationMerchant } from "@/lib/organizations-data";
 import { readIdParam } from "@/lib/route-params";
 
 export const metadata: Metadata = { title: "Tarifa por cantidad de pedidos · Volá!" };
 
-type OrderCountFeeRatePageProps = PageProps<"/organizaciones/[organizationId]/tarifa-pedidos">;
+type OrderCountFeeRatePageProps =
+  PageProps<"/organizaciones/[organizationId]/comercios/[merchantId]/tarifa-pedidos">;
 
 async function OrderCountFeeRateContent({ params }: Pick<OrderCountFeeRatePageProps, "params">) {
-  const organizationId = readIdParam((await params).organizationId);
-  const organization = await getOrganization(organizationId);
-  if (organization.type !== OrganizationType.Merchant) notFound();
-  const rate = await getOrderCountFeeRate(organizationId);
+  const routeParams = await params;
+  const organizationId = readIdParam(routeParams.organizationId);
+  const merchantId = readIdParam(routeParams.merchantId);
+  const [{ organization, merchant }, rate] = await Promise.all([
+    getOrganizationMerchant(organizationId, merchantId),
+    getOrderCountFeeRate(merchantId),
+  ]);
 
   return (
     <>
       <Button asChild variant="ghost" className="self-start">
-        <Link href={`/organizaciones/${organizationId}/tarifas`}>
+        <Link href={`/organizaciones/${organizationId}/comercios/${merchantId}/tarifas`}>
           <ArrowLeft data-icon="inline-start" />
-          Volver a {organization.name}
+          Volver a {merchant.name}
         </Link>
       </Button>
       <PageHeader
         title="Tarifa por cantidad de pedidos"
-        description={`Lo que ${organization.name} cobra por envío según cuántos pedidos lleva en el mes.`}
+        description={`Lo que ${merchant.name} cobra por envío según cuántos pedidos lleva en el mes.`}
       />
       <Card>
         <CardContent>
           <OrderCountFeeRateForm
-            organizationId={organizationId}
+            merchantId={merchantId}
             currency={organization.countryCurrency}
             initialRate={rate}
           />

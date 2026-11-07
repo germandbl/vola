@@ -1,4 +1,4 @@
-import type { OrderCountFeeRange, OrderCountFeeRate, Organization } from "@vola/shared";
+import type { OrderCountFeeRange, OrderCountFeeRate } from "@vola/shared";
 import { Pencil } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
@@ -16,14 +16,14 @@ function describeOrderRange(ranges: OrderCountFeeRange[], index: number): string
 }
 
 interface OrderCountFeeRateCardProps {
-  organization: Organization;
+  editHref: string;
+  currency: string | null;
   rate: OrderCountFeeRate;
   isActive: boolean;
 }
 
-export function OrderCountFeeRateCard({ organization, rate, isActive }: OrderCountFeeRateCardProps) {
+export function OrderCountFeeRateCard({ editHref, currency, rate, isActive }: OrderCountFeeRateCardProps) {
   const isConfigured = rate.ranges.length > 0;
-  const currency = organization.countryCurrency;
 
   return (
     <Card>
@@ -34,7 +34,7 @@ export function OrderCountFeeRateCard({ organization, rate, isActive }: OrderCou
         </CardTitle>
         <CardAction>
           <Button asChild variant="outline">
-            <Link href={`/organizaciones/${organization.id}/tarifa-pedidos`}>
+            <Link href={editHref}>
               <Pencil data-icon="inline-start" />
               {isConfigured ? "Editar tarifa" : "Configurar tarifa"}
             </Link>

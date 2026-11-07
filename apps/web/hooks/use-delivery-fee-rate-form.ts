@@ -45,7 +45,7 @@ function toForm(
   };
 }
 
-export function useDeliveryFeeRateForm(organizationId: number, initialRate: DeliveryFeeRate) {
+export function useDeliveryFeeRateForm(merchantId: number, initialRate: DeliveryFeeRate) {
   const [ranges, setRanges] = useState(() => toRangeInputs(initialRate));
   const [hasExtraFee, setHasExtraFee] = useState(initialRate.extraFeePerKm !== null);
   const [extraFeePerKm, setExtraFeePerKm] = useState(
@@ -78,7 +78,7 @@ export function useDeliveryFeeRateForm(organizationId: number, initialRate: Deli
       return;
     }
     startTransition(async () => {
-      setResult(await saveDeliveryFeeRate(organizationId, validation.data));
+      setResult(await saveDeliveryFeeRate(merchantId, validation.data));
     });
   }
 

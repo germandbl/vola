@@ -5,21 +5,23 @@ export const MIN_PASSWORD_LENGTH = 8;
 
 export const ASSIGNABLE_ROLES = [RoleName.Administrator, RoleName.Agent] as const;
 
+// Aceptamos espacios y guiones al escribir, pero guardamos el número limpio.
+export const phoneNumberSchema = z
+  .string()
+  .transform((value) => value.replace(/[\s-]/g, ''))
+  .pipe(
+    z
+      .string()
+      .regex(
+        /^\+[0-9]{8,15}$/,
+        'Escribí el teléfono con código de país. Ej. +504 9999 8888',
+      ),
+  );
+
 export const userFormSchema = z.object({
   name: z.string().trim().min(1, 'Escribí el nombre.'),
   email: z.email('Escribí un email válido.').toLowerCase(),
-  // Aceptamos espacios y guiones al escribir, pero guardamos el número limpio.
-  phoneNumber: z
-    .string()
-    .transform((value) => value.replace(/[\s-]/g, ''))
-    .pipe(
-      z
-        .string()
-        .regex(
-          /^\+[0-9]{8,15}$/,
-          'Escribí el teléfono con código de país. Ej. +504 9999 8888',
-        ),
-    ),
+  phoneNumber: phoneNumberSchema,
   password: z
     .string()
     .min(

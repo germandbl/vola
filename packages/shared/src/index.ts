@@ -8,3 +8,4 @@ export * from './organization-access.js';
 export * from './delivery-fees.js';
 export * from './permissions.js';
 export * from './order-count-fees.js';
+export * from './merchants.js';

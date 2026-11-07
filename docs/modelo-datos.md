@@ -9,8 +9,9 @@ erDiagram
   organizations ||--o{ users : "tiene"
   organizations ||--o{ teams : "tiene"
   organizations ||--o{ driver_merchant_assignments : "recibe"
-  organizations ||--o| delivery_fee_rates : "cobra"
-  organizations ||--o{ order_count_fee_ranges : "cobra"
+  organizations ||--o{ merchants : "tiene"
+  merchants ||--o| delivery_fee_rates : "cobra"
+  merchants ||--o{ order_count_fee_ranges : "cobra"
   delivery_fee_rates ||--o{ delivery_fee_rate_ranges : "tiene"
   roles ||--o{ users : "asigna"
   roles ||--o{ role_permissions : "tiene"
@@ -33,7 +34,6 @@ erDiagram
     varchar name
     bigint country_id FK
     organization_types type
-    delivery_fee_bases delivery_fee_basis
     timestamp created_at
   }
   roles {
@@ -87,9 +87,19 @@ erDiagram
     bigint team_id FK
     timestamp created_at
   }
+  merchants {
+    bigint id PK
+    bigint organization_id FK
+    varchar name
+    varchar contact_name
+    varchar contact_email
+    varchar contact_phone
+    delivery_fee_bases delivery_fee_basis
+    timestamp created_at
+  }
   delivery_fee_rates {
     bigint id PK
-    bigint organization_id FK, UK
+    bigint merchant_id FK, UK
     numeric extra_fee_per_km
     timestamp created_at
   }
@@ -102,7 +112,7 @@ erDiagram
   }
   order_count_fee_ranges {
     bigint id PK
-    bigint organization_id FK
+    bigint merchant_id FK
     integer up_to_order_count
     numeric fee
     timestamp created_at
@@ -117,7 +127,7 @@ erDiagram
 ```
 
 Relaciones:
-- Uno a muchos: un país tiene muchas organizaciones y muchos motoristas; una organización tiene muchos usuarios y equipos; un rol tiene muchos usuarios y permisos; un usuario tiene muchos permisos y sesiones; una tarifa de envío tiene muchos rangos; un comercio tiene muchos rangos de tarifa por cantidad de pedidos.
+- Uno a muchos: un país tiene muchas organizaciones y muchos motoristas; una organización tiene muchos usuarios, equipos y comercios; un rol tiene muchos usuarios y permisos; un usuario tiene muchos permisos y sesiones; una tarifa de envío tiene muchos rangos; un comercio tiene muchos rangos de tarifa por cantidad de pedidos.
 - Uno a uno: un usuario puede ser un motorista; un comercio puede tener una tarifa de envío.
 - Muchos a muchos: motoristas y comercios, a través de driver_merchant_assignments; usuarios y equipos, a través de team_members.
 
@@ -135,9 +145,9 @@ Todas las tablas tienen `id` como llave primaria (bigint generado por la base) y
 ### organizations
 
 - Llaves foráneas: country_id → countries. Al borrar el país: se impide si tiene organizaciones.
-- NOT NULL: name, type. country_id puede ser nulo. delivery_fee_basis puede ser nulo: el comercio todavía no eligió cómo cobra el envío.
+- NOT NULL: name, type. country_id puede ser nulo.
 - UNIQUE: ninguna.
-- CHECK: name no puede estar vacío. type solo puede ser merchant o platform. delivery_fee_basis solo puede ser distance o completed_orders.
+- CHECK: name no puede estar vacío. type solo puede ser merchant (un cliente) o platform (solo Volá!).
 
 ### roles
 
@@ -151,7 +161,7 @@ Todas las tablas tienen `id` como llave primaria (bigint generado por la base) y
 - Llaves foráneas: role_id → roles. Al borrar el rol: se borran sus permisos.
 - NOT NULL: role_id, permission_key.
 - UNIQUE: role_id con permission_key.
-- CHECK: permission_key solo puede ser organizations.view o delivery_fees.manage.
+- CHECK: permission_key solo puede ser organizations.view, delivery_fees.manage o merchants.manage.
 
 ### users
 
@@ -165,7 +175,7 @@ Todas las tablas tienen `id` como llave primaria (bigint generado por la base) y
 - Llaves foráneas: user_id → users. Al borrar el usuario: se borran sus permisos.
 - NOT NULL: user_id, permission_key.
 - UNIQUE: user_id con permission_key.
-- CHECK: permission_key solo puede ser organizations.view o delivery_fees.manage.
+- CHECK: permission_key solo puede ser organizations.view, delivery_fees.manage o merchants.manage.
 
 ### drivers
 
@@ -195,11 +205,18 @@ Todas las tablas tienen `id` como llave primaria (bigint generado por la base) y
 - UNIQUE: team_id con user_id.
 - CHECK: ninguno.
 
+### merchants
+
+- Llaves foráneas: organization_id → organizations. Al borrar la organización: se borran sus comercios.
+- NOT NULL: organization_id, name, contact_name, contact_email, contact_phone. delivery_fee_basis puede ser nulo: el comercio todavía no eligió cómo cobra el envío.
+- UNIQUE: organization_id con name.
+- CHECK: name, contact_name y contact_phone no pueden estar vacíos. contact_email tiene que estar en minúsculas. delivery_fee_basis solo puede ser distance o completed_orders.
+
 ### delivery_fee_rates
 
-- Llaves foráneas: organization_id → organizations. Al borrar la organización: se borra su tarifa.
-- NOT NULL: organization_id. extra_fee_per_km puede ser nulo: sin cobro por km extra, el último rango no tiene límite.
-- UNIQUE: organization_id.
+- Llaves foráneas: merchant_id → merchants. Al borrar el comercio: se borra su tarifa.
+- NOT NULL: merchant_id. extra_fee_per_km puede ser nulo: sin cobro por km extra, el último rango no tiene límite.
+- UNIQUE: merchant_id.
 - CHECK: extra_fee_per_km no puede ser negativo.
 
 ### delivery_fee_rate_ranges
@@ -211,9 +228,9 @@ Todas las tablas tienen `id` como llave primaria (bigint generado por la base) y
 
 ### order_count_fee_ranges
 
-- Llaves foráneas: organization_id → organizations. Al borrar la organización: se borran sus rangos.
-- NOT NULL: organization_id, fee. up_to_order_count puede ser nulo: es el último rango, cubre todos los pedidos que siguen en el mes.
-- UNIQUE: organization_id con up_to_order_count, contando los nulos como iguales (solo un rango sin límite por comercio).
+- Llaves foráneas: merchant_id → merchants. Al borrar el comercio: se borran sus rangos.
+- NOT NULL: merchant_id, fee. up_to_order_count puede ser nulo: es el último rango, cubre todos los pedidos que siguen en el mes.
+- UNIQUE: merchant_id con up_to_order_count, contando los nulos como iguales (solo un rango sin límite por comercio).
 - CHECK: up_to_order_count mayor que 0. fee no puede ser negativo.
 
 ### sessions

@@ -8,7 +8,7 @@ import {
   timestamp,
   unique,
 } from 'drizzle-orm/pg-core';
-import { organizations } from '../organizations/organizations.schema.js';
+import { merchants } from '../merchants/merchants.schema.js';
 
 export const deliveryFeeRates = pgTable(
   'delivery_fee_rates',
@@ -16,10 +16,10 @@ export const deliveryFeeRates = pgTable(
     id: bigint('id', { mode: 'number' })
       .primaryKey()
       .generatedAlwaysAsIdentity(),
-    organizationId: bigint('organization_id', { mode: 'number' })
+    merchantId: bigint('merchant_id', { mode: 'number' })
       .notNull()
       .unique()
-      .references(() => organizations.id, { onDelete: 'cascade' }),
+      .references(() => merchants.id, { onDelete: 'cascade' }),
     extraFeePerKm: numeric('extra_fee_per_km', {
       precision: 10,
       scale: 2,
@@ -65,16 +65,16 @@ export const orderCountFeeRanges = pgTable(
     id: bigint('id', { mode: 'number' })
       .primaryKey()
       .generatedAlwaysAsIdentity(),
-    organizationId: bigint('organization_id', { mode: 'number' })
+    merchantId: bigint('merchant_id', { mode: 'number' })
       .notNull()
-      .references(() => organizations.id, { onDelete: 'cascade' }),
+      .references(() => merchants.id, { onDelete: 'cascade' }),
     upToOrderCount: integer('up_to_order_count'),
     fee: numeric('fee', { precision: 10, scale: 2, mode: 'number' }).notNull(),
     createdAt: timestamp('created_at').notNull().defaultNow(),
   },
   (table) => [
     // Con NULLS NOT DISTINCT, un comercio solo puede tener un rango sin límite.
-    unique().on(table.organizationId, table.upToOrderCount).nullsNotDistinct(),
+    unique().on(table.merchantId, table.upToOrderCount).nullsNotDistinct(),
     check(
       'order_count_fee_ranges_up_to_order_count_positive',
       sql`${table.upToOrderCount} > 0`,

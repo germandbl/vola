@@ -24,7 +24,7 @@ import { DeliveryFeeBasisService } from './delivery-fee-basis.service.js';
 import { DeliveryFeesService } from './delivery-fees.service.js';
 import { OrderCountFeesService } from './order-count-fees.service.js';
 
-@Controller('organizations/:organizationId')
+@Controller('merchants/:merchantId')
 export class DeliveryFeesController {
   constructor(
     private readonly deliveryFeesService: DeliveryFeesService,
@@ -35,54 +35,54 @@ export class DeliveryFeesController {
   @Get('delivery-fee-rate')
   findRate(
     @CurrentUser() user: AuthUser,
-    @Param('organizationId', ParseIntPipe) organizationId: number,
+    @Param('merchantId', ParseIntPipe) merchantId: number,
   ): Promise<DeliveryFeeRate> {
-    return this.deliveryFeesService.findRate(user, organizationId);
+    return this.deliveryFeesService.findRate(user, merchantId);
   }
 
   @Put('delivery-fee-rate')
   saveRate(
     @CurrentUser() user: AuthUser,
-    @Param('organizationId', ParseIntPipe) organizationId: number,
+    @Param('merchantId', ParseIntPipe) merchantId: number,
     @Body(new ZodValidationPipe(deliveryFeeRateFormSchema))
     form: DeliveryFeeRateForm,
   ): Promise<DeliveryFeeRate> {
-    return this.deliveryFeesService.saveRate(user, organizationId, form);
+    return this.deliveryFeesService.saveRate(user, merchantId, form);
   }
 
   @Get('order-count-fee-rate')
   findOrderCountRate(
     @CurrentUser() user: AuthUser,
-    @Param('organizationId', ParseIntPipe) organizationId: number,
+    @Param('merchantId', ParseIntPipe) merchantId: number,
   ): Promise<OrderCountFeeRate> {
-    return this.orderCountFeesService.findRate(user, organizationId);
+    return this.orderCountFeesService.findRate(user, merchantId);
   }
 
   @Put('order-count-fee-rate')
   saveOrderCountRate(
     @CurrentUser() user: AuthUser,
-    @Param('organizationId', ParseIntPipe) organizationId: number,
+    @Param('merchantId', ParseIntPipe) merchantId: number,
     @Body(new ZodValidationPipe(orderCountFeeRateFormSchema))
     form: OrderCountFeeRateForm,
   ): Promise<OrderCountFeeRate> {
-    return this.orderCountFeesService.saveRate(user, organizationId, form);
+    return this.orderCountFeesService.saveRate(user, merchantId, form);
   }
 
   @Get('delivery-fee-basis')
   findBasis(
     @CurrentUser() user: AuthUser,
-    @Param('organizationId', ParseIntPipe) organizationId: number,
+    @Param('merchantId', ParseIntPipe) merchantId: number,
   ): Promise<DeliveryFeeBasisSetting> {
-    return this.deliveryFeeBasisService.findBasis(user, organizationId);
+    return this.deliveryFeeBasisService.findBasis(user, merchantId);
   }
 
   @Put('delivery-fee-basis')
   saveBasis(
     @CurrentUser() user: AuthUser,
-    @Param('organizationId', ParseIntPipe) organizationId: number,
+    @Param('merchantId', ParseIntPipe) merchantId: number,
     @Body(new ZodValidationPipe(deliveryFeeBasisFormSchema))
     form: DeliveryFeeBasisForm,
   ): Promise<DeliveryFeeBasisSetting> {
-    return this.deliveryFeeBasisService.saveBasis(user, organizationId, form);
+    return this.deliveryFeeBasisService.saveBasis(user, merchantId, form);
   }
 }

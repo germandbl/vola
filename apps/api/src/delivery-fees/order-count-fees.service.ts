@@ -18,46 +18,46 @@ export class OrderCountFeesService {
 
   async findRate(
     user: AuthUser,
-    organizationId: number,
+    merchantId: number,
   ): Promise<OrderCountFeeRate> {
     await this.deliveryFeeAccessService.assertCanManageMerchantFees(
       user,
-      organizationId,
+      merchantId,
     );
-    return this.findRateByOrganizationId(organizationId);
+    return this.findRateByMerchantId(merchantId);
   }
 
   async saveRate(
     user: AuthUser,
-    organizationId: number,
+    merchantId: number,
     form: OrderCountFeeRateForm,
   ): Promise<OrderCountFeeRate> {
     await this.deliveryFeeAccessService.assertCanManageMerchantFees(
       user,
-      organizationId,
+      merchantId,
     );
 
     await this.database.transaction(async (transaction) => {
       await transaction
         .delete(orderCountFeeRanges)
-        .where(eq(orderCountFeeRanges.organizationId, organizationId));
+        .where(eq(orderCountFeeRanges.merchantId, merchantId));
       await transaction
         .insert(orderCountFeeRanges)
-        .values(form.ranges.map((range) => ({ organizationId, ...range })));
+        .values(form.ranges.map((range) => ({ merchantId, ...range })));
     });
-    return this.findRateByOrganizationId(organizationId);
+    return this.findRateByMerchantId(merchantId);
   }
 
-  async hasRate(organizationId: number): Promise<boolean> {
+  async hasRate(merchantId: number): Promise<boolean> {
     const rangeCount = await this.database.$count(
       orderCountFeeRanges,
-      eq(orderCountFeeRanges.organizationId, organizationId),
+      eq(orderCountFeeRanges.merchantId, merchantId),
     );
     return rangeCount > 0;
   }
 
-  private async findRateByOrganizationId(
-    organizationId: number,
+  private async findRateByMerchantId(
+    merchantId: number,
   ): Promise<OrderCountFeeRate> {
     // En Postgres, ASC deja los NULL al final: el rango sin límite queda último.
     const ranges = await this.database
@@ -66,7 +66,7 @@ export class OrderCountFeesService {
         fee: orderCountFeeRanges.fee,
       })
       .from(orderCountFeeRanges)
-      .where(eq(orderCountFeeRanges.organizationId, organizationId))
+      .where(eq(orderCountFeeRanges.merchantId, merchantId))
       .orderBy(asc(orderCountFeeRanges.upToOrderCount));
     return { ranges };
   }

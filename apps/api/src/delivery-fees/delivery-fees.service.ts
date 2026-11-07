@@ -21,33 +21,30 @@ export class DeliveryFeesService {
     private readonly deliveryFeeAccessService: DeliveryFeeAccessService,
   ) {}
 
-  async findRate(
-    user: AuthUser,
-    organizationId: number,
-  ): Promise<DeliveryFeeRate> {
+  async findRate(user: AuthUser, merchantId: number): Promise<DeliveryFeeRate> {
     await this.deliveryFeeAccessService.assertCanManageMerchantFees(
       user,
-      organizationId,
+      merchantId,
     );
-    return this.findRateByOrganizationId(organizationId);
+    return this.findRateByMerchantId(merchantId);
   }
 
   async saveRate(
     user: AuthUser,
-    organizationId: number,
+    merchantId: number,
     form: DeliveryFeeRateForm,
   ): Promise<DeliveryFeeRate> {
     await this.deliveryFeeAccessService.assertCanManageMerchantFees(
       user,
-      organizationId,
+      merchantId,
     );
 
     await this.database.transaction(async (transaction) => {
       const [rate] = await transaction
         .insert(deliveryFeeRates)
-        .values({ organizationId, extraFeePerKm: form.extraFeePerKm })
+        .values({ merchantId, extraFeePerKm: form.extraFeePerKm })
         .onConflictDoUpdate({
-          target: deliveryFeeRates.organizationId,
+          target: deliveryFeeRates.merchantId,
           set: { extraFeePerKm: form.extraFeePerKm },
         })
         .returning({ id: deliveryFeeRates.id });
@@ -58,19 +55,19 @@ export class DeliveryFeesService {
         .insert(deliveryFeeRateRanges)
         .values(form.ranges.map((range) => ({ rateId: rate.id, ...range })));
     });
-    return this.findRateByOrganizationId(organizationId);
+    return this.findRateByMerchantId(merchantId);
   }
 
-  async hasRate(organizationId: number): Promise<boolean> {
+  async hasRate(merchantId: number): Promise<boolean> {
     const rateCount = await this.database.$count(
       deliveryFeeRates,
-      eq(deliveryFeeRates.organizationId, organizationId),
+      eq(deliveryFeeRates.merchantId, merchantId),
     );
     return rateCount > 0;
   }
 
-  private async findRateByOrganizationId(
-    organizationId: number,
+  private async findRateByMerchantId(
+    merchantId: number,
   ): Promise<DeliveryFeeRate> {
     const [rate] = await this.database
       .select({
@@ -78,7 +75,7 @@ export class DeliveryFeesService {
         extraFeePerKm: deliveryFeeRates.extraFeePerKm,
       })
       .from(deliveryFeeRates)
-      .where(eq(deliveryFeeRates.organizationId, organizationId));
+      .where(eq(deliveryFeeRates.merchantId, merchantId));
     if (!rate) return UNCONFIGURED_RATE;
 
     // En Postgres, ASC deja los NULL al final: el rango sin límite queda último.

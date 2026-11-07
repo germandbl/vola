@@ -16,15 +16,23 @@ export interface SeedUser {
   permissions?: Permission[];
 }
 
+export interface SeedMerchant {
+  name: string;
+  contactName: string;
+  contactEmail: string;
+  contactPhone: string;
+  deliveryFeeBasis?: DeliveryFeeBasis;
+  deliveryFeeRate?: DeliveryFeeRateForm;
+  orderCountFeeRate?: OrderCountFeeRateForm;
+}
+
 export interface SeedOrganization {
   name: string;
   type: OrganizationType;
   countryCode: string;
   teamNames: string[];
   users: SeedUser[];
-  deliveryFeeRate?: DeliveryFeeRateForm;
-  orderCountFeeRate?: OrderCountFeeRateForm;
-  deliveryFeeBasis?: DeliveryFeeBasis;
+  merchants: SeedMerchant[];
 }
 
 export const PLATFORM_DRIVERS_MERCHANT_NAMES = [
@@ -39,6 +47,7 @@ export const SEED_ORGANIZATIONS: SeedOrganization[] = [
     type: OrganizationType.Platform,
     countryCode: 'HN',
     teamNames: ['Operaciones', 'Soporte a comercios'],
+    merchants: [],
     users: [
       {
         name: 'Andrea Castillo',
@@ -62,6 +71,7 @@ export const SEED_ORGANIZATIONS: SeedOrganization[] = [
         permissions: [
           Permission.ViewOrganizations,
           Permission.ManageDeliveryFees,
+          Permission.ManageMerchants,
         ],
       },
       {
@@ -87,17 +97,31 @@ export const SEED_ORGANIZATIONS: SeedOrganization[] = [
   {
     name: 'Baleadas Doña Mary',
     type: OrganizationType.Merchant,
-    deliveryFeeBasis: DeliveryFeeBasis.Distance,
-    deliveryFeeRate: {
-      ranges: [
-        { upToKm: 3, fee: 30 },
-        { upToKm: 6, fee: 45 },
-        { upToKm: null, fee: 60 },
-      ],
-      extraFeePerKm: null,
-    },
     countryCode: 'HN',
     teamNames: ['Cocina', 'Despacho'],
+    merchants: [
+      {
+        name: 'Baleadas Doña Mary',
+        contactName: 'María Elena Banegas',
+        contactEmail: 'maria.banegas@baleadasdonamary.hn',
+        contactPhone: '+50499614402',
+        deliveryFeeBasis: DeliveryFeeBasis.Distance,
+        deliveryFeeRate: {
+          ranges: [
+            { upToKm: 3, fee: 30 },
+            { upToKm: 6, fee: 45 },
+            { upToKm: null, fee: 60 },
+          ],
+          extraFeePerKm: null,
+        },
+      },
+      {
+        name: 'Licuados Doña Mary',
+        contactName: 'Cindy Flores',
+        contactEmail: 'cindy.flores@baleadasdonamary.hn',
+        contactPhone: '+50433087719',
+      },
+    ],
     users: [
       {
         name: 'María Elena Banegas',
@@ -123,13 +147,21 @@ export const SEED_ORGANIZATIONS: SeedOrganization[] = [
   {
     name: 'Farmacia San Rafael',
     type: OrganizationType.Merchant,
-    deliveryFeeBasis: DeliveryFeeBasis.Distance,
-    deliveryFeeRate: {
-      ranges: [{ upToKm: 2, fee: 0 }],
-      extraFeePerKm: 10,
-    },
     countryCode: 'HN',
     teamNames: ['Mostrador'],
+    merchants: [
+      {
+        name: 'Farmacia San Rafael',
+        contactName: 'Gabriela Maradiaga',
+        contactEmail: 'gabriela.maradiaga@farmaciasanrafael.hn',
+        contactPhone: '+50432215508',
+        deliveryFeeBasis: DeliveryFeeBasis.Distance,
+        deliveryFeeRate: {
+          ranges: [{ upToKm: 2, fee: 0 }],
+          extraFeePerKm: 10,
+        },
+      },
+    ],
     users: [
       {
         name: 'Gabriela Maradiaga',
@@ -156,20 +188,28 @@ export const SEED_ORGANIZATIONS: SeedOrganization[] = [
   {
     name: 'Panadería El Trigal',
     type: OrganizationType.Merchant,
-    deliveryFeeBasis: DeliveryFeeBasis.CompletedOrders,
-    orderCountFeeRate: {
-      ranges: [
-        { upToOrderCount: 100, fee: 30 },
-        { upToOrderCount: 300, fee: 25 },
-        { upToOrderCount: null, fee: 20 },
-      ],
-    },
-    deliveryFeeRate: {
-      ranges: [{ upToKm: 4, fee: 25 }],
-      extraFeePerKm: 7.5,
-    },
     countryCode: 'HN',
     teamNames: ['Producción', 'Ventas'],
+    merchants: [
+      {
+        name: 'Panadería El Trigal',
+        contactName: 'Fernando Paz',
+        contactEmail: 'fernando.paz@eltrigal.hn',
+        contactPhone: '+50495048217',
+        deliveryFeeBasis: DeliveryFeeBasis.CompletedOrders,
+        orderCountFeeRate: {
+          ranges: [
+            { upToOrderCount: 100, fee: 30 },
+            { upToOrderCount: 300, fee: 25 },
+            { upToOrderCount: null, fee: 20 },
+          ],
+        },
+        deliveryFeeRate: {
+          ranges: [{ upToKm: 4, fee: 25 }],
+          extraFeePerKm: 7.5,
+        },
+      },
+    ],
     users: [
       {
         name: 'Fernando Paz',
@@ -201,17 +241,25 @@ export const SEED_ORGANIZATIONS: SeedOrganization[] = [
   {
     name: 'Pupusería La Ceibita',
     type: OrganizationType.Merchant,
-    deliveryFeeBasis: DeliveryFeeBasis.Distance,
-    deliveryFeeRate: {
-      ranges: [
-        { upToKm: 3, fee: 1.5 },
-        { upToKm: 6, fee: 2.5 },
-        { upToKm: null, fee: 3.5 },
-      ],
-      extraFeePerKm: null,
-    },
     countryCode: 'SV',
     teamNames: ['Cocina'],
+    merchants: [
+      {
+        name: 'Pupusería La Ceibita',
+        contactName: 'Marta Hernández',
+        contactEmail: 'marta.hernandez@laceibita.com.sv',
+        contactPhone: '+50376128840',
+        deliveryFeeBasis: DeliveryFeeBasis.Distance,
+        deliveryFeeRate: {
+          ranges: [
+            { upToKm: 3, fee: 1.5 },
+            { upToKm: 6, fee: 2.5 },
+            { upToKm: null, fee: 3.5 },
+          ],
+          extraFeePerKm: null,
+        },
+      },
+    ],
     users: [
       {
         name: 'Marta Hernández',
@@ -232,6 +280,14 @@ export const SEED_ORGANIZATIONS: SeedOrganization[] = [
     type: OrganizationType.Merchant,
     countryCode: 'GT',
     teamNames: ['Barra'],
+    merchants: [
+      {
+        name: 'Café Las Lomas',
+        contactName: 'Lucía Barrios',
+        contactEmail: 'lucia.barrios@cafelaslomas.com.gt',
+        contactPhone: '+50255870326',
+      },
+    ],
     users: [
       {
         name: 'Lucía Barrios',

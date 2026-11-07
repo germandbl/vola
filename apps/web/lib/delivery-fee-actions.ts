@@ -50,22 +50,22 @@ async function saveToApi(path: string, body: unknown): Promise<DeliveryFeeSaveRe
 }
 
 export async function saveDeliveryFeeRate(
-  organizationId: number,
+  merchantId: number,
   form: DeliveryFeeRateForm,
 ): Promise<DeliveryFeeSaveResult> {
-  return saveToApi(`/organizations/${organizationId}/delivery-fee-rate`, form);
+  return saveToApi(`/merchants/${merchantId}/delivery-fee-rate`, form);
 }
 
 export async function saveOrderCountFeeRate(
-  organizationId: number,
+  merchantId: number,
   form: OrderCountFeeRateForm,
 ): Promise<DeliveryFeeSaveResult> {
-  return saveToApi(`/organizations/${organizationId}/order-count-fee-rate`, form);
+  return saveToApi(`/merchants/${merchantId}/order-count-fee-rate`, form);
 }
 
 export async function saveDeliveryFeeBasis(
-  organizationId: number,
+  merchantId: number,
   form: DeliveryFeeBasisForm,
 ): Promise<DeliveryFeeSaveResult> {
-  return saveToApi(`/organizations/${organizationId}/delivery-fee-basis`, form);
+  return saveToApi(`/merchants/${merchantId}/delivery-fee-basis`, form);
 }

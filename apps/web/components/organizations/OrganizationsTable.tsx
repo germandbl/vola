@@ -35,7 +35,7 @@ export async function OrganizationsTable({ page }: OrganizationsTableProps) {
             <Building2 />
           </EmptyMedia>
           <EmptyTitle>Todavía no hay organizaciones</EmptyTitle>
-          <EmptyDescription>Creá la primera para darle acceso a un comercio.</EmptyDescription>
+          <EmptyDescription>Creá la primera para darle acceso a un cliente.</EmptyDescription>
         </EmptyHeader>
       </Empty>
     );

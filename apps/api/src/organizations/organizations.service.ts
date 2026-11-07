@@ -6,6 +6,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import {
+  OrganizationType,
   PAGE_SIZE,
   canViewAllOrganizations,
   canViewOrganization,
@@ -94,9 +95,10 @@ export class OrganizationsService {
     assertIsSuperadmin(user);
     await this.assertCountryExists(form.countryId);
 
+    // Volá! es la única organización plataforma; toda organización nueva es un cliente.
     const [created] = await this.database
       .insert(organizations)
-      .values(form)
+      .values({ ...form, type: OrganizationType.Merchant })
       .returning({ id: organizations.id });
     return this.findExistingById(created.id);
   }

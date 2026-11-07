@@ -3,12 +3,14 @@ import {
   countrySchema,
   deliveryFeeBasisSettingSchema,
   deliveryFeeRateSchema,
+  merchantSchema,
   orderCountFeeRateSchema,
   organizationSchema,
   userSummarySchema,
   type Country,
   type DeliveryFeeBasisSetting,
   type DeliveryFeeRate,
+  type Merchant,
   type OrderCountFeeRate,
   type Organization,
   type Paginated,
@@ -69,27 +71,48 @@ export function getOrganizationUsersPage(
   );
 }
 
-export function getDeliveryFeeRate(organizationId: number): Promise<DeliveryFeeRate> {
+export function getMerchants(organizationId: number): Promise<Merchant[]> {
+  return getFromApi(`/organizations/${organizationId}/merchants`, z.array(merchantSchema));
+}
+
+export const getMerchant = cache((merchantId: number): Promise<Merchant> => {
+  return getFromApi(`/merchants/${merchantId}`, merchantSchema);
+});
+
+export function getDeliveryFeeRate(merchantId: number): Promise<DeliveryFeeRate> {
   return getFromApi(
-    `/organizations/${organizationId}/delivery-fee-rate`,
+    `/merchants/${merchantId}/delivery-fee-rate`,
     deliveryFeeRateSchema,
   );
 }
 
-export function getOrderCountFeeRate(organizationId: number): Promise<OrderCountFeeRate> {
+export function getOrderCountFeeRate(merchantId: number): Promise<OrderCountFeeRate> {
   return getFromApi(
-    `/organizations/${organizationId}/order-count-fee-rate`,
+    `/merchants/${merchantId}/order-count-fee-rate`,
     orderCountFeeRateSchema,
   );
 }
 
-export function getDeliveryFeeBasis(organizationId: number): Promise<DeliveryFeeBasisSetting> {
+export function getDeliveryFeeBasis(merchantId: number): Promise<DeliveryFeeBasisSetting> {
   return getFromApi(
-    `/organizations/${organizationId}/delivery-fee-basis`,
+    `/merchants/${merchantId}/delivery-fee-basis`,
     deliveryFeeBasisSettingSchema,
   );
 }
 
 export function getCountries(): Promise<Country[]> {
   return getFromApi("/countries", z.array(countrySchema));
+}
+
+export async function getOrganizationMerchant(
+  organizationId: number,
+  merchantId: number,
+): Promise<{ organization: Organization; merchant: Merchant }> {
+  const [organization, merchant] = await Promise.all([
+    getOrganization(organizationId),
+    getMerchant(merchantId),
+  ]);
+  // La URL trae los dos ids; si el comercio es de otra organización, la ruta no existe.
+  if (merchant.organizationId !== organization.id) notFound();
+  return { organization, merchant };
 }

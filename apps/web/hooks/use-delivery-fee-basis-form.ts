@@ -3,7 +3,7 @@ import { useState, useTransition, type FormEvent } from "react";
 import { saveDeliveryFeeBasis, type DeliveryFeeSaveResult } from "@/lib/delivery-fee-actions";
 
 export function useDeliveryFeeBasisForm(
-  organizationId: number,
+  merchantId: number,
   initialBasis: DeliveryFeeBasis | null,
 ) {
   const [selectedBasis, setSelectedBasis] = useState(initialBasis);
@@ -20,7 +20,7 @@ export function useDeliveryFeeBasisForm(
     event.preventDefault();
     if (selectedBasis === null) return;
     startTransition(async () => {
-      setResult(await saveDeliveryFeeBasis(organizationId, { basis: selectedBasis }));
+      setResult(await saveDeliveryFeeBasis(merchantId, { basis: selectedBasis }));
     });
   }
 
