@@ -1,11 +1,6 @@
 "use client";
 
-import {
-  OrganizationType,
-  organizationFormSchema,
-  type Country,
-  type Organization,
-} from "@vola/shared";
+import { organizationFormSchema, type Country, type Organization } from "@vola/shared";
 import { useActionState } from "react";
 import { FormErrorAlert } from "@/components/FormErrorAlert";
 import { Button } from "@/components/ui/button";
@@ -21,7 +16,6 @@ import {
 import { Spinner } from "@/components/ui/spinner";
 import { useClientValidation } from "@/hooks/use-client-validation";
 import { INITIAL_FORM_STATE, type FormState } from "@/lib/form-state";
-import { ORGANIZATION_TYPE_LABEL } from "@/lib/labels";
 
 interface OrganizationFormProps {
   action: (previousState: FormState, formData: FormData) => Promise<FormState>;
@@ -73,25 +67,6 @@ export function OrganizationForm({
             </SelectContent>
           </Select>
           <FieldError>{errors.countryId}</FieldError>
-        </Field>
-        <Field data-invalid={Boolean(errors.type)}>
-          <FieldLabel htmlFor="type">Tipo</FieldLabel>
-          <Select
-            name="type"
-            defaultValue={state.values.type ?? organization?.type ?? OrganizationType.Merchant}
-          >
-            <SelectTrigger id="type" className="w-full" aria-invalid={Boolean(errors.type)}>
-              <SelectValue placeholder="Elegí el tipo" />
-            </SelectTrigger>
-            <SelectContent>
-              {Object.values(OrganizationType).map((type) => (
-                <SelectItem key={type} value={type}>
-                  {ORGANIZATION_TYPE_LABEL[type]}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <FieldError>{errors.type}</FieldError>
         </Field>
         <div className="flex items-center gap-4">
           <Button type="submit" disabled={isPending}>

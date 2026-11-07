@@ -7,7 +7,7 @@ import {
 } from '@vola/shared';
 import { eq } from 'drizzle-orm';
 import { DATABASE, type Database } from '../database/database.module.js';
-import { organizations } from '../organizations/organizations.schema.js';
+import { merchants } from '../merchants/merchants.schema.js';
 import { DeliveryFeeAccessService } from './delivery-fee-access.service.js';
 import { DeliveryFeesService } from './delivery-fees.service.js';
 import { OrderCountFeesService } from './order-count-fees.service.js';
@@ -23,49 +23,49 @@ export class DeliveryFeeBasisService {
 
   async findBasis(
     user: AuthUser,
-    organizationId: number,
+    merchantId: number,
   ): Promise<DeliveryFeeBasisSetting> {
     await this.deliveryFeeAccessService.assertCanManageMerchantFees(
       user,
-      organizationId,
+      merchantId,
     );
-    const [organization] = await this.database
-      .select({ basis: organizations.deliveryFeeBasis })
-      .from(organizations)
-      .where(eq(organizations.id, organizationId));
-    return { basis: organization.basis };
+    const [merchant] = await this.database
+      .select({ basis: merchants.deliveryFeeBasis })
+      .from(merchants)
+      .where(eq(merchants.id, merchantId));
+    return { basis: merchant.basis };
   }
 
   async saveBasis(
     user: AuthUser,
-    organizationId: number,
+    merchantId: number,
     form: DeliveryFeeBasisForm,
   ): Promise<DeliveryFeeBasisSetting> {
     await this.deliveryFeeAccessService.assertCanManageMerchantFees(
       user,
-      organizationId,
+      merchantId,
     );
-    const hasRate = await this.hasRate(organizationId, form.basis);
+    const hasRate = await this.hasRate(merchantId, form.basis);
     if (!hasRate) {
       throw new BadRequestException(
-        `Organization ${organizationId} has no ${form.basis} delivery fee rate; configure it before activating it`,
+        `Merchant ${merchantId} has no ${form.basis} delivery fee rate; configure it before activating it`,
       );
     }
 
     await this.database
-      .update(organizations)
+      .update(merchants)
       .set({ deliveryFeeBasis: form.basis })
-      .where(eq(organizations.id, organizationId));
+      .where(eq(merchants.id, merchantId));
     return { basis: form.basis };
   }
 
   private hasRate(
-    organizationId: number,
+    merchantId: number,
     basis: DeliveryFeeBasis,
   ): Promise<boolean> {
     if (basis === DeliveryFeeBasis.Distance) {
-      return this.deliveryFeesService.hasRate(organizationId);
+      return this.deliveryFeesService.hasRate(merchantId);
     }
-    return this.orderCountFeesService.hasRate(organizationId);
+    return this.orderCountFeesService.hasRate(merchantId);
   }
 }

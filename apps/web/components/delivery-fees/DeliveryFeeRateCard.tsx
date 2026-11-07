@@ -1,4 +1,4 @@
-import type { DeliveryFeeRange, DeliveryFeeRate, Organization } from "@vola/shared";
+import type { DeliveryFeeRange, DeliveryFeeRate } from "@vola/shared";
 import { Pencil } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
@@ -15,15 +15,15 @@ function describeRangeDistance(ranges: DeliveryFeeRange[], index: number): strin
 }
 
 interface DeliveryFeeRateCardProps {
-  organization: Organization;
+  editHref: string;
+  currency: string | null;
   rate: DeliveryFeeRate;
   isActive: boolean;
 }
 
-export function DeliveryFeeRateCard({ organization, rate, isActive }: DeliveryFeeRateCardProps) {
+export function DeliveryFeeRateCard({ editHref, currency, rate, isActive }: DeliveryFeeRateCardProps) {
   const isConfigured = rate.ranges.length > 0;
   const lastUpToKm = rate.ranges.at(-1)?.upToKm;
-  const currency = organization.countryCurrency;
 
   return (
     <Card>
@@ -34,7 +34,7 @@ export function DeliveryFeeRateCard({ organization, rate, isActive }: DeliveryFe
         </CardTitle>
         <CardAction>
           <Button asChild variant="outline">
-            <Link href={`/organizaciones/${organization.id}/tarifa-envio`}>
+            <Link href={editHref}>
               <Pencil data-icon="inline-start" />
               {isConfigured ? "Editar tarifa" : "Configurar tarifa"}
             </Link>

@@ -1,38 +1,29 @@
-import {
-  OrganizationType,
-  canManageDeliveryFees,
-  type AuthUser,
-  type Organization,
-} from "@vola/shared";
+import { OrganizationType, type Organization } from "@vola/shared";
 import { Suspense } from "react";
 import { PageHeader } from "@/components/PageHeader";
-import { OrganizationTabs, type OrganizationTab } from "@/components/organizations/OrganizationTabs";
+import { SectionTabs, type SectionTab } from "@/components/SectionTabs";
 import { Skeleton } from "@/components/ui/skeleton";
-import { getCurrentUser } from "@/lib/current-user";
 import { ORGANIZATION_TYPE_LABEL } from "@/lib/labels";
 import { getOrganization } from "@/lib/organizations-data";
 import { readIdParam } from "@/lib/route-params";
 
 type OrganizationLayoutProps = LayoutProps<"/organizaciones/[organizationId]">;
 
-function getTabs(organization: Organization, user: AuthUser): OrganizationTab[] {
+function getTabs(organization: Organization): SectionTab[] {
   const basePath = `/organizaciones/${organization.id}`;
-  const tabs: OrganizationTab[] = [
+  const tabs: SectionTab[] = [
     { href: basePath, label: "General" },
     { href: `${basePath}/usuarios`, label: "Usuarios y permisos" },
   ];
-  if (organization.type === OrganizationType.Merchant && canManageDeliveryFees(user)) {
-    tabs.push({ href: `${basePath}/tarifas`, label: "Tarifas y cobros" });
+  if (organization.type === OrganizationType.Merchant) {
+    tabs.push({ href: `${basePath}/comercios`, label: "Comercios" });
   }
   return tabs;
 }
 
 async function OrganizationHeader({ params }: Pick<OrganizationLayoutProps, "params">) {
   const organizationId = readIdParam((await params).organizationId);
-  const [organization, currentUser] = await Promise.all([
-    getOrganization(organizationId),
-    getCurrentUser(),
-  ]);
+  const organization = await getOrganization(organizationId);
   const countryLabel = organization.countryName ?? "Sin país";
 
   return (
@@ -41,7 +32,7 @@ async function OrganizationHeader({ params }: Pick<OrganizationLayoutProps, "par
         title={organization.name}
         description={`${ORGANIZATION_TYPE_LABEL[organization.type]} · ${countryLabel}`}
       />
-      <OrganizationTabs tabs={getTabs(organization, currentUser)} />
+      <SectionTabs label="Secciones de la organización" tabs={getTabs(organization)} />
     </div>
   );
 }

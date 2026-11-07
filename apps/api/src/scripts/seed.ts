@@ -17,6 +17,7 @@ import {
   driverMerchantAssignments,
   drivers,
 } from '../drivers/drivers.schema.js';
+import { merchants } from '../merchants/merchants.schema.js';
 import { organizations } from '../organizations/organizations.schema.js';
 import { roles } from '../roles/roles.schema.js';
 import { teamMembers, teams } from '../teams/teams.schema.js';
@@ -24,6 +25,7 @@ import { userPermissions, users } from '../users/users.schema.js';
 import {
   PLATFORM_DRIVERS_MERCHANT_NAMES,
   SEED_ORGANIZATIONS,
+  type SeedMerchant,
   type SeedOrganization,
   type SeedUser,
 } from './seed-data.js';
@@ -115,12 +117,12 @@ async function insertDriver(
 
 async function insertDeliveryFeeRate(
   database: Database,
-  organizationId: number,
+  merchantId: number,
   deliveryFeeRate: DeliveryFeeRateForm,
 ): Promise<void> {
   const [rate] = await database
     .insert(deliveryFeeRates)
-    .values({ organizationId, extraFeePerKm: deliveryFeeRate.extraFeePerKm })
+    .values({ merchantId, extraFeePerKm: deliveryFeeRate.extraFeePerKm })
     .returning({ id: deliveryFeeRates.id });
   await database
     .insert(deliveryFeeRateRanges)
@@ -131,14 +133,32 @@ async function insertDeliveryFeeRate(
 
 async function insertOrderCountFeeRate(
   database: Database,
-  organizationId: number,
+  merchantId: number,
   orderCountFeeRate: OrderCountFeeRateForm,
 ): Promise<void> {
   await database
     .insert(orderCountFeeRanges)
     .values(
-      orderCountFeeRate.ranges.map((range) => ({ organizationId, ...range })),
+      orderCountFeeRate.ranges.map((range) => ({ merchantId, ...range })),
     );
+}
+
+async function insertMerchant(
+  database: Database,
+  organizationId: number,
+  seedMerchant: SeedMerchant,
+): Promise<void> {
+  const { deliveryFeeRate, orderCountFeeRate, ...merchantData } = seedMerchant;
+  const [merchant] = await database
+    .insert(merchants)
+    .values({ ...merchantData, organizationId })
+    .returning({ id: merchants.id });
+  if (deliveryFeeRate) {
+    await insertDeliveryFeeRate(database, merchant.id, deliveryFeeRate);
+  }
+  if (orderCountFeeRate) {
+    await insertOrderCountFeeRate(database, merchant.id, orderCountFeeRate);
+  }
 }
 
 async function seedOrganization(
@@ -152,7 +172,6 @@ async function seedOrganization(
       name: seedOrganization.name,
       type: seedOrganization.type,
       countryId,
-      deliveryFeeBasis: seedOrganization.deliveryFeeBasis,
     })
     .returning({ id: organizations.id });
   const teamIds = await insertTeams(
@@ -160,19 +179,8 @@ async function seedOrganization(
     organization.id,
     seedOrganization.teamNames,
   );
-  if (seedOrganization.deliveryFeeRate) {
-    await insertDeliveryFeeRate(
-      context.database,
-      organization.id,
-      seedOrganization.deliveryFeeRate,
-    );
-  }
-  if (seedOrganization.orderCountFeeRate) {
-    await insertOrderCountFeeRate(
-      context.database,
-      organization.id,
-      seedOrganization.orderCountFeeRate,
-    );
+  for (const seedMerchant of seedOrganization.merchants) {
+    await insertMerchant(context.database, organization.id, seedMerchant);
   }
 
   const driverIds: number[] = [];

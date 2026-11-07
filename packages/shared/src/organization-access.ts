@@ -37,6 +37,11 @@ export function canViewOrganization(
   return canManageOrganization(user, organizationId);
 }
 
+export function canManageMerchants(user: AuthUser): boolean {
+  if (user.role === RoleName.Superadmin) return true;
+  return hasPlatformPermission(user, Permission.ManageMerchants);
+}
+
 export function canManageDeliveryFees(user: AuthUser): boolean {
   if (user.role === RoleName.Superadmin) return true;
   return hasPlatformPermission(user, Permission.ManageDeliveryFees);

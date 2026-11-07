@@ -38,7 +38,7 @@ export default function OrganizationsPage({ searchParams }: PageProps<"/organiza
     <div className="mx-auto flex max-w-5xl flex-col gap-6">
       <PageHeader
         title="Organizaciones"
-        description="Comercios y equipos que usan Volá!."
+        description="Clientes que usan Volá! y sus comercios."
         action={
           <Suspense fallback={null}>
             <CreateOrganizationButton />

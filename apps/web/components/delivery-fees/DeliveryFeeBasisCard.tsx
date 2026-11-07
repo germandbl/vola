@@ -10,19 +10,19 @@ import { Spinner } from "@/components/ui/spinner";
 import { useDeliveryFeeBasisForm } from "@/hooks/use-delivery-fee-basis-form";
 
 interface DeliveryFeeBasisCardProps {
-  organizationId: number;
+  merchantId: number;
   initialBasis: DeliveryFeeBasis | null;
   hasDistanceRate: boolean;
   hasOrderCountRate: boolean;
 }
 
 export function DeliveryFeeBasisCard({
-  organizationId,
+  merchantId,
   initialBasis,
   hasDistanceRate,
   hasOrderCountRate,
 }: DeliveryFeeBasisCardProps) {
-  const form = useDeliveryFeeBasisForm(organizationId, initialBasis);
+  const form = useDeliveryFeeBasisForm(merchantId, initialBasis);
   const options = [
     {
       basis: DeliveryFeeBasis.Distance,

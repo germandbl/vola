@@ -40,7 +40,7 @@ function toForm(ranges: OrderCountRangeInput[]): OrderCountFeeRateForm {
   };
 }
 
-export function useOrderCountFeeRateForm(organizationId: number, initialRate: OrderCountFeeRate) {
+export function useOrderCountFeeRateForm(merchantId: number, initialRate: OrderCountFeeRate) {
   const [ranges, setRanges] = useState(() => toRangeInputs(initialRate));
   const [result, setResult] = useState<DeliveryFeeSaveResult>({ fieldErrors: {} });
   const [isPending, startTransition] = useTransition();
@@ -67,7 +67,7 @@ export function useOrderCountFeeRateForm(organizationId: number, initialRate: Or
       return;
     }
     startTransition(async () => {
-      setResult(await saveOrderCountFeeRate(organizationId, validation.data));
+      setResult(await saveOrderCountFeeRate(merchantId, validation.data));
     });
   }
 

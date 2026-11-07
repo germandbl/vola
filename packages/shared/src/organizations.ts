@@ -16,7 +16,6 @@ export const organizationFormSchema = z.object({
     .number({ error: 'Elegí un país.' })
     .int('Elegí un país.')
     .positive('Elegí un país.'),
-  type: z.enum(OrganizationType, { error: 'Elegí el tipo de organización.' }),
 });
 
 export type OrganizationForm = z.infer<typeof organizationFormSchema>;

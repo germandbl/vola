@@ -26,13 +26,13 @@ function getFromKm(ranges: RangeInput[], index: number): string {
 }
 
 interface DeliveryFeeRateFormProps {
-  organizationId: number;
+  merchantId: number;
   currency: string | null;
   initialRate: DeliveryFeeRate;
 }
 
-export function DeliveryFeeRateForm({ organizationId, currency, initialRate }: DeliveryFeeRateFormProps) {
-  const form = useDeliveryFeeRateForm(organizationId, initialRate);
+export function DeliveryFeeRateForm({ merchantId, currency, initialRate }: DeliveryFeeRateFormProps) {
+  const form = useDeliveryFeeRateForm(merchantId, initialRate);
   const { fieldErrors, formError, isSaved } = form.result;
   const lastIndex = form.ranges.length - 1;
 
