@@ -35,9 +35,14 @@ function toMerchant(row: MerchantRow): Merchant {
   return { ...row, createdAt: row.createdAt.toISOString() };
 }
 
-function assertCanManageMerchants(user: AuthUser): void {
-  if (!canManageMerchants(user)) {
-    throw new ForbiddenException('You cannot manage merchants');
+function assertCanManageMerchants(
+  user: AuthUser,
+  organizationId: number,
+): void {
+  if (!canManageMerchants(user, organizationId)) {
+    throw new ForbiddenException(
+      `You cannot manage the merchants of organization ${organizationId}`,
+    );
   }
 }
 
@@ -74,7 +79,7 @@ export class MerchantsService {
     organizationId: number,
     form: MerchantForm,
   ): Promise<Merchant> {
-    assertCanManageMerchants(user);
+    assertCanManageMerchants(user, organizationId);
     const organization = await this.organizationsService.findById(
       user,
       organizationId,
@@ -98,8 +103,8 @@ export class MerchantsService {
     merchantId: number,
     form: MerchantForm,
   ): Promise<Merchant> {
-    assertCanManageMerchants(user);
     const merchant = await this.findExistingById(merchantId);
+    assertCanManageMerchants(user, merchant.organizationId);
     await this.assertNameIsFree(merchant.organizationId, form.name, merchantId);
 
     await this.database
