@@ -6,6 +6,7 @@ import {
   type OrderSummary,
 } from "@vola/shared";
 import { ReceiptText } from "lucide-react";
+import Link from "next/link";
 import { ListPagination } from "@/components/ListPagination";
 import {
   Empty,
@@ -24,6 +25,7 @@ import {
 } from "@/components/ui/table";
 import { formatDate, formatDateTime, formatMoney } from "@/lib/labels";
 import { getOrdersPage } from "@/lib/organizations-data";
+import { ORDER_DETAIL_PARAM } from "@/lib/order-detail-param";
 import { AssignDriverDialog } from "./AssignDriverDialog";
 import { OrderStatusChip } from "./OrderStatusChip";
 
@@ -81,7 +83,15 @@ export async function OrdersTable({ page, showOrganization, currentUser }: Order
           <TableBody>
             {ordersPage.items.map((order) => (
               <TableRow key={order.id}>
-                <TableCell className="font-semibold">#{order.id}</TableCell>
+                <TableCell className="font-semibold">
+                  <Link
+                    href={`/ordenes?page=${ordersPage.page}&${ORDER_DETAIL_PARAM}=${order.id}`}
+                    scroll={false}
+                    className="text-accion underline-offset-4 hover:underline"
+                  >
+                    #{order.id}
+                  </Link>
+                </TableCell>
                 {showOrganization && <TableCell>{order.organizationName}</TableCell>}
                 <TableCell>
                   <p>{order.customerName}</p>

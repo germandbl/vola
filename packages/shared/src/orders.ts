@@ -240,3 +240,32 @@ export const driverOrderDetailSchema = driverOrderSchema.extend({
 });
 
 export type DriverOrderDetail = z.infer<typeof driverOrderDetailSchema>;
+
+export const orderStatusChangeSchema = z.object({
+  status: orderStatusSchema,
+  cancellationReason: z.string().nullable(),
+  changedByName: z.string(),
+  changedAt: z.string(),
+});
+
+export type OrderStatusChange = z.infer<typeof orderStatusChangeSchema>;
+
+export const orderDetailItemSchema = z.object({
+  name: z.string(),
+  quantity: z.number(),
+  unitPrice: z.number(),
+});
+
+export const orderDetailSchema = orderSummarySchema.extend({
+  branchAddress: z.string(),
+  deliveryLatitude: z.number(),
+  deliveryLongitude: z.number(),
+  subtotal: z.number(),
+  customerDeliveryFee: z.number(),
+  createdByName: z.string(),
+  assignedAt: z.string().nullable(),
+  items: z.array(orderDetailItemSchema),
+  statusHistory: z.array(orderStatusChangeSchema),
+});
+
+export type OrderDetail = z.infer<typeof orderDetailSchema>;
