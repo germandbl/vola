@@ -18,6 +18,7 @@ import {
   type DriverOrder,
   type DriverOrderDetail,
   type OrderBranchOption,
+  type OrderDetail,
   type OrderDriver,
   type OrderForm,
   type OrderStatusChangeForm,
@@ -101,5 +102,14 @@ export class OrdersController {
     form: OrderStatusChangeForm,
   ): Promise<DriverOrderDetail> {
     return this.driverOrdersService.changeStatus(user, orderId, form);
+  }
+
+  // Al final: ':orderId' no debe tapar rutas fijas como 'assigned-to-me' o 'branch-options'.
+  @Get(':orderId')
+  findDetail(
+    @CurrentUser() user: AuthUser,
+    @Param('orderId', ParseIntPipe) orderId: number,
+  ): Promise<OrderDetail> {
+    return this.ordersService.findDetail(user, orderId);
   }
 }

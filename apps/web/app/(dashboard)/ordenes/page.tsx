@@ -12,6 +12,7 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { PageHeader } from "@/components/PageHeader";
 import { TableSkeleton } from "@/components/TableSkeleton";
+import { OrderDetailSheet } from "@/components/orders/OrderDetailSheet";
 import { OrdersTable } from "@/components/orders/OrdersTable";
 import { Button } from "@/components/ui/button";
 import { getCurrentUser } from "@/lib/current-user";
@@ -57,6 +58,9 @@ async function OrdersContent({ searchParams }: Pick<PageProps<"/ordenes">, "sear
 export default function OrdersPage({ searchParams }: PageProps<"/ordenes">) {
   return (
     <div className="flex flex-col gap-6">
+      <Suspense fallback={null}>
+        <OrderDetailSheet />
+      </Suspense>
       <Suspense fallback={<TableSkeleton />}>
         <OrdersContent searchParams={searchParams} />
       </Suspense>

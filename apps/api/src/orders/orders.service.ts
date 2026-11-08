@@ -14,6 +14,8 @@ import {
   canViewOrders,
   type AuthUser,
   type OrderBranchOption,
+  type OrderDetail,
+  type OrderStatusChange,
   type OrderForm,
   type OrderSummary,
   type Paginated,
@@ -29,7 +31,7 @@ import { DATABASE, type Database } from '../database/database.module.js';
 import { merchants } from '../merchants/merchants.schema.js';
 import { organizations } from '../organizations/organizations.schema.js';
 import { users } from '../users/users.schema.js';
-import { orderItems, orders } from './orders.schema.js';
+import { orderItems, orderStatusChanges, orders } from './orders.schema.js';
 import {
   VolaDeliveryFeeService,
   type VolaDeliveryFee,
@@ -158,6 +160,69 @@ export class OrdersService {
     });
 
     return this.findSummaryById(orderId);
+  }
+
+  async findDetail(user: AuthUser, orderId: number): Promise<OrderDetail> {
+    const summary = await this.findSummaryById(orderId);
+    // No revelamos si existe una orden de otra organización.
+    const canSeeOrder =
+      canViewAllOrders(user) ||
+      (canViewOrders(user) && summary.organizationId === user.organizationId);
+    if (!canSeeOrder) {
+      throw new NotFoundException(`Order ${orderId} not found`);
+    }
+
+    const [extra] = await this.database
+      .select({
+        branchAddress: branches.address,
+        deliveryLatitude: orders.deliveryLatitude,
+        deliveryLongitude: orders.deliveryLongitude,
+        subtotal: orders.subtotal,
+        customerDeliveryFee: orders.customerDeliveryFee,
+        createdByName: users.name,
+        assignedAt: orders.assignedAt,
+      })
+      .from(orders)
+      .innerJoin(branches, eq(orders.branchId, branches.id))
+      .innerJoin(users, eq(orders.createdByUserId, users.id))
+      .where(eq(orders.id, orderId));
+    const items = await this.database
+      .select({
+        name: orderItems.name,
+        quantity: orderItems.quantity,
+        unitPrice: orderItems.unitPrice,
+      })
+      .from(orderItems)
+      .where(eq(orderItems.orderId, orderId))
+      .orderBy(asc(orderItems.id));
+
+    return {
+      ...summary,
+      ...extra,
+      assignedAt: extra.assignedAt?.toISOString() ?? null,
+      items,
+      statusHistory: await this.findStatusHistory(orderId),
+    };
+  }
+
+  private async findStatusHistory(
+    orderId: number,
+  ): Promise<OrderStatusChange[]> {
+    const rows = await this.database
+      .select({
+        status: orderStatusChanges.status,
+        cancellationReason: orderStatusChanges.cancellationReason,
+        changedByName: users.name,
+        changedAt: orderStatusChanges.createdAt,
+      })
+      .from(orderStatusChanges)
+      .innerJoin(users, eq(orderStatusChanges.changedByUserId, users.id))
+      .where(eq(orderStatusChanges.orderId, orderId))
+      .orderBy(asc(orderStatusChanges.createdAt), asc(orderStatusChanges.id));
+    return rows.map((row) => ({
+      ...row,
+      changedAt: row.changedAt.toISOString(),
+    }));
   }
 
   async findSummaryById(orderId: number): Promise<OrderSummary> {
