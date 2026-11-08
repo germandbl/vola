@@ -17,15 +17,31 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { formatDate } from "@/lib/labels";
-import { getOwnDrivers } from "@/lib/organizations-data";
+import { getDrivers } from "@/lib/organizations-data";
 
+// Un motorista de la plataforma puede atender comercios de varios clientes, así que se agrupan por cliente.
 function describeMerchants(driver: DriverSummary): string {
   if (driver.merchants.length === 0) return "Ninguno";
-  return driver.merchants.map((merchant) => merchant.name).join(", ");
+  if (!driver.owner.isPlatform) {
+    return driver.merchants.map((merchant) => merchant.name).join(", ");
+  }
+  const merchantNamesByOrganization = new Map<string, string[]>();
+  for (const merchant of driver.merchants) {
+    const names = merchantNamesByOrganization.get(merchant.organizationName) ?? [];
+    names.push(merchant.name);
+    merchantNamesByOrganization.set(merchant.organizationName, names);
+  }
+  return [...merchantNamesByOrganization]
+    .map(([organizationName, names]) => `${organizationName}: ${names.join(", ")}`)
+    .join(" · ");
 }
 
-export async function DriversTable() {
-  const drivers = await getOwnDrivers();
+interface DriversTableProps {
+  showOwner: boolean;
+}
+
+export async function DriversTable({ showOwner }: DriversTableProps) {
+  const drivers = await getDrivers();
 
   if (drivers.length === 0) {
     return (
@@ -34,8 +50,8 @@ export async function DriversTable() {
           <EmptyMedia variant="icon">
             <Bike />
           </EmptyMedia>
-          <EmptyTitle>Todavía no tenés motoristas</EmptyTitle>
-          <EmptyDescription>Creá el primero para entregar con tu propio equipo.</EmptyDescription>
+          <EmptyTitle>Todavía no hay motoristas</EmptyTitle>
+          <EmptyDescription>Creá el primero para empezar a entregar.</EmptyDescription>
         </EmptyHeader>
       </Empty>
     );
@@ -47,9 +63,10 @@ export async function DriversTable() {
         <TableHeader>
           <TableRow>
             <TableHead>Nombre</TableHead>
+            {showOwner && <TableHead>Pertenece a</TableHead>}
             <TableHead>Email</TableHead>
             <TableHead>Teléfono</TableHead>
-            <TableHead>Comercios que atiende</TableHead>
+            <TableHead>Atiende</TableHead>
             <TableHead>Creado</TableHead>
           </TableRow>
         </TableHeader>
@@ -61,11 +78,10 @@ export async function DriversTable() {
                   {driver.name}
                 </Link>
               </TableCell>
+              {showOwner && <TableCell>{driver.owner.name}</TableCell>}
               <TableCell>{driver.email}</TableCell>
               <TableCell>{driver.phoneNumber}</TableCell>
-              <TableCell className="whitespace-normal">
-                {describeMerchants(driver)}
-              </TableCell>
+              <TableCell className="whitespace-normal">{describeMerchants(driver)}</TableCell>
               <TableCell>{formatDate(driver.createdAt)}</TableCell>
             </TableRow>
           ))}

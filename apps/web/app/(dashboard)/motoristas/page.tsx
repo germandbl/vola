@@ -1,4 +1,4 @@
-import { canManageOwnDrivers } from "@vola/shared";
+import { canAccessDrivers, canManageAllDrivers } from "@vola/shared";
 import { Plus } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
@@ -14,13 +14,18 @@ export const metadata: Metadata = { title: "Motoristas · Volá!" };
 
 async function DriversContent() {
   const currentUser = await getCurrentUser();
-  if (!canManageOwnDrivers(currentUser)) notFound();
+  if (!canAccessDrivers(currentUser)) notFound();
+  const isPlatformUser = canManageAllDrivers(currentUser);
 
   return (
     <>
       <PageHeader
         title="Motoristas"
-        description="Tu propio equipo de entrega. Solo tu organización los ve."
+        description={
+          isPlatformUser
+            ? "Motoristas de la plataforma y de cada cliente."
+            : "Tu propio equipo de entrega. Solo tu organización los ve."
+        }
         action={
           <Button asChild>
             <Link href="/motoristas/nuevo">
@@ -30,7 +35,7 @@ async function DriversContent() {
           </Button>
         }
       />
-      <DriversTable />
+      <DriversTable showOwner={isPlatformUser} />
     </>
   );
 }

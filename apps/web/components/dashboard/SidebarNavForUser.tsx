@@ -1,5 +1,5 @@
 import {
-  canManageOwnDrivers,
+  canAccessDrivers,
   canViewAllOrganizations,
   canViewOrganization,
   canViewOrders,
@@ -14,7 +14,7 @@ function getNavItems(user: AuthUser): NavItem[] {
   if (canViewOrders(user)) {
     items.push({ href: "/ordenes", label: "Órdenes", icon: "orders" });
   }
-  if (canManageOwnDrivers(user)) {
+  if (canAccessDrivers(user)) {
     items.push({ href: "/motoristas", label: "Motoristas", icon: "drivers" });
   }
   if (canViewAllOrganizations(user)) {

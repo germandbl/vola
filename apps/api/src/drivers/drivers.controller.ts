@@ -14,6 +14,7 @@ import {
   type DriverForm,
   type DriverMerchant,
   type DriverMerchantsForm,
+  type DriverOwner,
   type DriverSummary,
 } from '@vola/shared';
 import { CurrentUser } from '../auth/current-user.decorator.js';
@@ -25,8 +26,13 @@ export class DriversController {
   constructor(private readonly driversService: DriversService) {}
 
   @Get()
-  findOwn(@CurrentUser() user: AuthUser): Promise<DriverSummary[]> {
-    return this.driversService.findOwn(user);
+  findVisible(@CurrentUser() user: AuthUser): Promise<DriverSummary[]> {
+    return this.driversService.findVisible(user);
+  }
+
+  @Get('owner-options')
+  findOwnerOptions(@CurrentUser() user: AuthUser): Promise<DriverOwner[]> {
+    return this.driversService.findOwnerOptions(user);
   }
 
   @Get('merchant-options')
@@ -37,11 +43,11 @@ export class DriversController {
   }
 
   @Get(':driverId')
-  findOwnById(
+  findById(
     @CurrentUser() user: AuthUser,
     @Param('driverId', ParseIntPipe) driverId: number,
   ): Promise<DriverSummary> {
-    return this.driversService.findOwnById(user, driverId);
+    return this.driversService.findById(user, driverId);
   }
 
   @Post()

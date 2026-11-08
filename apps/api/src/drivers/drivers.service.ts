@@ -7,15 +7,20 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import {
+  OrganizationType,
   RoleName,
-  canManageOwnDrivers,
+  canAccessDrivers,
+  canDriverServeMerchant,
+  canManageAllDrivers,
+  canManageDriversOf,
   type AuthUser,
   type DriverForm,
   type DriverMerchant,
   type DriverMerchantsForm,
+  type DriverOwner,
   type DriverSummary,
 } from '@vola/shared';
-import { and, asc, eq, inArray } from 'drizzle-orm';
+import { asc, desc, eq, inArray, type SQL } from 'drizzle-orm';
 import { hashPassword } from '../auth/passwords.js';
 import { createFieldValidationException } from '../common/field-validation.js';
 import { DATABASE, type Database } from '../database/database.module.js';
@@ -30,15 +35,43 @@ const driverColumns = {
   name: users.name,
   email: users.email,
   phoneNumber: users.phoneNumber,
+  ownerId: organizations.id,
+  ownerName: organizations.name,
+  ownerType: organizations.type,
   createdAt: drivers.createdAt,
 };
 
-type DriverRow = Omit<DriverSummary, 'merchants' | 'createdAt'> & {
-  createdAt: Date;
+// El enum organization_types se declaró merchant, platform: ordenar DESC deja a Volá! primero.
+const PLATFORM_FIRST = desc(organizations.type);
+
+const merchantOptionColumns = {
+  id: merchants.id,
+  name: merchants.name,
+  organizationId: organizations.id,
+  organizationName: organizations.name,
 };
 
-function assertCanManageOwnDrivers(user: AuthUser): void {
-  if (!canManageOwnDrivers(user)) {
+interface DriverRow {
+  id: number;
+  name: string;
+  email: string;
+  phoneNumber: string;
+  ownerId: number;
+  ownerName: string;
+  ownerType: OrganizationType;
+  createdAt: Date;
+}
+
+function toOwner(
+  id: number,
+  name: string,
+  type: OrganizationType,
+): DriverOwner {
+  return { id, name, isPlatform: type === OrganizationType.Platform };
+}
+
+function assertCanAccessDrivers(user: AuthUser): void {
+  if (!canAccessDrivers(user)) {
     throw new ForbiddenException('You cannot manage drivers');
   }
 }
@@ -50,49 +83,66 @@ export class DriversService {
     private readonly usersService: UsersService,
   ) {}
 
-  // Un motorista propio es un usuario de la organización: otra organización no lo ve.
-  async findOwn(user: AuthUser): Promise<DriverSummary[]> {
-    assertCanManageOwnDrivers(user);
+  // Volá! ve todos los motoristas; un cliente solo los suyos.
+  async findVisible(user: AuthUser): Promise<DriverSummary[]> {
+    assertCanAccessDrivers(user);
+    const visibleDrivers = canManageAllDrivers(user)
+      ? undefined
+      : eq(users.organizationId, user.organizationId);
     const rows = await this.selectDrivers()
-      .where(eq(users.organizationId, user.organizationId))
-      .orderBy(asc(users.name));
+      .where(visibleDrivers)
+      .orderBy(PLATFORM_FIRST, asc(users.name));
     return this.withMerchants(rows);
   }
 
-  async findOwnById(user: AuthUser, driverId: number): Promise<DriverSummary> {
-    assertCanManageOwnDrivers(user);
-    const [row] = await this.selectDrivers().where(
-      and(
-        eq(drivers.id, driverId),
-        eq(users.organizationId, user.organizationId),
-      ),
-    );
-    if (!row) {
+  async findById(user: AuthUser, driverId: number): Promise<DriverSummary> {
+    assertCanAccessDrivers(user);
+    const [row] = await this.selectDrivers().where(eq(drivers.id, driverId));
+    if (!row || !canManageDriversOf(user, row.ownerId)) {
       throw new NotFoundException(`Driver ${driverId} not found`);
     }
     const [driver] = await this.withMerchants([row]);
     return driver;
   }
 
+  async findOwnerOptions(user: AuthUser): Promise<DriverOwner[]> {
+    assertCanAccessDrivers(user);
+    const rows = await this.database
+      .select({
+        id: organizations.id,
+        name: organizations.name,
+        type: organizations.type,
+      })
+      .from(organizations)
+      .where(this.findManageableOrganizations(user, organizations.id))
+      .orderBy(PLATFORM_FIRST, asc(organizations.name));
+    return rows.map((row) => toOwner(row.id, row.name, row.type));
+  }
+
   async findMerchantOptions(user: AuthUser): Promise<DriverMerchant[]> {
-    assertCanManageOwnDrivers(user);
-    return this.database
-      .select({ id: merchants.id, name: merchants.name })
-      .from(merchants)
-      .where(eq(merchants.organizationId, user.organizationId))
-      .orderBy(asc(merchants.name));
+    assertCanAccessDrivers(user);
+    return this.selectMerchantOptions()
+      .where(this.findManageableOrganizations(user, merchants.organizationId))
+      .orderBy(asc(organizations.name), asc(merchants.name));
   }
 
   async create(user: AuthUser, form: DriverForm): Promise<DriverSummary> {
-    assertCanManageOwnDrivers(user);
+    if (!canManageDriversOf(user, form.organizationId)) {
+      throw new ForbiddenException(
+        `You cannot create drivers for organization ${form.organizationId}`,
+      );
+    }
     const existingUser = await this.usersService.findByEmail(form.email);
     if (existingUser) {
       throw new ConflictException(
         `A user with email ${form.email} already exists`,
       );
     }
-    const merchantIds = await this.findOwnMerchantIds(user, form.merchantIds);
-    const countryId = await this.findOrganizationCountryId(user.organizationId);
+    const { owner, countryId } = await this.findOwner(form.organizationId);
+    const merchantIds = await this.findServableMerchantIds(
+      owner,
+      form.merchantIds,
+    );
     const passwordHash = await hashPassword(form.password);
     const roleId = await this.usersService.findRoleIdByName(RoleName.Driver);
 
@@ -105,24 +155,22 @@ export class DriversService {
           phoneNumber: form.phoneNumber,
           passwordHash,
           roleId,
-          organizationId: user.organizationId,
+          organizationId: owner.id,
         })
         .returning({ id: users.id });
       const [driver] = await transaction
         .insert(drivers)
         .values({ userId: driverUser.id, countryId })
         .returning({ id: drivers.id });
-      await transaction
-        .insert(driverMerchantAssignments)
-        .values(
-          merchantIds.map((merchantId) => ({
-            driverId: driver.id,
-            merchantId,
-          })),
-        );
+      await transaction.insert(driverMerchantAssignments).values(
+        merchantIds.map((merchantId) => ({
+          driverId: driver.id,
+          merchantId,
+        })),
+      );
       return driver.id;
     });
-    return this.findOwnById(user, driverId);
+    return this.findById(user, driverId);
   }
 
   async updateMerchants(
@@ -130,8 +178,11 @@ export class DriversService {
     driverId: number,
     form: DriverMerchantsForm,
   ): Promise<DriverSummary> {
-    await this.findOwnById(user, driverId);
-    const merchantIds = await this.findOwnMerchantIds(user, form.merchantIds);
+    const driver = await this.findById(user, driverId);
+    const merchantIds = await this.findServableMerchantIds(
+      driver.owner,
+      form.merchantIds,
+    );
 
     await this.database.transaction(async (transaction) => {
       await transaction
@@ -141,25 +192,64 @@ export class DriversService {
         .insert(driverMerchantAssignments)
         .values(merchantIds.map((merchantId) => ({ driverId, merchantId })));
     });
-    return this.findOwnById(user, driverId);
+    return this.findById(user, driverId);
   }
 
-  private async findOwnMerchantIds(
+  // undefined: todas las organizaciones (Volá!); si no, solo la del cliente.
+  private findManageableOrganizations(
     user: AuthUser,
+    organizationColumn:
+      typeof organizations.id | typeof merchants.organizationId,
+  ): SQL | undefined {
+    if (canManageAllDrivers(user)) return undefined;
+    return eq(organizationColumn, user.organizationId);
+  }
+
+  private async findOwner(
+    organizationId: number,
+  ): Promise<{ owner: DriverOwner; countryId: number }> {
+    const [organization] = await this.database
+      .select({
+        name: organizations.name,
+        type: organizations.type,
+        countryId: organizations.countryId,
+      })
+      .from(organizations)
+      .where(eq(organizations.id, organizationId));
+    if (!organization) {
+      throw createFieldValidationException(
+        'organizationId',
+        'Elegí a quién pertenece el motorista.',
+      );
+    }
+    if (!organization.countryId) {
+      throw new BadRequestException(
+        `Organization ${organizationId} has no country; set it before creating drivers`,
+      );
+    }
+    return {
+      owner: toOwner(organizationId, organization.name, organization.type),
+      countryId: organization.countryId,
+    };
+  }
+
+  private async findServableMerchantIds(
+    owner: DriverOwner,
     requestedMerchantIds: number[],
   ): Promise<number[]> {
     const merchantIds = [...new Set(requestedMerchantIds)];
-    const ownMerchantCount = await this.database.$count(
-      merchants,
-      and(
-        inArray(merchants.id, merchantIds),
-        eq(merchants.organizationId, user.organizationId),
-      ),
+    const requestedMerchants = await this.selectMerchantOptions().where(
+      inArray(merchants.id, merchantIds),
     );
-    if (ownMerchantCount !== merchantIds.length) {
+    const isEveryMerchantServable =
+      requestedMerchants.length === merchantIds.length &&
+      requestedMerchants.every((merchant) =>
+        canDriverServeMerchant(owner, merchant),
+      );
+    if (!isEveryMerchantServable) {
       throw createFieldValidationException(
         'merchantIds',
-        'Elegí solo comercios de tu organización.',
+        'Un motorista de un cliente solo atiende comercios de ese cliente.',
       );
     }
     return merchantIds;
@@ -170,44 +260,41 @@ export class DriversService {
     const assignments = await this.database
       .select({
         driverId: driverMerchantAssignments.driverId,
-        id: merchants.id,
-        name: merchants.name,
+        ...merchantOptionColumns,
       })
       .from(driverMerchantAssignments)
       .innerJoin(
         merchants,
         eq(driverMerchantAssignments.merchantId, merchants.id),
       )
+      .innerJoin(organizations, eq(merchants.organizationId, organizations.id))
       .where(
         inArray(
           driverMerchantAssignments.driverId,
           rows.map((row) => row.id),
         ),
       )
-      .orderBy(asc(merchants.name));
+      .orderBy(asc(organizations.name), asc(merchants.name));
 
     return rows.map((row) => ({
-      ...row,
+      id: row.id,
+      name: row.name,
+      email: row.email,
+      phoneNumber: row.phoneNumber,
+      owner: toOwner(row.ownerId, row.ownerName, row.ownerType),
       merchants: assignments
         .filter((assignment) => assignment.driverId === row.id)
-        .map(({ id, name }) => ({ id, name })),
+        .map(({ driverId: _driverId, ...merchant }) => merchant),
       createdAt: row.createdAt.toISOString(),
     }));
   }
 
-  private async findOrganizationCountryId(
-    organizationId: number,
-  ): Promise<number> {
-    const [organization] = await this.database
-      .select({ countryId: organizations.countryId })
-      .from(organizations)
-      .where(eq(organizations.id, organizationId));
-    if (!organization?.countryId) {
-      throw new BadRequestException(
-        `Organization ${organizationId} has no country; set it before creating drivers`,
-      );
-    }
-    return organization.countryId;
+  private selectMerchantOptions() {
+    return this.database
+      .select(merchantOptionColumns)
+      .from(merchants)
+      .innerJoin(organizations, eq(merchants.organizationId, organizations.id))
+      .$dynamic();
   }
 
   private selectDrivers() {
@@ -215,6 +302,7 @@ export class DriversService {
       .select(driverColumns)
       .from(drivers)
       .innerJoin(users, eq(drivers.userId, users.id))
+      .innerJoin(organizations, eq(users.organizationId, organizations.id))
       .$dynamic();
   }
 }
