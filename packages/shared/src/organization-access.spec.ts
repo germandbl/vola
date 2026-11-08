@@ -3,6 +3,7 @@ import type { AuthUser } from "./auth.js";
 import {
   canManageAllMerchants,
   canManageMerchants,
+  canManageOwnDrivers,
   canViewOrganization,
 } from "./organization-access.js";
 import { OrganizationType } from "./organizations.js";
@@ -75,5 +76,28 @@ describe("canViewOrganization", () => {
     expect(
       canViewOrganization(createClientUser({}), CLIENT_ORGANIZATION_ID),
     ).toBe(false);
+  });
+});
+
+describe("canManageOwnDrivers", () => {
+  it("lets a client administrator and an agent with the permission manage drivers", () => {
+    expect(
+      canManageOwnDrivers(createClientUser({ role: RoleName.Administrator })),
+    ).toBe(true);
+    expect(
+      canManageOwnDrivers(
+        createClientUser({ permissions: [Permission.ManageDrivers] }),
+      ),
+    ).toBe(true);
+    expect(canManageOwnDrivers(createClientUser({}))).toBe(false);
+  });
+
+  it("does not apply to Volá! users", () => {
+    const platformAdministrator = createClientUser({
+      role: RoleName.Administrator,
+      organizationId: 1,
+      organizationType: OrganizationType.Platform,
+    });
+    expect(canManageOwnDrivers(platformAdministrator)).toBe(false);
   });
 });

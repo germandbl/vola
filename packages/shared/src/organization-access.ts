@@ -107,3 +107,13 @@ export function canManageDeliveryFees(user: AuthUser): boolean {
   if (user.role === RoleName.Superadmin) return true;
   return hasPlatformPermission(user, Permission.ManageDeliveryFees);
 }
+
+// Por ahora cada cliente gestiona solo sus propios motoristas; los de Volá! se asignan aparte.
+export function canManageOwnDrivers(user: AuthUser): boolean {
+  if (user.organizationType !== OrganizationType.Merchant) return false;
+  return canActInOwnOrganization(
+    user,
+    user.organizationId,
+    Permission.ManageDrivers,
+  );
+}

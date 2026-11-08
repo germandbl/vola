@@ -219,7 +219,7 @@ Todas las tablas tienen `id` como llave primaria (bigint generado por la base) y
 - Llaves foráneas: role_id → roles. Al borrar el rol: se borran sus permisos.
 - NOT NULL: role_id, permission_key.
 - UNIQUE: role_id con permission_key.
-- CHECK: permission_key solo puede ser organizations.view, delivery_fees.manage, merchants.manage u orders.create.
+- CHECK: permission_key solo puede ser organizations.view, delivery_fees.manage, merchants.manage, orders.create o drivers.manage.
 
 ### users
 
@@ -233,7 +233,7 @@ Todas las tablas tienen `id` como llave primaria (bigint generado por la base) y
 - Llaves foráneas: user_id → users. Al borrar el usuario: se borran sus permisos.
 - NOT NULL: user_id, permission_key.
 - UNIQUE: user_id con permission_key.
-- CHECK: permission_key solo puede ser organizations.view, delivery_fees.manage, merchants.manage u orders.create.
+- CHECK: permission_key solo puede ser organizations.view, delivery_fees.manage, merchants.manage, orders.create o drivers.manage.
 
 ### drivers
 

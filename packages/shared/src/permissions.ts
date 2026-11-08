@@ -5,6 +5,7 @@ export const Permission = {
   ManageDeliveryFees: 'delivery_fees.manage',
   ManageMerchants: 'merchants.manage',
   CreateOrders: 'orders.create',
+  ManageDrivers: 'drivers.manage',
 } as const;
 
 export type Permission = (typeof Permission)[keyof typeof Permission];
