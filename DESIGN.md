@@ -36,12 +36,23 @@ Usamos el voseo centroamericano y el imperativo directo.
 
 ## 3. Logotipo
 
-Todavía no hay logotipo diseñado. Mientras tanto, la marca se escribe como palabra: **Volá!** en Outfit 800, siempre con tilde y signo de exclamación.
+El kit de marca trae dos símbolos, en PNG con transparencia:
 
-- Sobre `cielo`, `maya`, `escarcha`, `nube`, `aire` o `blanco`: logotipo en `tinta`.
-- Sobre `tinta`, `marino` o `accion`: logotipo en `blanco`.
-- Nunca en blanco sobre `cielo` ni ningún azul claro (2.6:1 o menos, no se lee).
-- Nunca "Vola" sin tilde ni sin exclamación.
+- **Logotipo completo**: la caja con alas y la palabra **Volá!**. Va en encabezados, login y portadas.
+- **Isotipo V**: la V con líneas de velocidad. Va en íconos de app, favicon y espacios pequeños.
+
+Dónde está cada uno:
+
+- Web: `apps/web/assets/brand/` (`logo-color.png`, `logo-blanco.png`) con el componente `Logo`; `favicon.ico` y `apple-icon.png` en `apps/web/app/`.
+- App de motoristas: `apps/drivers-mobile/assets/images/` (`icon.png`, íconos de Android, `splash-icon.png`, `logo-color.png`).
+
+Reglas:
+
+- Logotipo a color sobre `blanco`, `aire` y azules claros.
+- Logotipo blanco sobre `tinta`, `marino` o `accion` (por ejemplo la barra lateral).
+- Ícono de app: la V en `tinta` sobre `cielo`. En Android, la V como primer plano y `cielo` de fondo; el sistema aplica la máscara.
+- Nunca deformar, recortar ni cambiar los colores del logotipo. Escalarlo siempre manteniendo la proporción.
+- Nunca "Vola" sin tilde ni sin exclamación cuando la marca se escribe como texto.
 - Área de respeto: la altura de la letra "V" alrededor de todo el logotipo.
 
 ---
