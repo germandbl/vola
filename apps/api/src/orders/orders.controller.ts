@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   ParseIntPipe,
@@ -98,6 +99,24 @@ export class OrdersController {
     form: OrderAssignmentForm,
   ): Promise<OrderSummary> {
     return this.orderAssignmentsService.assignDriver(user, orderId, form);
+  }
+
+  @Put(':orderId/reassign')
+  reassignDriver(
+    @CurrentUser() user: AuthUser,
+    @Param('orderId', ParseIntPipe) orderId: number,
+    @Body(new ZodValidationPipe(orderAssignmentFormSchema))
+    form: OrderAssignmentForm,
+  ): Promise<OrderDetail> {
+    return this.orderAssignmentsService.reassignDriver(user, orderId, form);
+  }
+
+  @Delete(':orderId/driver')
+  releaseDriver(
+    @CurrentUser() user: AuthUser,
+    @Param('orderId', ParseIntPipe) orderId: number,
+  ): Promise<OrderDetail> {
+    return this.orderAssignmentsService.releaseDriver(user, orderId);
   }
 
   @Put(':orderId/status')

@@ -2,19 +2,17 @@
 
 import {
   ACTIVE_ORDER_STATUSES,
-  PreparationStatus,
+  canAssignOrders,
   canManageOrders,
-  findNextPreparationStatus,
+  canOrderDriverBeChanged,
   type AuthUser,
   type OrderDetail,
 } from "@vola/shared";
-import { ChefHat, PackageCheck } from "lucide-react";
-import { FormErrorAlert } from "@/components/FormErrorAlert";
-import { Button } from "@/components/ui/button";
-import { Spinner } from "@/components/ui/spinner";
-import { useOrderActions } from "@/hooks/use-order-actions";
 import { CancelOrderDialog } from "./CancelOrderDialog";
 import { CompleteOrderDialog } from "./CompleteOrderDialog";
+import { OrderPreparationButton } from "./OrderPreparationButton";
+import { ReassignDriverDialog } from "./ReassignDriverDialog";
+import { ReleaseDriverDialog } from "./ReleaseDriverDialog";
 
 interface OrderDetailActionsProps {
   order: OrderDetail;
@@ -23,47 +21,29 @@ interface OrderDetailActionsProps {
 }
 
 export function OrderDetailActions({ order, currentUser, onUpdated }: OrderDetailActionsProps) {
-  const actions = useOrderActions(order, onUpdated);
-  const isActive = ACTIVE_ORDER_STATUSES.includes(order.status);
-  if (!isActive || !canManageOrders(currentUser, order.organizationId)) return null;
+  if (!ACTIVE_ORDER_STATUSES.includes(order.status)) return null;
 
-  const nextPreparationStatus = findNextPreparationStatus(order.preparationStatus);
+  const canManage = canManageOrders(currentUser, order.organizationId);
+  const canChangeDriver =
+    canAssignOrders(currentUser, order.organizationId) &&
+    canOrderDriverBeChanged(order.status, order.driver !== null);
+  if (!canManage && !canChangeDriver) return null;
 
   return (
     <div className="flex flex-col gap-3 border-t px-5 py-4">
-      {actions.error && <FormErrorAlert message={actions.error} />}
-      <div className="flex flex-wrap gap-3">
-        {nextPreparationStatus === PreparationStatus.Preparing && (
-          <Button
-            variant="outline"
-            className="flex-1"
-            disabled={actions.isPending}
-            onClick={() => actions.changePreparation(PreparationStatus.Preparing)}
-          >
-            {actions.isPending ? <Spinner data-icon="inline-start" /> : <ChefHat data-icon="inline-start" />}
-            Empezar preparación
-          </Button>
-        )}
-        {nextPreparationStatus === PreparationStatus.Ready && (
-          <Button
-            variant="outline"
-            className="flex-1"
-            disabled={actions.isPending}
-            onClick={() => actions.changePreparation(PreparationStatus.Ready)}
-          >
-            {actions.isPending ? (
-              <Spinner data-icon="inline-start" />
-            ) : (
-              <PackageCheck data-icon="inline-start" />
-            )}
-            Marcar lista para recoger
-          </Button>
-        )}
-      </div>
-      <div className="flex flex-wrap gap-3">
-        <CompleteOrderDialog order={order} onUpdated={onUpdated} />
-        <CancelOrderDialog order={order} onUpdated={onUpdated} />
-      </div>
+      {canManage && <OrderPreparationButton order={order} onUpdated={onUpdated} />}
+      {canChangeDriver && (
+        <div className="flex flex-wrap gap-3">
+          <ReassignDriverDialog order={order} onUpdated={onUpdated} />
+          <ReleaseDriverDialog order={order} onUpdated={onUpdated} />
+        </div>
+      )}
+      {canManage && (
+        <div className="flex flex-wrap gap-3">
+          <CompleteOrderDialog order={order} onUpdated={onUpdated} />
+          <CancelOrderDialog order={order} onUpdated={onUpdated} />
+        </div>
+      )}
     </div>
   );
 }

@@ -4,6 +4,7 @@ import {
   PreparationStatus,
   findNextPreparationStatus,
   getPreparationStatus,
+  canOrderDriverBeChanged,
   orderCancellationFormSchema,
   calculateOrderSubtotal,
   canDriverMoveTo,
@@ -148,5 +149,19 @@ describe("orderCancellationFormSchema", () => {
     expect(result.error?.issues[0].message).toBe(
       "Escribí el motivo de la cancelación.",
     );
+  });
+});
+
+describe("canOrderDriverBeChanged", () => {
+  it("allows active orders with a driver", () => {
+    expect(canOrderDriverBeChanged(OrderStatus.OnTheWay, true)).toBe(true);
+  });
+
+  it("rejects orders without a driver", () => {
+    expect(canOrderDriverBeChanged(OrderStatus.New, false)).toBe(false);
+  });
+
+  it("rejects finished orders", () => {
+    expect(canOrderDriverBeChanged(OrderStatus.Delivered, true)).toBe(false);
   });
 });

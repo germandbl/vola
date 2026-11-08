@@ -254,12 +254,20 @@ export const orderAssignmentFormSchema = z.object({
 
 export type OrderAssignmentForm = z.infer<typeof orderAssignmentFormSchema>;
 
-// Por ahora solo se asigna una orden Nueva y sin motorista; reasignar es otra historia.
+// La primera asignación es solo para órdenes Nuevas; para cambiar de motorista está canOrderDriverBeChanged.
 export function canOrderBeAssigned(
   status: OrderStatus,
   hasDriver: boolean,
 ): boolean {
   return status === OrderStatus.New && !hasDriver;
+}
+
+export function canOrderDriverBeChanged(
+  status: OrderStatus,
+  hasDriver: boolean,
+): boolean {
+  if (!hasDriver) return false;
+  return ACTIVE_ORDER_STATUSES.includes(status);
 }
 
 export const orderBranchOptionSchema = z.object({
