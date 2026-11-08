@@ -4,6 +4,8 @@ import {
   cancelOrder,
   changeOrderPreparation,
   completeOrder,
+  reassignOrderDriver,
+  releaseOrderDriver,
   type OrderActionResult,
 } from "@/lib/order-detail-actions";
 
@@ -11,12 +13,14 @@ export function useOrderActions(order: OrderDetail, onUpdated: (order: OrderDeta
   const [error, setError] = useState<string>();
   const [isPending, startTransition] = useTransition();
 
-  function run(action: () => Promise<OrderActionResult>) {
+  function run(action: () => Promise<OrderActionResult>, onSaved?: () => void) {
     setError(undefined);
     startTransition(async () => {
       const result = await action();
-      if (result.order) onUpdated(result.order);
       setError(result.error);
+      if (!result.order) return;
+      onUpdated(result.order);
+      onSaved?.();
     });
   }
 
@@ -32,5 +36,13 @@ export function useOrderActions(order: OrderDetail, onUpdated: (order: OrderDeta
     run(() => cancelOrder(order.id, form));
   }
 
-  return { error, isPending, changePreparation, complete, cancel };
+  function reassignDriver(driverId: number, onSaved: () => void) {
+    run(() => reassignOrderDriver(order.id, { driverId }), onSaved);
+  }
+
+  function releaseDriver(onSaved: () => void) {
+    run(() => releaseOrderDriver(order.id), onSaved);
+  }
+
+  return { error, isPending, changePreparation, complete, cancel, reassignDriver, releaseDriver };
 }

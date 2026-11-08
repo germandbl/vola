@@ -9,6 +9,7 @@ import { useFocusEffect } from "expo-router";
 import { useCallback, useState } from "react";
 import { ApiUnreachableError } from "@/lib/api";
 import {
+  OrderNoLongerAssignedError,
   OrderStatusConflictError,
   requestOrderDetail,
   requestStatusChange,
@@ -22,11 +23,16 @@ function toErrorMessage(error: unknown): string {
   if (error instanceof OrderStatusConflictError) {
     return "Esta orden cambió mientras tanto. Volvé a la lista para ver cómo quedó.";
   }
+  if (error instanceof OrderNoLongerAssignedError) {
+    return "Esta orden ya no está asignada a vos. Volvé a la lista.";
+  }
   return "Algo falló de nuestro lado. Probá de nuevo en un momento.";
 }
 
 function isExpectedError(error: unknown): boolean {
-  return error instanceof ApiUnreachableError || error instanceof OrderStatusConflictError;
+  if (error instanceof ApiUnreachableError) return true;
+  if (error instanceof OrderStatusConflictError) return true;
+  return error instanceof OrderNoLongerAssignedError;
 }
 
 export function useOrderDetail(orderId: number) {
