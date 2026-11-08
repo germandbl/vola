@@ -201,6 +201,8 @@ Píldoras horizontales de alto 8px y largos distintos, como estelas de algo que 
 | --- | --- |
 | Nueva | "Nueva" |
 | Preparando | "Preparando" |
+| En camino a sucursal | "En camino a sucursal" |
+| En sucursal | "En sucursal" |
 | En camino | "Va volando" |
 | Entregada | "Entregada" |
 | Cancelada | "Cancelada" |

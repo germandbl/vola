@@ -1,11 +1,13 @@
 import Feather from "@expo/vector-icons/Feather";
 import { colors, spacing, type DriverOrder } from "@vola/shared";
+import { router } from "expo-router";
 import { Pressable, StyleSheet, View } from "react-native";
-import { callPhone, openDirections } from "@/lib/external-links";
 import { formatMoney } from "@/lib/format";
 import { AppText } from "./AppText";
 import { Card } from "./Card";
+import { DirectionsLink } from "./DirectionsLink";
 import { OrderStatusChip } from "./OrderStatusChip";
+import { PhoneLink } from "./PhoneLink";
 
 const ICON_SIZE = 18;
 
@@ -26,32 +28,27 @@ export function OrderCard({ order }: OrderCardProps) {
 
       <View style={styles.section}>
         <AppText>{order.customerName}</AppText>
-        <Pressable
-          accessibilityRole="link"
-          accessibilityHint="Llama al cliente"
-          onPress={() => callPhone(order.customerPhone)}
-          style={styles.linkRow}
-        >
-          <Feather name="phone" size={ICON_SIZE} color={colors.accion} />
-          <AppText tone="accion">{order.customerPhone}</AppText>
-        </Pressable>
-        <Pressable
-          accessibilityRole="link"
-          accessibilityHint="Abre el mapa con cómo llegar"
-          onPress={() => openDirections(order.deliveryLatitude, order.deliveryLongitude)}
-          style={styles.linkRow}
-        >
-          <Feather name="map-pin" size={ICON_SIZE} color={colors.accion} />
-          <AppText tone="accion" style={styles.address}>
-            {order.deliveryAddress}
-          </AppText>
-        </Pressable>
+        <PhoneLink phoneNumber={order.customerPhone} />
+        <DirectionsLink
+          address={order.deliveryAddress}
+          latitude={order.deliveryLatitude}
+          longitude={order.deliveryLongitude}
+        />
       </View>
 
       <View style={styles.totalRow}>
         <AppText tone="tintaSuave">Total a cobrar</AppText>
         <AppText variant="titulo3">{formatMoney(order.total, order.currency)}</AppText>
       </View>
+
+      <Pressable
+        accessibilityRole="button"
+        onPress={() => router.push(`/orders/${order.id}`)}
+        style={styles.detailButton}
+      >
+        <AppText tone="accion">Ver detalle</AppText>
+        <Feather name="chevron-right" size={ICON_SIZE} color={colors.accion} />
+      </Pressable>
     </Card>
   );
 }
@@ -65,8 +62,6 @@ const styles = StyleSheet.create({
     gap: spacing[2],
   },
   section: { gap: spacing[2] },
-  linkRow: { flexDirection: "row", alignItems: "flex-start", gap: spacing[2] },
-  address: { flex: 1, textDecorationLine: "underline" },
   totalRow: {
     flexDirection: "row",
     alignItems: "center",
@@ -74,5 +69,11 @@ const styles = StyleSheet.create({
     paddingTop: spacing[4],
     borderTopWidth: 1,
     borderTopColor: colors.linea,
+  },
+  detailButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "flex-end",
+    gap: spacing[1],
   },
 });

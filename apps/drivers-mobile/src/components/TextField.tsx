@@ -5,6 +5,7 @@ import { getTextStyle } from "@/theme/fonts";
 import { AppText } from "./AppText";
 
 const FIELD_HEIGHT = 48;
+const MULTILINE_MIN_HEIGHT = 96;
 const BORDER_WIDTH = 1;
 const FOCUSED_BORDER_WIDTH = 2;
 
@@ -34,6 +35,7 @@ export function TextField({ label, error, ...inputProps }: TextFieldProps) {
         aria-invalid={Boolean(error)}
         style={[
           styles.input,
+          inputProps.multiline && styles.multilineInput,
           { borderColor, borderWidth: isFocused ? FOCUSED_BORDER_WIDTH : BORDER_WIDTH },
         ]}
         {...inputProps}
@@ -56,5 +58,11 @@ const styles = StyleSheet.create({
     borderRadius: radius.sm,
     backgroundColor: colors.blanco,
     color: colors.tinta,
+  },
+  multilineInput: {
+    height: undefined,
+    minHeight: MULTILINE_MIN_HEIGHT,
+    paddingVertical: spacing[2],
+    textAlignVertical: "top",
   },
 });

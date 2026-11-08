@@ -1,10 +1,21 @@
 import { ORDER_STATUS_LABEL, OrderStatus } from "@vola/shared";
-import { Bike, ChefHat, CircleCheck, CircleDot, CircleX, type LucideIcon } from "lucide-react";
+import {
+  Bike,
+  ChefHat,
+  CircleCheck,
+  CircleDot,
+  CircleX,
+  CornerUpRight,
+  ShoppingBag,
+  type LucideIcon,
+} from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 const ORDER_STATUS_ICON: Record<OrderStatus, LucideIcon> = {
   [OrderStatus.New]: CircleDot,
   [OrderStatus.Preparing]: ChefHat,
+  [OrderStatus.HeadingToBranch]: CornerUpRight,
+  [OrderStatus.AtBranch]: ShoppingBag,
   [OrderStatus.OnTheWay]: Bike,
   [OrderStatus.Delivered]: CircleCheck,
   [OrderStatus.Cancelled]: CircleX,

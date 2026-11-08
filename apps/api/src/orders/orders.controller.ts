@@ -11,19 +11,23 @@ import {
 import {
   orderAssignmentFormSchema,
   orderFormSchema,
+  orderStatusChangeFormSchema,
   paginationQuerySchema,
   type AuthUser,
   type OrderAssignmentForm,
   type DriverOrder,
+  type DriverOrderDetail,
   type OrderBranchOption,
   type OrderDriver,
   type OrderForm,
+  type OrderStatusChangeForm,
   type OrderSummary,
   type Paginated,
   type PaginationQuery,
 } from '@vola/shared';
 import { CurrentUser } from '../auth/current-user.decorator.js';
 import { ZodValidationPipe } from '../common/zod-validation.pipe.js';
+import { DriverOrdersService } from './driver-orders.service.js';
 import { OrderAssignmentsService } from './order-assignments.service.js';
 import { OrdersService } from './orders.service.js';
 
@@ -32,6 +36,7 @@ export class OrdersController {
   constructor(
     private readonly ordersService: OrdersService,
     private readonly orderAssignmentsService: OrderAssignmentsService,
+    private readonly driverOrdersService: DriverOrdersService,
   ) {}
 
   @Get()
@@ -44,7 +49,15 @@ export class OrdersController {
 
   @Get('assigned-to-me')
   findAssignedToMe(@CurrentUser() user: AuthUser): Promise<DriverOrder[]> {
-    return this.ordersService.findAssignedToDriver(user);
+    return this.driverOrdersService.findAssigned(user);
+  }
+
+  @Get('assigned-to-me/:orderId')
+  findAssignedToMeDetail(
+    @CurrentUser() user: AuthUser,
+    @Param('orderId', ParseIntPipe) orderId: number,
+  ): Promise<DriverOrderDetail> {
+    return this.driverOrdersService.findDetail(user, orderId);
   }
 
   @Get('branch-options')
@@ -78,5 +91,15 @@ export class OrdersController {
     form: OrderAssignmentForm,
   ): Promise<OrderSummary> {
     return this.orderAssignmentsService.assignDriver(user, orderId, form);
+  }
+
+  @Put(':orderId/status')
+  changeStatus(
+    @CurrentUser() user: AuthUser,
+    @Param('orderId', ParseIntPipe) orderId: number,
+    @Body(new ZodValidationPipe(orderStatusChangeFormSchema))
+    form: OrderStatusChangeForm,
+  ): Promise<DriverOrderDetail> {
+    return this.driverOrdersService.changeStatus(user, orderId, form);
   }
 }

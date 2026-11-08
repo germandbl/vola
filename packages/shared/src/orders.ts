@@ -5,6 +5,8 @@ import { phoneNumberSchema } from "./users.js";
 export const OrderStatus = {
   New: "new",
   Preparing: "preparing",
+  HeadingToBranch: "heading_to_branch",
+  AtBranch: "at_branch",
   OnTheWay: "on_the_way",
   Delivered: "delivered",
   Cancelled: "cancelled",
@@ -18,6 +20,8 @@ export const orderStatusSchema = z.enum(OrderStatus);
 export const ORDER_STATUS_LABEL: Record<OrderStatus, string> = {
   [OrderStatus.New]: "Nueva",
   [OrderStatus.Preparing]: "Preparando",
+  [OrderStatus.HeadingToBranch]: "En camino a sucursal",
+  [OrderStatus.AtBranch]: "En sucursal",
   [OrderStatus.OnTheWay]: "Va volando",
   [OrderStatus.Delivered]: "Entregada",
   [OrderStatus.Cancelled]: "Cancelada",
@@ -27,8 +31,64 @@ export const ORDER_STATUS_LABEL: Record<OrderStatus, string> = {
 export const ACTIVE_ORDER_STATUSES: OrderStatus[] = [
   OrderStatus.New,
   OrderStatus.Preparing,
+  OrderStatus.HeadingToBranch,
+  OrderStatus.AtBranch,
   OrderStatus.OnTheWay,
 ];
+
+// El paso que sigue para el motorista; null cuando la orden ya terminó.
+const DRIVER_NEXT_STATUS: Record<OrderStatus, OrderStatus | null> = {
+  [OrderStatus.New]: OrderStatus.HeadingToBranch,
+  [OrderStatus.Preparing]: OrderStatus.HeadingToBranch,
+  [OrderStatus.HeadingToBranch]: OrderStatus.AtBranch,
+  [OrderStatus.AtBranch]: OrderStatus.OnTheWay,
+  [OrderStatus.OnTheWay]: OrderStatus.Delivered,
+  [OrderStatus.Delivered]: null,
+  [OrderStatus.Cancelled]: null,
+};
+
+export function findDriverNextStatus(status: OrderStatus): OrderStatus | null {
+  return DRIVER_NEXT_STATUS[status];
+}
+
+// El motorista solo cancela cuando ya va con la orden hacia el cliente.
+export function canDriverCancel(status: OrderStatus): boolean {
+  return status === OrderStatus.OnTheWay;
+}
+
+export function canDriverMoveTo(
+  current: OrderStatus,
+  next: OrderStatus,
+): boolean {
+  if (next === OrderStatus.Cancelled) return canDriverCancel(current);
+  return findDriverNextStatus(current) === next;
+}
+
+const MAX_CANCELLATION_REASON_LENGTH = 300;
+
+export const orderStatusChangeFormSchema = z.discriminatedUnion("status", [
+  z.object({
+    status: z.enum([
+      OrderStatus.HeadingToBranch,
+      OrderStatus.AtBranch,
+      OrderStatus.OnTheWay,
+      OrderStatus.Delivered,
+    ]),
+  }),
+  z.object({
+    status: z.literal(OrderStatus.Cancelled),
+    cancellationReason: z
+      .string()
+      .trim()
+      .min(1, "Escribí el motivo de la cancelación.")
+      .max(
+        MAX_CANCELLATION_REASON_LENGTH,
+        `El motivo no puede pasar de ${MAX_CANCELLATION_REASON_LENGTH} caracteres.`,
+      ),
+  }),
+]);
+
+export type OrderStatusChangeForm = z.infer<typeof orderStatusChangeFormSchema>;
 
 const MAX_ITEMS = 50;
 const MAX_ITEM_QUANTITY = 999;
@@ -115,6 +175,8 @@ export const orderSummarySchema = z.object({
   deliveryFeeBasis: deliveryFeeBasisSchema,
   distanceKm: z.number().nullable(),
   driver: orderDriverSchema.nullable(),
+  statusChangedAt: z.string(),
+  cancellationReason: z.string().nullable(),
   createdAt: z.string(),
 });
 
@@ -161,6 +223,20 @@ export const driverOrderSchema = z.object({
   total: z.number(),
   currency: z.string().nullable(),
   assignedAt: z.string(),
+  statusChangedAt: z.string(),
 });
 
 export type DriverOrder = z.infer<typeof driverOrderSchema>;
+
+export const driverOrderItemSchema = z.object({
+  name: z.string(),
+  quantity: z.number(),
+});
+
+export const driverOrderDetailSchema = driverOrderSchema.extend({
+  branchAddress: z.string(),
+  items: z.array(driverOrderItemSchema),
+  cancellationReason: z.string().nullable(),
+});
+
+export type DriverOrderDetail = z.infer<typeof driverOrderDetailSchema>;

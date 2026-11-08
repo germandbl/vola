@@ -1,7 +1,11 @@
 import { describe, expect, it } from "vitest";
 import {
+  OrderStatus,
   calculateOrderSubtotal,
+  canDriverMoveTo,
+  findDriverNextStatus,
   orderFormSchema,
+  orderStatusChangeFormSchema,
   type OrderForm,
 } from "./orders.js";
 
@@ -60,5 +64,55 @@ describe("calculateOrderSubtotal", () => {
         { name: "Licuado", quantity: 2, unitPrice: 0.1 },
       ]),
     ).toBe(75.2);
+  });
+});
+
+describe("canDriverMoveTo", () => {
+  it("moves the order one step at a time", () => {
+    expect(canDriverMoveTo(OrderStatus.New, OrderStatus.HeadingToBranch)).toBe(
+      true,
+    );
+    expect(
+      canDriverMoveTo(OrderStatus.HeadingToBranch, OrderStatus.AtBranch),
+    ).toBe(true);
+    expect(canDriverMoveTo(OrderStatus.AtBranch, OrderStatus.OnTheWay)).toBe(
+      true,
+    );
+    expect(canDriverMoveTo(OrderStatus.OnTheWay, OrderStatus.Delivered)).toBe(
+      true,
+    );
+  });
+
+  it("does not skip steps", () => {
+    expect(canDriverMoveTo(OrderStatus.New, OrderStatus.Delivered)).toBe(false);
+    expect(
+      canDriverMoveTo(OrderStatus.HeadingToBranch, OrderStatus.OnTheWay),
+    ).toBe(false);
+  });
+
+  it("only cancels an order on the way", () => {
+    expect(canDriverMoveTo(OrderStatus.OnTheWay, OrderStatus.Cancelled)).toBe(
+      true,
+    );
+    expect(canDriverMoveTo(OrderStatus.AtBranch, OrderStatus.Cancelled)).toBe(
+      false,
+    );
+  });
+
+  it("does not move a finished order", () => {
+    expect(canDriverMoveTo(OrderStatus.Delivered, OrderStatus.Cancelled)).toBe(
+      false,
+    );
+    expect(findDriverNextStatus(OrderStatus.Cancelled)).toBeNull();
+  });
+});
+
+describe("orderStatusChangeFormSchema", () => {
+  it("requires a reason to cancel", () => {
+    const result = orderStatusChangeFormSchema.safeParse({
+      status: OrderStatus.Cancelled,
+      cancellationReason: "  ",
+    });
+    expect(result.error?.issues[0].path).toEqual(["cancellationReason"]);
   });
 });

@@ -9,6 +9,8 @@ const ICON_SIZE = 12;
 const ORDER_STATUS_ICON: Record<OrderStatus, keyof typeof Feather.glyphMap> = {
   [OrderStatus.New]: "circle",
   [OrderStatus.Preparing]: "clock",
+  [OrderStatus.HeadingToBranch]: "corner-up-right",
+  [OrderStatus.AtBranch]: "shopping-bag",
   [OrderStatus.OnTheWay]: "navigation",
   [OrderStatus.Delivered]: "check-circle",
   [OrderStatus.Cancelled]: "x-circle",

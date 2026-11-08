@@ -19,6 +19,8 @@ import { users } from '../users/users.schema.js';
 export const orderStatus = pgEnum('order_statuses', [
   'new',
   'preparing',
+  'heading_to_branch',
+  'at_branch',
   'on_the_way',
   'delivered',
   'cancelled',
@@ -72,6 +74,8 @@ export const orders = pgTable(
       { onDelete: 'restrict' },
     ),
     assignedAt: timestamp('assigned_at'),
+    statusChangedAt: timestamp('status_changed_at').notNull().defaultNow(),
+    cancellationReason: varchar('cancellation_reason'),
     createdAt: timestamp('created_at').notNull().defaultNow(),
   },
   (table) => [
@@ -86,6 +90,10 @@ export const orders = pgTable(
     check(
       'orders_driver_assigned_together',
       sql`(${table.driverId} IS NULL) = (${table.assignedAt} IS NULL)`,
+    ),
+    check(
+      'orders_cancellation_reason_only_when_cancelled',
+      sql`(${table.status} = 'cancelled') = (${table.cancellationReason} IS NOT NULL)`,
     ),
     check(
       'orders_total_matches',
@@ -112,5 +120,34 @@ export const orderItems = pgTable(
     check('order_items_name_not_blank', sql`btrim(${table.name}) <> ''`),
     check('order_items_quantity_positive', sql`${table.quantity} > 0`),
     check('order_items_unit_price_not_negative', sql`${table.unitPrice} >= 0`),
+  ],
+);
+
+// Historial de estados: cuándo cambió cada orden y quién la cambió.
+export const orderStatusChanges = pgTable(
+  'order_status_changes',
+  {
+    id: bigint('id', { mode: 'number' })
+      .primaryKey()
+      .generatedAlwaysAsIdentity(),
+    orderId: bigint('order_id', { mode: 'number' })
+      .notNull()
+      .references(() => orders.id, { onDelete: 'cascade' }),
+    status: orderStatus('status').notNull(),
+    cancellationReason: varchar('cancellation_reason'),
+    changedByUserId: bigint('changed_by_user_id', { mode: 'number' })
+      .notNull()
+      .references(() => users.id, { onDelete: 'restrict' }),
+    createdAt: timestamp('created_at').notNull().defaultNow(),
+  },
+  (table) => [
+    check(
+      'order_status_changes_cancellation_reason_only_when_cancelled',
+      sql`(${table.status} = 'cancelled') = (${table.cancellationReason} IS NOT NULL)`,
+    ),
+    check(
+      'order_status_changes_cancellation_reason_not_blank',
+      sql`btrim(${table.cancellationReason}) <> ''`,
+    ),
   ],
 );

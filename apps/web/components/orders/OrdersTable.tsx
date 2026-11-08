@@ -22,7 +22,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { formatDate, formatMoney } from "@/lib/labels";
+import { formatDate, formatDateTime, formatMoney } from "@/lib/labels";
 import { getOrdersPage } from "@/lib/organizations-data";
 import { AssignDriverDialog } from "./AssignDriverDialog";
 import { OrderStatusChip } from "./OrderStatusChip";
@@ -99,8 +99,18 @@ export async function OrdersTable({ page, showOrganization, currentUser }: Order
                   <p>{formatMoney(order.volaDeliveryFee, order.currency)}</p>
                   <p className="text-sm text-muted-foreground">{describeVolaFeeBasis(order)}</p>
                 </TableCell>
-                <TableCell>
-                  <OrderStatusChip status={order.status} />
+                <TableCell className="whitespace-normal">
+                  <div className="flex flex-col items-start gap-1">
+                    <OrderStatusChip status={order.status} />
+                    <span className="text-sm text-muted-foreground">
+                      Desde {formatDateTime(order.statusChangedAt)}
+                    </span>
+                    {order.cancellationReason && (
+                      <span className="text-sm text-muted-foreground">
+                        Motivo: {order.cancellationReason}
+                      </span>
+                    )}
+                  </div>
                 </TableCell>
                 <TableCell>
                   {canAssign(currentUser, order) ? (
