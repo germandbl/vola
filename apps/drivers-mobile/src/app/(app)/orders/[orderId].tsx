@@ -1,6 +1,6 @@
-import { ORDER_STATUS_LABEL, colors, findDriverNextStatus, spacing } from "@vola/shared";
+import { PREPARATION_STATUS_LABEL, colors, findDriverNextStatus, spacing } from "@vola/shared";
 import { useLocalSearchParams } from "expo-router";
-import { ActivityIndicator, ScrollView, StyleSheet, View } from "react-native";
+import { ActivityIndicator, RefreshControl, ScrollView, StyleSheet, View } from "react-native";
 import { AppText } from "@/components/AppText";
 import { Card } from "@/components/Card";
 import { ErrorMessage } from "@/components/ErrorMessage";
@@ -33,7 +33,16 @@ export default function OrderDetailScreen() {
   const showDirections = () => openDirections(order.deliveryLatitude, order.deliveryLongitude);
 
   return (
-    <ScrollView contentContainerStyle={styles.content}>
+    <ScrollView
+      contentContainerStyle={styles.content}
+      refreshControl={
+        <RefreshControl
+          refreshing={orderDetail.isRefreshing}
+          onRefresh={orderDetail.refresh}
+          tintColor={colors.tinta}
+        />
+      }
+    >
       <MapPreview
         latitude={order.deliveryLatitude}
         longitude={order.deliveryLongitude}
@@ -47,7 +56,7 @@ export default function OrderDetailScreen() {
       <Card style={styles.statusCard}>
         <View style={styles.tiles}>
           <StatTile icon="clock" label="Estado de la orden" tone="nube">
-            {ORDER_STATUS_LABEL[order.status]}
+            {PREPARATION_STATUS_LABEL[order.preparationStatus]}
           </StatTile>
           <StatTile icon="dollar-sign" label="Total a cobrar" tone="bruma">
             {formatMoney(order.total, order.currency)}

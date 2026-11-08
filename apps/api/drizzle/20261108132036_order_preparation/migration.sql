@@ -1,0 +1,5 @@
+ALTER TABLE "orders" ADD COLUMN "preparation_started_at" timestamp;--> statement-breakpoint
+ALTER TABLE "orders" ADD COLUMN "ready_at" timestamp;--> statement-breakpoint
+ALTER TABLE "orders" ADD CONSTRAINT "orders_ready_after_preparation_started" CHECK ("ready_at" IS NULL OR "preparation_started_at" IS NOT NULL);--> statement-breakpoint
+ALTER TABLE "role_permissions" DROP CONSTRAINT "role_permissions_permission_key_known", ADD CONSTRAINT "role_permissions_permission_key_known" CHECK ("permission_key" IN ('organizations.view', 'delivery_fees.manage', 'merchants.manage', 'orders.create', 'drivers.manage', 'orders.assign', 'orders.manage'));--> statement-breakpoint
+ALTER TABLE "user_permissions" DROP CONSTRAINT "user_permissions_permission_key_known", ADD CONSTRAINT "user_permissions_permission_key_known" CHECK ("permission_key" IN ('organizations.view', 'delivery_fees.manage', 'merchants.manage', 'orders.create', 'drivers.manage', 'orders.assign', 'orders.manage'));

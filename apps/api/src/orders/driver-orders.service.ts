@@ -10,6 +10,7 @@ import {
   OrderStatus,
   RoleName,
   canDriverMoveTo,
+  getPreparationStatus,
   type AuthUser,
   type DriverOrder,
   type DriverOrderDetail,
@@ -41,6 +42,8 @@ const driverOrderColumns = {
   cancellationReason: orders.cancellationReason,
   assignedAt: orders.assignedAt,
   statusChangedAt: orders.statusChangedAt,
+  preparationStartedAt: orders.preparationStartedAt,
+  readyAt: orders.readyAt,
 };
 
 interface DriverOrderRow {
@@ -59,6 +62,8 @@ interface DriverOrderRow {
   cancellationReason: string | null;
   assignedAt: Date | null;
   statusChangedAt: Date;
+  preparationStartedAt: Date | null;
+  readyAt: Date | null;
 }
 
 function toDriverOrder(row: DriverOrderRow): DriverOrder {
@@ -79,6 +84,12 @@ function toDriverOrder(row: DriverOrderRow): DriverOrder {
     currency: row.currency,
     assignedAt: row.assignedAt.toISOString(),
     statusChangedAt: row.statusChangedAt.toISOString(),
+    preparationStatus: getPreparationStatus(
+      row.preparationStartedAt,
+      row.readyAt,
+    ),
+    preparationStartedAt: row.preparationStartedAt?.toISOString() ?? null,
+    readyAt: row.readyAt?.toISOString() ?? null,
   };
 }
 

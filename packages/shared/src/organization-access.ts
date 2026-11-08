@@ -146,3 +146,13 @@ export function canAssignOrders(
   if (hasPlatformPermission(user, Permission.AssignOrders)) return true;
   return canActInOwnOrganization(user, organizationId, Permission.AssignOrders);
 }
+
+// Preparar, completar y cancelar órdenes: el comercio en las suyas y Volá! en todas.
+export function canManageOrders(
+  user: AuthUser,
+  organizationId: number,
+): boolean {
+  if (user.role === RoleName.Superadmin) return true;
+  if (hasPlatformPermission(user, Permission.ManageOrders)) return true;
+  return canActInOwnOrganization(user, organizationId, Permission.ManageOrders);
+}

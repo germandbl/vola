@@ -48,5 +48,10 @@ export function useOrderDetailSheet() {
     router.push(query ? `${pathname}?${query}` : pathname, { scroll: false });
   }
 
-  return { isOpen: orderId !== null, orderId, state, close };
+  // Después de una acción, el API devuelve la orden ya actualizada.
+  function showUpdatedOrder(order: OrderDetail) {
+    setState({ kind: "loaded", order });
+  }
+
+  return { isOpen: orderId !== null, orderId, state, close, showUpdatedOrder };
 }

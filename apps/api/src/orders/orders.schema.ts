@@ -76,9 +76,15 @@ export const orders = pgTable(
     assignedAt: timestamp('assigned_at'),
     statusChangedAt: timestamp('status_changed_at').notNull().defaultNow(),
     cancellationReason: varchar('cancellation_reason'),
+    preparationStartedAt: timestamp('preparation_started_at'),
+    readyAt: timestamp('ready_at'),
     createdAt: timestamp('created_at').notNull().defaultNow(),
   },
   (table) => [
+    check(
+      'orders_ready_after_preparation_started',
+      sql`${table.readyAt} IS NULL OR ${table.preparationStartedAt} IS NOT NULL`,
+    ),
     check(
       'orders_delivery_address_not_blank',
       sql`btrim(${table.deliveryAddress}) <> ''`,

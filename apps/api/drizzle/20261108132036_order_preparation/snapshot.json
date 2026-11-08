@@ -1,0 +1,161 @@
+{
+  "type": "diff",
+  "version": "9",
+  "dialect": "postgres",
+  "id": "94f8cf34-7b8e-4bd6-b92c-432dfde839e2",
+  "prevIds": [
+    "41cc8c4d-5461-4c90-9437-5ef23397cb60"
+  ],
+  "footprints": [
+    {
+      "statementType": "add_column",
+      "statementTarget": [
+        "column",
+        "public",
+        "orders",
+        "preparation_started_at"
+      ],
+      "writes": [
+        "s|col|public.orders.preparation_started_at",
+        "n|col|public.orders.preparation_started_at",
+        "e|col|public.orders.preparation_started_at"
+      ],
+      "reads": [
+        "n|tbl|public.orders",
+        "n|sch|public"
+      ]
+    },
+    {
+      "statementType": "add_column",
+      "statementTarget": [
+        "column",
+        "public",
+        "orders",
+        "ready_at"
+      ],
+      "writes": [
+        "s|col|public.orders.ready_at",
+        "n|col|public.orders.ready_at",
+        "e|col|public.orders.ready_at"
+      ],
+      "reads": [
+        "n|tbl|public.orders",
+        "n|sch|public"
+      ]
+    },
+    {
+      "statementType": "add_check",
+      "statementTarget": [
+        "table",
+        "public",
+        "orders"
+      ],
+      "writes": [
+        "s|ck|public.orders.orders_ready_after_preparation_started",
+        "n|ck|public.orders.orders_ready_after_preparation_started",
+        "e|ck|public.orders.orders_ready_after_preparation_started",
+        "n|con|public.orders.orders_ready_after_preparation_started"
+      ],
+      "reads": [
+        "n|tbl|public.orders",
+        "n|sch|public",
+        "n|col|public.orders.ready_at",
+        "n|col|public.orders.preparation_started_at"
+      ]
+    },
+    {
+      "statementType": "alter_check",
+      "statementTarget": [
+        "table",
+        "public",
+        "role_permissions"
+      ],
+      "writes": [
+        "s|ck|public.role_permissions.role_permissions_permission_key_known"
+      ],
+      "reads": [
+        "n|tbl|public.role_permissions",
+        "n|sch|public",
+        "n|col|public.role_permissions.permission_key",
+        "e|col|public.role_permissions.permission_key"
+      ],
+      "sqlHash": "7007fc9fe127cbcf"
+    },
+    {
+      "statementType": "alter_check",
+      "statementTarget": [
+        "table",
+        "public",
+        "user_permissions"
+      ],
+      "writes": [
+        "s|ck|public.user_permissions.user_permissions_permission_key_known"
+      ],
+      "reads": [
+        "n|tbl|public.user_permissions",
+        "n|sch|public",
+        "n|col|public.user_permissions.permission_key",
+        "e|col|public.user_permissions.permission_key"
+      ],
+      "sqlHash": "084e3a84468432d6"
+    }
+  ],
+  "deltas": [
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "orders",
+        "name": "preparation_started_at",
+        "type": "timestamp",
+        "typeSchema": null,
+        "notNull": false,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "orders",
+        "name": "ready_at",
+        "type": "timestamp",
+        "typeSchema": null,
+        "notNull": false,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "orders",
+        "name": "orders_ready_after_preparation_started",
+        "value": "\"ready_at\" IS NULL OR \"preparation_started_at\" IS NOT NULL",
+        "entityType": "checks"
+      }
+    },
+    {
+      "op": "alter",
+      "key": "checks\u0000[\"public\",\"role_permissions\",\"role_permissions_permission_key_known\"]",
+      "set": {
+        "value": "\"permission_key\" IN ('organizations.view', 'delivery_fees.manage', 'merchants.manage', 'orders.create', 'drivers.manage', 'orders.assign', 'orders.manage')"
+      }
+    },
+    {
+      "op": "alter",
+      "key": "checks\u0000[\"public\",\"user_permissions\",\"user_permissions_permission_key_known\"]",
+      "set": {
+        "value": "\"permission_key\" IN ('organizations.view', 'delivery_fees.manage', 'merchants.manage', 'orders.create', 'drivers.manage', 'orders.assign', 'orders.manage')"
+      }
+    }
+  ]
+}

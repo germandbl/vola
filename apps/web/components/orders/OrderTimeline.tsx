@@ -12,6 +12,12 @@ function buildTimeline(order: OrderDetail): TimelineEntry[] {
   const entries: TimelineEntry[] = [
     { label: "Creada", detail: `por ${order.createdByName}`, at: order.createdAt },
   ];
+  if (order.preparationStartedAt) {
+    entries.push({ label: "En preparación", detail: null, at: order.preparationStartedAt });
+  }
+  if (order.readyAt) {
+    entries.push({ label: "Lista para recoger", detail: null, at: order.readyAt });
+  }
   if (order.assignedAt && order.driver) {
     entries.push({ label: `Asignada a ${order.driver.name}`, detail: null, at: order.assignedAt });
   }

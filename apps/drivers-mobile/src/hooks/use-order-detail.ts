@@ -5,7 +5,8 @@ import {
   type DriverOrderDetail,
   type OrderStatusChangeForm,
 } from "@vola/shared";
-import { useEffect, useState } from "react";
+import { useFocusEffect } from "expo-router";
+import { useCallback, useState } from "react";
 import { ApiUnreachableError } from "@/lib/api";
 import {
   OrderStatusConflictError,
@@ -34,15 +35,34 @@ export function useOrderDetail(orderId: number) {
   const [error, setError] = useState<string>();
   const [cancellationReasonError, setCancellationReasonError] = useState<string>();
   const [isChangingStatus, setIsChangingStatus] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
-  useEffect(() => {
-    requestOrderDetail(token, orderId)
-      .then(setOrder)
-      .catch((loadError: unknown) => {
-        setError(toErrorMessage(loadError));
-        if (!isExpectedError(loadError)) throw loadError;
-      });
+  const loadOrder = useCallback(async () => {
+    try {
+      setOrder(await requestOrderDetail(token, orderId));
+      setError(undefined);
+    } catch (loadError) {
+      setError(toErrorMessage(loadError));
+      if (!isExpectedError(loadError)) throw loadError;
+    }
   }, [token, orderId]);
+
+  // Se recarga cada vez que la pantalla vuelve a estar a la vista, igual que la lista.
+  useFocusEffect(
+    useCallback(() => {
+      loadOrder();
+    }, [loadOrder]),
+  );
+
+  // El comercio puede cambiar la preparación mientras el motorista mira el detalle.
+  async function refresh() {
+    setIsRefreshing(true);
+    try {
+      await loadOrder();
+    } finally {
+      setIsRefreshing(false);
+    }
+  }
 
   async function changeStatus(form: OrderStatusChangeForm) {
     setError(undefined);
@@ -83,6 +103,8 @@ export function useOrderDetail(orderId: number) {
     error,
     cancellationReasonError,
     isChangingStatus,
+    isRefreshing,
+    refresh,
     advance,
     cancel,
   };

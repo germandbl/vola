@@ -12,6 +12,7 @@ import {
   canCreateOrdersForAnyOrganization,
   canViewAllOrders,
   canViewOrders,
+  getPreparationStatus,
   type AuthUser,
   type OrderBranchOption,
   type OrderDetail,
@@ -56,21 +57,38 @@ const orderSummaryColumns = {
   driverName: users.name,
   statusChangedAt: orders.statusChangedAt,
   cancellationReason: orders.cancellationReason,
+  preparationStartedAt: orders.preparationStartedAt,
+  readyAt: orders.readyAt,
   createdAt: orders.createdAt,
 };
 
 type OrderSummaryRow = Omit<
   OrderSummary,
-  'driver' | 'statusChangedAt' | 'createdAt'
+  | 'driver'
+  | 'statusChangedAt'
+  | 'preparationStatus'
+  | 'preparationStartedAt'
+  | 'readyAt'
+  | 'createdAt'
 > & {
   driverId: number | null;
   driverName: string | null;
   statusChangedAt: Date;
+  preparationStartedAt: Date | null;
+  readyAt: Date | null;
   createdAt: Date;
 };
 
 function toOrderSummary(row: OrderSummaryRow): OrderSummary {
-  const { driverId, driverName, statusChangedAt, createdAt, ...order } = row;
+  const {
+    driverId,
+    driverName,
+    statusChangedAt,
+    preparationStartedAt,
+    readyAt,
+    createdAt,
+    ...order
+  } = row;
   const driver =
     driverId !== null && driverName !== null
       ? { id: driverId, name: driverName }
@@ -79,6 +97,9 @@ function toOrderSummary(row: OrderSummaryRow): OrderSummary {
     ...order,
     driver,
     statusChangedAt: statusChangedAt.toISOString(),
+    preparationStatus: getPreparationStatus(preparationStartedAt, readyAt),
+    preparationStartedAt: preparationStartedAt?.toISOString() ?? null,
+    readyAt: readyAt?.toISOString() ?? null,
     createdAt: createdAt.toISOString(),
   };
 }

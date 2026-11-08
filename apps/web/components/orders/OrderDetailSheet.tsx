@@ -1,5 +1,6 @@
 "use client";
 
+import { PREPARATION_STATUS_LABEL, type AuthUser } from "@vola/shared";
 import { FormErrorAlert } from "@/components/FormErrorAlert";
 import {
   Sheet,
@@ -10,11 +11,17 @@ import {
 } from "@/components/ui/sheet";
 import { Spinner } from "@/components/ui/spinner";
 import { useOrderDetailSheet } from "@/hooks/use-order-detail-sheet";
+import { Badge } from "@/components/ui/badge";
+import { OrderDetailActions } from "./OrderDetailActions";
 import { OrderDetailBody } from "./OrderDetailBody";
 import { OrderDetailMap } from "./OrderDetailMap";
 import { OrderStatusChip } from "./OrderStatusChip";
 
-export function OrderDetailSheet() {
+interface OrderDetailSheetProps {
+  currentUser: AuthUser;
+}
+
+export function OrderDetailSheet({ currentUser }: OrderDetailSheetProps) {
   const sheet = useOrderDetailSheet();
   const { state } = sheet;
 
@@ -24,7 +31,14 @@ export function OrderDetailSheet() {
         <SheetHeader className="border-b px-5 pt-5 pb-3">
           <div className="flex flex-wrap items-center gap-3">
             <SheetTitle className="text-lg">Orden #{sheet.orderId}</SheetTitle>
-            {state.kind === "loaded" && <OrderStatusChip status={state.order.status} />}
+            {state.kind === "loaded" && (
+              <>
+                <OrderStatusChip status={state.order.status} />
+                <Badge variant="outline">
+                  {PREPARATION_STATUS_LABEL[state.order.preparationStatus]}
+                </Badge>
+              </>
+            )}
           </div>
           <SheetDescription>
             {state.kind === "loaded" ? state.order.organizationName : "Detalle de la orden"}
@@ -55,6 +69,11 @@ export function OrderDetailSheet() {
             <div className="flex-1 overflow-y-auto">
               <OrderDetailBody order={state.order} />
             </div>
+            <OrderDetailActions
+              order={state.order}
+              currentUser={currentUser}
+              onUpdated={sheet.showUpdatedOrder}
+            />
           </>
         )}
       </SheetContent>
