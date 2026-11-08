@@ -7,6 +7,7 @@ import {
 } from "@vola/shared";
 import { useState, useTransition, type FormEvent } from "react";
 import type { SelectedAddress } from "@/hooks/use-address-suggestions";
+import type { Coordinates } from "@/lib/map-defaults";
 import { toFieldErrors } from "@/lib/form-state";
 import type { OrderSaveResult } from "@/lib/order-actions";
 
@@ -46,7 +47,8 @@ export function useOrderForm(save: (form: OrderForm) => Promise<OrderSaveResult>
     customerName: "",
     customerPhone: "",
   });
-  const [address, setAddress] = useState<SelectedAddress | null>(null);
+  const [address, setAddress] = useState("");
+  const [location, setLocation] = useState<Coordinates | null>(null);
   const [items, setItems] = useState(() => [createItemInput()]);
   const [customerDeliveryFee, setCustomerDeliveryFee] = useState("");
   const [result, setResult] = useState<OrderSaveResult>({ fieldErrors: {} });
@@ -69,6 +71,11 @@ export function useOrderForm(save: (form: OrderForm) => Promise<OrderSaveResult>
     setCustomer((current) => ({ ...current, [field]: value }));
   }
 
+  function selectSuggestedAddress(suggestedAddress: SelectedAddress) {
+    setAddress(suggestedAddress.address);
+    setLocation({ latitude: suggestedAddress.latitude, longitude: suggestedAddress.longitude });
+  }
+
   function addItem() {
     setItems((current) => [...current, createItemInput()]);
   }
@@ -87,9 +94,9 @@ export function useOrderForm(save: (form: OrderForm) => Promise<OrderSaveResult>
     return {
       branchId: toNumber(branchId),
       ...customer,
-      deliveryAddress: address?.address ?? "",
-      deliveryLatitude: address?.latitude ?? Number.NaN,
-      deliveryLongitude: address?.longitude ?? Number.NaN,
+      deliveryAddress: address,
+      deliveryLatitude: location?.latitude ?? Number.NaN,
+      deliveryLongitude: location?.longitude ?? Number.NaN,
       items: items.map(toItemForm),
       customerDeliveryFee: toNumber(customerDeliveryFee),
     };
@@ -111,6 +118,7 @@ export function useOrderForm(save: (form: OrderForm) => Promise<OrderSaveResult>
     branchId,
     customer,
     address,
+    location,
     items,
     customerDeliveryFee,
     subtotal,
@@ -121,6 +129,8 @@ export function useOrderForm(save: (form: OrderForm) => Promise<OrderSaveResult>
     setBranchId,
     updateCustomer,
     setAddress,
+    setLocation,
+    selectSuggestedAddress,
     addItem,
     removeItem,
     updateItem,

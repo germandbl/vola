@@ -152,7 +152,7 @@ export type OrderCancellationForm = z.infer<typeof orderCancellationFormSchema>;
 
 const MAX_ITEMS = 50;
 const MAX_ITEM_QUANTITY = 999;
-const CHOOSE_SUGGESTED_ADDRESS = "Elegí una dirección de las sugerencias.";
+const CHOOSE_SUGGESTED_ADDRESS = "Buscá la dirección o ubicala en el mapa.";
 const HUNDREDTHS_PER_UNIT = 100;
 
 const orderItemFormSchema = z.object({

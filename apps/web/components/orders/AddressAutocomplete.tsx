@@ -17,15 +17,24 @@ import { useAddressSuggestions, type SelectedAddress } from "@/hooks/use-address
 interface AddressAutocompleteProps {
   id: string;
   countryCode: string | null;
-  value: SelectedAddress | null;
+  value: string;
   isInvalid: boolean;
   onSelect: (address: SelectedAddress) => void;
+  onWrite: (address: string) => void;
 }
 
-export function AddressAutocomplete({ id, countryCode, value, isInvalid, onSelect }: AddressAutocompleteProps) {
+export function AddressAutocomplete({
+  id,
+  countryCode,
+  value,
+  isInvalid,
+  onSelect,
+  onWrite,
+}: AddressAutocompleteProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [selectError, setSelectError] = useState<string>();
   const suggestions = useAddressSuggestions(countryCode);
+  const writtenAddress = suggestions.query.trim();
 
   async function selectPrediction(prediction: google.maps.places.PlacePrediction) {
     setIsOpen(false);
@@ -36,6 +45,12 @@ export function AddressAutocomplete({ id, countryCode, value, isInvalid, onSelec
       setSelectError("No pudimos ubicar esa dirección. Elegí otra.");
       throw resolveError;
     }
+  }
+
+  function chooseWrittenAddress() {
+    setIsOpen(false);
+    setSelectError(undefined);
+    onWrite(writtenAddress);
   }
 
   return (
@@ -54,7 +69,7 @@ export function AddressAutocomplete({ id, countryCode, value, isInvalid, onSelec
           >
             <MapPin data-icon="inline-start" />
             <span className={value ? "truncate" : "truncate text-muted-foreground"}>
-              {value?.address ?? "Buscá la dirección del cliente"}
+              {value || "Buscá o escribí la dirección del cliente"}
             </span>
           </Button>
         </PopoverTrigger>
@@ -68,6 +83,11 @@ export function AddressAutocomplete({ id, countryCode, value, isInvalid, onSelec
             <CommandList>
               <CommandEmpty>Escribí al menos 3 letras para ver sugerencias.</CommandEmpty>
               <CommandGroup>
+                {writtenAddress && (
+                  <CommandItem value={writtenAddress} onSelect={chooseWrittenAddress}>
+                    Usar “{writtenAddress}”
+                  </CommandItem>
+                )}
                 {suggestions.predictions.map((prediction) => (
                   <CommandItem
                     key={prediction.placeId}

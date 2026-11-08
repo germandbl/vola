@@ -84,9 +84,12 @@ export function OrderForm({ save, branchOptions }: OrderFormProps) {
               <DeliveryAddressPicker
                 id="deliveryAddress"
                 countryCode={countryCode}
-                value={form.address}
+                address={form.address}
+                location={form.location}
                 isInvalid={Boolean(addressError)}
-                onSelect={form.setAddress}
+                onSelectSuggestion={form.selectSuggestedAddress}
+                onWriteAddress={form.setAddress}
+                onMoveLocation={form.setLocation}
               />
               <FieldError>{addressError}</FieldError>
             </Field>
