@@ -6,7 +6,7 @@ import type { ColorValue } from "react-native";
 const TAB_ICON_SIZE = 24;
 
 interface TabIconProps {
-  name: "home" | "user";
+  name: "package" | "user";
   color: ColorValue;
 }
 
@@ -31,8 +31,8 @@ export default function AppLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: "Inicio",
-          tabBarIcon: ({ color }) => <TabIcon name="home" color={color} />,
+          title: "Órdenes",
+          tabBarIcon: ({ color }) => <TabIcon name="package" color={color} />,
         }}
       />
       <Tabs.Screen
