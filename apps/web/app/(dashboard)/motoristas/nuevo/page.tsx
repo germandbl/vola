@@ -1,3 +1,4 @@
+import { canManageAllDrivers } from "@vola/shared";
 import { ArrowLeft, Store } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
@@ -14,13 +15,18 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty";
+import { getCurrentUser } from "@/lib/current-user";
 import { createDriver } from "@/lib/driver-actions";
-import { getDriverMerchantOptions } from "@/lib/organizations-data";
+import { getDriverMerchantOptions, getDriverOwnerOptions } from "@/lib/organizations-data";
 
 export const metadata: Metadata = { title: "Crear motorista · Volá!" };
 
 async function NewDriverContent() {
-  const merchants = await getDriverMerchantOptions();
+  const [owners, merchants, currentUser] = await Promise.all([
+    getDriverOwnerOptions(),
+    getDriverMerchantOptions(),
+    getCurrentUser(),
+  ]);
 
   if (merchants.length === 0) {
     return (
@@ -29,7 +35,7 @@ async function NewDriverContent() {
           <EmptyMedia variant="icon">
             <Store />
           </EmptyMedia>
-          <EmptyTitle>Todavía no tenés comercios</EmptyTitle>
+          <EmptyTitle>Todavía no hay comercios</EmptyTitle>
           <EmptyDescription>
             Cada motorista atiende uno o más comercios. Creá un comercio primero.
           </EmptyDescription>
@@ -41,7 +47,12 @@ async function NewDriverContent() {
   return (
     <Card>
       <CardContent>
-        <DriverForm save={createDriver} merchants={merchants} />
+        <DriverForm
+          save={createDriver}
+          owners={owners}
+          merchants={merchants}
+          isMerchantSearchable={canManageAllDrivers(currentUser)}
+        />
       </CardContent>
     </Card>
   );

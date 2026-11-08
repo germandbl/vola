@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import type { AuthUser } from "./auth.js";
 import {
   canManageAllMerchants,
+  canManageDriversOf,
   canManageMerchants,
   canManageOwnDrivers,
   canViewOrganization,
@@ -99,5 +100,39 @@ describe("canManageOwnDrivers", () => {
       organizationType: OrganizationType.Platform,
     });
     expect(canManageOwnDrivers(platformAdministrator)).toBe(false);
+  });
+});
+
+describe("canManageDriversOf", () => {
+  it("lets Volá! manage drivers of any organization", () => {
+    const platformAgent = createClientUser({
+      organizationId: 1,
+      organizationType: OrganizationType.Platform,
+      permissions: [Permission.ManageDrivers],
+    });
+    expect(canManageDriversOf(platformAgent, 1)).toBe(true);
+    expect(
+      canManageDriversOf(platformAgent, OTHER_CLIENT_ORGANIZATION_ID),
+    ).toBe(true);
+  });
+
+  it("does not let a Volá! agent without the permission manage drivers", () => {
+    const platformAgent = createClientUser({
+      organizationId: 1,
+      organizationType: OrganizationType.Platform,
+    });
+    expect(canManageDriversOf(platformAgent, CLIENT_ORGANIZATION_ID)).toBe(
+      false,
+    );
+  });
+
+  it("keeps a client administrator within their organization", () => {
+    const administrator = createClientUser({ role: RoleName.Administrator });
+    expect(canManageDriversOf(administrator, CLIENT_ORGANIZATION_ID)).toBe(
+      true,
+    );
+    expect(
+      canManageDriversOf(administrator, OTHER_CLIENT_ORGANIZATION_ID),
+    ).toBe(false);
   });
 });

@@ -108,7 +108,7 @@ export function canManageDeliveryFees(user: AuthUser): boolean {
   return hasPlatformPermission(user, Permission.ManageDeliveryFees);
 }
 
-// Por ahora cada cliente gestiona solo sus propios motoristas; los de Volá! se asignan aparte.
+// Un cliente gestiona solo los motoristas de su organización.
 export function canManageOwnDrivers(user: AuthUser): boolean {
   if (user.organizationType !== OrganizationType.Merchant) return false;
   return canActInOwnOrganization(
@@ -116,4 +116,24 @@ export function canManageOwnDrivers(user: AuthUser): boolean {
     user.organizationId,
     Permission.ManageDrivers,
   );
+}
+
+// Volá! gestiona los motoristas de la plataforma y los de cualquier cliente.
+export function canManageAllDrivers(user: AuthUser): boolean {
+  if (canManageAllOrganizations(user)) return true;
+  return hasPlatformPermission(user, Permission.ManageDrivers);
+}
+
+export function canAccessDrivers(user: AuthUser): boolean {
+  if (canManageAllDrivers(user)) return true;
+  return canManageOwnDrivers(user);
+}
+
+export function canManageDriversOf(
+  user: AuthUser,
+  organizationId: number,
+): boolean {
+  if (canManageAllDrivers(user)) return true;
+  if (!canManageOwnDrivers(user)) return false;
+  return user.organizationId === organizationId;
 }

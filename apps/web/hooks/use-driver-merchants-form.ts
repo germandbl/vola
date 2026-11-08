@@ -26,5 +26,11 @@ export function useDriverMerchantsForm(
     });
   }
 
-  return { ...merchantSelection, result, isPending, submit };
+  return {
+    selectedMerchantIds: merchantSelection.selectedMerchantIds,
+    toggleMerchants: merchantSelection.toggleMerchants,
+    result,
+    isPending,
+    submit,
+  };
 }

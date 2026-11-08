@@ -3,12 +3,13 @@ import { useState } from "react";
 export function useMerchantSelection(initialMerchantIds: number[]) {
   const [selectedMerchantIds, setSelectedMerchantIds] = useState(initialMerchantIds);
 
-  function toggleMerchant(merchantId: number, isSelected: boolean) {
+  function toggleMerchants(merchantIds: number[], isSelected: boolean) {
     setSelectedMerchantIds((current) => {
-      if (isSelected) return [...current, merchantId];
-      return current.filter((id) => id !== merchantId);
+      const withoutToggled = current.filter((id) => !merchantIds.includes(id));
+      if (!isSelected) return withoutToggled;
+      return [...withoutToggled, ...merchantIds];
     });
   }
 
-  return { selectedMerchantIds, toggleMerchant };
+  return { selectedMerchantIds, setSelectedMerchantIds, toggleMerchants };
 }
