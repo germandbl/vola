@@ -20,11 +20,13 @@ export default function TabsLayout() {
   return (
     <Tabs
       screenOptions={{
-        headerShown: false,
+        tabBarShowLabel: false,
         tabBarActiveTintColor: colors.tinta,
         tabBarInactiveTintColor: colors.tintaSuave,
         tabBarStyle: { backgroundColor: colors.blanco, borderTopColor: colors.linea },
-        tabBarLabelStyle: { fontFamily: "Outfit_600SemiBold" },
+        headerStyle: { backgroundColor: colors.aire },
+        headerTitleStyle: { fontFamily: "Outfit_700Bold", color: colors.tinta },
+        headerShadowVisible: false,
         sceneStyle: { backgroundColor: colors.aire },
       }}
     >
@@ -32,13 +34,16 @@ export default function TabsLayout() {
         name="index"
         options={{
           title: "Órdenes",
+          tabBarAccessibilityLabel: "Órdenes",
           tabBarIcon: ({ color }) => <TabIcon name="package" color={color} />,
         }}
       />
       <Tabs.Screen
         name="profile"
         options={{
-          title: "Perfil",
+          title: "Mi cuenta",
+          headerShown: false,
+          tabBarAccessibilityLabel: "Mi cuenta",
           tabBarIcon: ({ color }) => <TabIcon name="user" color={color} />,
         }}
       />

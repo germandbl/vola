@@ -4,6 +4,7 @@ import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View } from "re
 import { SafeAreaView } from "react-native-safe-area-context";
 import { AppText } from "@/components/AppText";
 import { ErrorMessage } from "@/components/ErrorMessage";
+import { PasswordField } from "@/components/PasswordField";
 import { PrimaryButton } from "@/components/PrimaryButton";
 import { TextField } from "@/components/TextField";
 import { useSignInForm } from "@/hooks/use-sign-in-form";
@@ -28,8 +29,10 @@ export default function SignInScreen() {
             style={styles.logo}
           />
           <View style={styles.heading}>
-            <AppText variant="titulo2">Inicia sesión</AppText>
-            <AppText tone="tintaSuave">
+            <AppText variant="titulo2" style={styles.centeredText}>
+              Inicia sesión
+            </AppText>
+            <AppText tone="tintaSuave" style={styles.centeredText}>
               Usá el email y la contraseña que te dio tu comercio o Volá!
             </AppText>
           </View>
@@ -45,11 +48,9 @@ export default function SignInScreen() {
             onChangeText={(value) => form.updateField("email", value)}
             error={form.fieldErrors.email}
           />
-          <TextField
+          <PasswordField
             label="Contraseña"
             placeholder="Tu contraseña"
-            secureTextEntry
-            autoCapitalize="none"
             autoComplete="current-password"
             textContentType="password"
             returnKeyType="go"
@@ -77,6 +78,7 @@ const styles = StyleSheet.create({
     gap: spacing[6],
     padding: spacing[4],
   },
-  logo: { height: LOGO_HEIGHT, aspectRatio: LOGO_ASPECT_RATIO, alignSelf: "flex-start" },
+  logo: { height: LOGO_HEIGHT, aspectRatio: LOGO_ASPECT_RATIO, alignSelf: "center" },
   heading: { gap: spacing[2] },
+  centeredText: { textAlign: "center" },
 });

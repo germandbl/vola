@@ -1,15 +1,9 @@
-import Feather from "@expo/vector-icons/Feather";
-import { colors, spacing, type DriverOrder } from "@vola/shared";
+import { colors, radius, spacing, type DriverOrder } from "@vola/shared";
 import { router } from "expo-router";
 import { Pressable, StyleSheet, View } from "react-native";
-import { formatMoney } from "@/lib/format";
+import { formatMoney, formatTime } from "@/lib/format";
 import { AppText } from "./AppText";
-import { Card } from "./Card";
-import { DirectionsLink } from "./DirectionsLink";
 import { OrderStatusChip } from "./OrderStatusChip";
-import { PhoneLink } from "./PhoneLink";
-
-const ICON_SIZE = 18;
 
 interface OrderCardProps {
   order: DriverOrder;
@@ -17,63 +11,54 @@ interface OrderCardProps {
 
 export function OrderCard({ order }: OrderCardProps) {
   return (
-    <Card style={styles.card}>
+    <Pressable
+      accessibilityRole="button"
+      accessibilityHint="Abre el detalle de la orden"
+      onPress={() => router.push(`/orders/${order.id}`)}
+      style={({ pressed }) => [styles.card, pressed && styles.pressed]}
+    >
       <View style={styles.header}>
-        <AppText variant="titulo3">Orden #{order.id}</AppText>
+        <View style={styles.title}>
+          <AppText variant="titulo3" numberOfLines={1}>
+            Orden #{order.id}
+          </AppText>
+          <AppText variant="pequeno" tone="tintaSuave" numberOfLines={1}>
+            {order.customerName}
+          </AppText>
+        </View>
         <OrderStatusChip status={order.status} />
       </View>
-      <AppText variant="pequeno" tone="tintaSuave">
-        Recogé en {order.merchantName} · {order.branchName}
+
+      <View style={styles.divider} />
+
+      <AppText variant="pequeno" numberOfLines={1}>
+        {order.merchantName} · {order.branchName}
       </AppText>
-
-      <View style={styles.section}>
-        <AppText>{order.customerName}</AppText>
-        <PhoneLink phoneNumber={order.customerPhone} />
-        <DirectionsLink
-          address={order.deliveryAddress}
-          latitude={order.deliveryLatitude}
-          longitude={order.deliveryLongitude}
-        />
+      <View style={styles.footer}>
+        <AppText variant="pequeno" style={styles.total}>
+          {formatMoney(order.total, order.currency)}
+        </AppText>
+        <AppText variant="pequeno" tone="tintaSuave">
+          Asignada a las {formatTime(order.assignedAt)}
+        </AppText>
       </View>
-
-      <View style={styles.totalRow}>
-        <AppText tone="tintaSuave">Total a cobrar</AppText>
-        <AppText variant="titulo3">{formatMoney(order.total, order.currency)}</AppText>
-      </View>
-
-      <Pressable
-        accessibilityRole="button"
-        onPress={() => router.push(`/orders/${order.id}`)}
-        style={styles.detailButton}
-      >
-        <AppText tone="accion">Ver detalle</AppText>
-        <Feather name="chevron-right" size={ICON_SIZE} color={colors.accion} />
-      </Pressable>
-    </Card>
+    </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
-  card: { gap: spacing[4] },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
+  card: {
     gap: spacing[2],
+    padding: spacing[4],
+    borderRadius: radius.md,
+    borderWidth: 1,
+    borderColor: colors.linea,
+    backgroundColor: colors.blanco,
   },
-  section: { gap: spacing[2] },
-  totalRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingTop: spacing[4],
-    borderTopWidth: 1,
-    borderTopColor: colors.linea,
-  },
-  detailButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "flex-end",
-    gap: spacing[1],
-  },
+  pressed: { backgroundColor: colors.bruma },
+  header: { flexDirection: "row", alignItems: "flex-start", gap: spacing[2] },
+  title: { flex: 1 },
+  divider: { height: 1, backgroundColor: colors.linea },
+  footer: { flexDirection: "row", justifyContent: "space-between", alignItems: "flex-end" },
+  total: { fontFamily: "Outfit_600SemiBold" },
 });
