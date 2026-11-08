@@ -5,6 +5,7 @@ import {
   countrySchema,
   deliveryFeeBasisSettingSchema,
   deliveryFeeRateSchema,
+  driverMerchantSchema,
   driverSummarySchema,
   merchantSchema,
   orderBranchOptionSchema,
@@ -17,6 +18,7 @@ import {
   type Country,
   type DeliveryFeeBasisSetting,
   type DeliveryFeeRate,
+  type DriverMerchant,
   type DriverSummary,
   type Merchant,
   type OrderBranchOption,
@@ -145,4 +147,12 @@ export function getOrderBranchOptions(): Promise<OrderBranchOption[]> {
 
 export function getOwnDrivers(): Promise<DriverSummary[]> {
   return getFromApi("/drivers", z.array(driverSummarySchema));
+}
+
+export function getOwnDriver(driverId: number): Promise<DriverSummary> {
+  return getFromApi(`/drivers/${driverId}`, driverSummarySchema);
+}
+
+export function getDriverMerchantOptions(): Promise<DriverMerchant[]> {
+  return getFromApi("/drivers/merchant-options", z.array(driverMerchantSchema));
 }
