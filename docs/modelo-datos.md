@@ -19,6 +19,7 @@ erDiagram
   branches ||--o{ orders : "despacha"
   users ||--o{ orders : "crea"
   orders ||--o{ order_items : "lleva"
+  drivers ||--o{ orders : "entrega"
   delivery_fee_rates ||--o{ delivery_fee_rate_ranges : "tiene"
   roles ||--o{ users : "asigna"
   roles ||--o{ role_permissions : "tiene"
@@ -166,6 +167,8 @@ erDiagram
     numeric vola_delivery_fee
     delivery_fee_bases delivery_fee_basis
     numeric distance_km
+    bigint driver_id FK
+    timestamp assigned_at
     timestamp created_at
   }
   order_items {
@@ -220,7 +223,7 @@ Todas las tablas tienen `id` como llave primaria (bigint generado por la base) y
 - Llaves foráneas: role_id → roles. Al borrar el rol: se borran sus permisos.
 - NOT NULL: role_id, permission_key.
 - UNIQUE: role_id con permission_key.
-- CHECK: permission_key solo puede ser organizations.view, delivery_fees.manage, merchants.manage, orders.create o drivers.manage.
+- CHECK: permission_key solo puede ser organizations.view, delivery_fees.manage, merchants.manage, orders.create, drivers.manage u orders.assign.
 
 ### users
 
@@ -234,7 +237,7 @@ Todas las tablas tienen `id` como llave primaria (bigint generado por la base) y
 - Llaves foráneas: user_id → users. Al borrar el usuario: se borran sus permisos.
 - NOT NULL: user_id, permission_key.
 - UNIQUE: user_id con permission_key.
-- CHECK: permission_key solo puede ser organizations.view, delivery_fees.manage, merchants.manage, orders.create o drivers.manage.
+- CHECK: permission_key solo puede ser organizations.view, delivery_fees.manage, merchants.manage, orders.create, drivers.manage u orders.assign.
 
 ### drivers
 
@@ -315,10 +318,10 @@ Todas las tablas tienen `id` como llave primaria (bigint generado por la base) y
 
 ### orders
 
-- Llaves foráneas: organization_id → organizations, branch_id → branches, customer_id → customers y created_by_user_id → users. Al borrar cualquiera de ellos: se impide si tiene pedidos.
-- NOT NULL: todo menos distance_km, que solo se llena cuando el costo de Volá! se calculó por distancia.
+- Llaves foráneas: organization_id → organizations, branch_id → branches, customer_id → customers, created_by_user_id → users y driver_id → drivers. Al borrar cualquiera de ellos: se impide si tiene pedidos.
+- NOT NULL: todo menos distance_km, que solo se llena cuando el costo de Volá! se calculó por distancia, y driver_id y assigned_at, que se llenan al asignar la orden a un motorista.
 - UNIQUE: ninguna.
-- CHECK: status solo puede ser new, preparing, on_the_way, delivered o cancelled. delivery_address no puede estar vacía. Los montos no pueden ser negativos. total es subtotal más customer_delivery_fee.
+- CHECK: status solo puede ser new, preparing, on_the_way, delivered o cancelled. delivery_address no puede estar vacía. Los montos no pueden ser negativos. total es subtotal más customer_delivery_fee. driver_id y assigned_at se llenan juntos o ninguno.
 
 ### order_items
 

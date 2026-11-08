@@ -91,6 +91,7 @@ export const SEED_ORGANIZATIONS: SeedOrganization[] = [
           Permission.ManageDeliveryFees,
           Permission.ManageMerchants,
           Permission.CreateOrders,
+          Permission.AssignOrders,
         ],
       },
       {
@@ -172,7 +173,11 @@ export const SEED_ORGANIZATIONS: SeedOrganization[] = [
         phoneNumber: '+50433087719',
         role: RoleName.Agent,
         teamName: 'Despacho',
-        permissions: [Permission.CreateOrders, Permission.ManageMerchants],
+        permissions: [
+          Permission.CreateOrders,
+          Permission.AssignOrders,
+          Permission.ManageMerchants,
+        ],
       },
       {
         name: 'Óscar Mendoza',

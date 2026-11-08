@@ -137,3 +137,12 @@ export function canManageDriversOf(
   if (!canManageOwnDrivers(user)) return false;
   return user.organizationId === organizationId;
 }
+
+export function canAssignOrders(
+  user: AuthUser,
+  organizationId: number,
+): boolean {
+  if (user.role === RoleName.Superadmin) return true;
+  if (hasPlatformPermission(user, Permission.AssignOrders)) return true;
+  return canActInOwnOrganization(user, organizationId, Permission.AssignOrders);
+}

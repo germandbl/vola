@@ -1,0 +1,204 @@
+{
+  "type": "diff",
+  "version": "9",
+  "dialect": "postgres",
+  "id": "2febfe5f-7d4e-4d04-9290-eb2ca30f1453",
+  "prevIds": [
+    "8160e082-23a1-4744-83dc-0f5c3639d13c"
+  ],
+  "footprints": [
+    {
+      "statementType": "add_column",
+      "statementTarget": [
+        "column",
+        "public",
+        "orders",
+        "driver_id"
+      ],
+      "writes": [
+        "s|col|public.orders.driver_id",
+        "n|col|public.orders.driver_id",
+        "e|col|public.orders.driver_id"
+      ],
+      "reads": [
+        "n|tbl|public.orders",
+        "n|sch|public"
+      ]
+    },
+    {
+      "statementType": "add_column",
+      "statementTarget": [
+        "column",
+        "public",
+        "orders",
+        "assigned_at"
+      ],
+      "writes": [
+        "s|col|public.orders.assigned_at",
+        "n|col|public.orders.assigned_at",
+        "e|col|public.orders.assigned_at"
+      ],
+      "reads": [
+        "n|tbl|public.orders",
+        "n|sch|public"
+      ]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "orders"
+      ],
+      "writes": [
+        "s|fk|public.orders.orders_driver_id_drivers_id_fkey",
+        "n|fk|public.orders.orders_driver_id_drivers_id_fkey",
+        "e|fk|public.orders.orders_driver_id_drivers_id_fkey",
+        "n|con|public.orders.orders_driver_id_drivers_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.orders",
+        "n|sch|public",
+        "n|tbl|public.drivers",
+        "n|sch|public",
+        "n|col|public.orders.driver_id",
+        "n|col|public.drivers.id",
+        "e|uniqueness|public.drivers.id"
+      ]
+    },
+    {
+      "statementType": "add_check",
+      "statementTarget": [
+        "table",
+        "public",
+        "orders"
+      ],
+      "writes": [
+        "s|ck|public.orders.orders_driver_assigned_together",
+        "n|ck|public.orders.orders_driver_assigned_together",
+        "e|ck|public.orders.orders_driver_assigned_together",
+        "n|con|public.orders.orders_driver_assigned_together"
+      ],
+      "reads": [
+        "n|tbl|public.orders",
+        "n|sch|public",
+        "n|col|public.orders.driver_id",
+        "n|col|public.orders.assigned_at"
+      ]
+    },
+    {
+      "statementType": "alter_check",
+      "statementTarget": [
+        "table",
+        "public",
+        "role_permissions"
+      ],
+      "writes": [
+        "s|ck|public.role_permissions.role_permissions_permission_key_known"
+      ],
+      "reads": [
+        "n|tbl|public.role_permissions",
+        "n|sch|public",
+        "n|col|public.role_permissions.permission_key",
+        "e|col|public.role_permissions.permission_key"
+      ],
+      "sqlHash": "8858a869289fb042"
+    },
+    {
+      "statementType": "alter_check",
+      "statementTarget": [
+        "table",
+        "public",
+        "user_permissions"
+      ],
+      "writes": [
+        "s|ck|public.user_permissions.user_permissions_permission_key_known"
+      ],
+      "reads": [
+        "n|tbl|public.user_permissions",
+        "n|sch|public",
+        "n|col|public.user_permissions.permission_key",
+        "e|col|public.user_permissions.permission_key"
+      ],
+      "sqlHash": "ce0cdf163cb20276"
+    }
+  ],
+  "deltas": [
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "orders",
+        "name": "driver_id",
+        "type": "bigint",
+        "typeSchema": null,
+        "notNull": false,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "orders",
+        "name": "assigned_at",
+        "type": "timestamp",
+        "typeSchema": null,
+        "notNull": false,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "orders",
+        "name": "orders_driver_id_drivers_id_fkey",
+        "nameExplicit": false,
+        "columns": [
+          "driver_id"
+        ],
+        "schemaTo": "public",
+        "tableTo": "drivers",
+        "columnsTo": [
+          "id"
+        ],
+        "onUpdate": "NO ACTION",
+        "onDelete": "RESTRICT",
+        "entityType": "fks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "orders",
+        "name": "orders_driver_assigned_together",
+        "value": "(\"driver_id\" IS NULL) = (\"assigned_at\" IS NULL)",
+        "entityType": "checks"
+      }
+    },
+    {
+      "op": "alter",
+      "key": "checks\u0000[\"public\",\"role_permissions\",\"role_permissions_permission_key_known\"]",
+      "set": {
+        "value": "\"permission_key\" IN ('organizations.view', 'delivery_fees.manage', 'merchants.manage', 'orders.create', 'drivers.manage', 'orders.assign')"
+      }
+    },
+    {
+      "op": "alter",
+      "key": "checks\u0000[\"public\",\"user_permissions\",\"user_permissions_permission_key_known\"]",
+      "set": {
+        "value": "\"permission_key\" IN ('organizations.view', 'delivery_fees.manage', 'merchants.manage', 'orders.create', 'drivers.manage', 'orders.assign')"
+      }
+    }
+  ]
+}

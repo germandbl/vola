@@ -1,0 +1,6 @@
+ALTER TABLE "orders" ADD COLUMN "driver_id" bigint;--> statement-breakpoint
+ALTER TABLE "orders" ADD COLUMN "assigned_at" timestamp;--> statement-breakpoint
+ALTER TABLE "orders" ADD CONSTRAINT "orders_driver_id_drivers_id_fkey" FOREIGN KEY ("driver_id") REFERENCES "drivers"("id") ON DELETE RESTRICT;--> statement-breakpoint
+ALTER TABLE "orders" ADD CONSTRAINT "orders_driver_assigned_together" CHECK (("driver_id" IS NULL) = ("assigned_at" IS NULL));--> statement-breakpoint
+ALTER TABLE "role_permissions" DROP CONSTRAINT "role_permissions_permission_key_known", ADD CONSTRAINT "role_permissions_permission_key_known" CHECK ("permission_key" IN ('organizations.view', 'delivery_fees.manage', 'merchants.manage', 'orders.create', 'drivers.manage', 'orders.assign'));--> statement-breakpoint
+ALTER TABLE "user_permissions" DROP CONSTRAINT "user_permissions_permission_key_known", ADD CONSTRAINT "user_permissions_permission_key_known" CHECK ("permission_key" IN ('organizations.view', 'delivery_fees.manage', 'merchants.manage', 'orders.create', 'drivers.manage', 'orders.assign'));
