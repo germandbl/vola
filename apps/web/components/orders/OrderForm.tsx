@@ -17,7 +17,7 @@ import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
 import { useOrderForm } from "@/hooks/use-order-form";
 import type { OrderSaveResult } from "@/lib/order-actions";
-import { AddressAutocomplete } from "./AddressAutocomplete";
+import { DeliveryAddressPicker } from "./DeliveryAddressPicker";
 import { BranchSelect } from "./BranchSelect";
 import { OrderItemFields } from "./OrderItemFields";
 import { OrderTotals } from "./OrderTotals";
@@ -81,7 +81,7 @@ export function OrderForm({ save, branchOptions }: OrderFormProps) {
             </Field>
             <Field data-invalid={Boolean(addressError)}>
               <FieldLabel htmlFor="deliveryAddress">Dirección de entrega</FieldLabel>
-              <AddressAutocomplete
+              <DeliveryAddressPicker
                 id="deliveryAddress"
                 countryCode={countryCode}
                 value={form.address}

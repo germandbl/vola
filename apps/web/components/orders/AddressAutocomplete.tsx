@@ -1,9 +1,7 @@
 "use client";
 
-import { APIProvider } from "@vis.gl/react-google-maps";
 import { MapPin } from "lucide-react";
 import { useState } from "react";
-import { FormErrorAlert } from "@/components/FormErrorAlert";
 import { Button } from "@/components/ui/button";
 import {
   Command,
@@ -15,11 +13,6 @@ import {
 } from "@/components/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useAddressSuggestions, type SelectedAddress } from "@/hooks/use-address-suggestions";
-import {
-  MAP_AUTH_FAILURE_MESSAGE,
-  MISSING_MAPS_KEY_MESSAGE,
-  useMapAuthFailure,
-} from "@/hooks/use-map-auth-failure";
 
 interface AddressAutocompleteProps {
   id: string;
@@ -29,7 +22,7 @@ interface AddressAutocompleteProps {
   onSelect: (address: SelectedAddress) => void;
 }
 
-function AddressCombobox({ id, countryCode, value, isInvalid, onSelect }: AddressAutocompleteProps) {
+export function AddressAutocomplete({ id, countryCode, value, isInvalid, onSelect }: AddressAutocompleteProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [selectError, setSelectError] = useState<string>();
   const suggestions = useAddressSuggestions(countryCode);
@@ -93,18 +86,5 @@ function AddressCombobox({ id, countryCode, value, isInvalid, onSelect }: Addres
         <p className="text-sm text-destructive">{suggestions.error ?? selectError}</p>
       )}
     </div>
-  );
-}
-
-export function AddressAutocomplete(props: AddressAutocompleteProps) {
-  const hasAuthFailed = useMapAuthFailure();
-  const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
-  if (hasAuthFailed) return <FormErrorAlert message={MAP_AUTH_FAILURE_MESSAGE} />;
-  if (!apiKey) return <FormErrorAlert message={MISSING_MAPS_KEY_MESSAGE} />;
-
-  return (
-    <APIProvider apiKey={apiKey}>
-      <AddressCombobox {...props} />
-    </APIProvider>
   );
 }
