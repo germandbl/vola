@@ -28,6 +28,15 @@ export function formatDate(isoDate: string): string {
   return dateFormatter.format(new Date(isoDate));
 }
 
+const dateTimeFormatter = new Intl.DateTimeFormat("es-HN", {
+  dateStyle: "medium",
+  timeStyle: "short",
+});
+
+export function formatDateTime(isoDate: string): string {
+  return dateTimeFormatter.format(new Date(isoDate));
+}
+
 export function formatMoney(amount: number, currency: string | null): string {
   if (!currency) return amount.toFixed(2);
   return new Intl.NumberFormat("es-HN", {

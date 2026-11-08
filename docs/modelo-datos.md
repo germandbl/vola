@@ -20,6 +20,8 @@ erDiagram
   users ||--o{ orders : "crea"
   orders ||--o{ order_items : "lleva"
   drivers ||--o{ orders : "entrega"
+  orders ||--o{ order_status_changes : "cambia"
+  users ||--o{ order_status_changes : "hace"
   delivery_fee_rates ||--o{ delivery_fee_rate_ranges : "tiene"
   roles ||--o{ users : "asigna"
   roles ||--o{ role_permissions : "tiene"
@@ -169,6 +171,16 @@ erDiagram
     numeric distance_km
     bigint driver_id FK
     timestamp assigned_at
+    timestamp status_changed_at
+    varchar cancellation_reason
+    timestamp created_at
+  }
+  order_status_changes {
+    bigint id PK
+    bigint order_id FK
+    order_statuses status
+    varchar cancellation_reason
+    bigint changed_by_user_id FK
     timestamp created_at
   }
   order_items {
@@ -319,9 +331,16 @@ Todas las tablas tienen `id` como llave primaria (bigint generado por la base) y
 ### orders
 
 - Llaves foráneas: organization_id → organizations, branch_id → branches, customer_id → customers, created_by_user_id → users y driver_id → drivers. Al borrar cualquiera de ellos: se impide si tiene pedidos.
-- NOT NULL: todo menos distance_km, que solo se llena cuando el costo de Volá! se calculó por distancia, y driver_id y assigned_at, que se llenan al asignar la orden a un motorista.
+- NOT NULL: todo menos distance_km, que solo se llena cuando el costo de Volá! se calculó por distancia, driver_id y assigned_at, que se llenan al asignar la orden a un motorista, y cancellation_reason, que solo tiene la orden cancelada. status_changed_at guarda la hora del último cambio de estado.
 - UNIQUE: ninguna.
-- CHECK: status solo puede ser new, preparing, on_the_way, delivered o cancelled. delivery_address no puede estar vacía. Los montos no pueden ser negativos. total es subtotal más customer_delivery_fee. driver_id y assigned_at se llenan juntos o ninguno.
+- CHECK: status solo puede ser new, preparing, heading_to_branch, at_branch, on_the_way, delivered o cancelled. cancellation_reason se llena solo cuando status es cancelled. delivery_address no puede estar vacía. Los montos no pueden ser negativos. total es subtotal más customer_delivery_fee. driver_id y assigned_at se llenan juntos o ninguno.
+
+### order_status_changes
+
+- Llaves foráneas: order_id → orders y changed_by_user_id → users. Al borrar la orden: se borra su historial. Al borrar el usuario: se impide si cambió estados.
+- NOT NULL: order_id, status, changed_by_user_id. cancellation_reason solo en cambios a cancelled.
+- UNIQUE: ninguna.
+- CHECK: cancellation_reason se llena solo cuando status es cancelled y no puede estar vacío.
 
 ### order_items
 

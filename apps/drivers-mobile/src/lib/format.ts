@@ -8,3 +8,9 @@ export function formatMoney(amount: number, currency: string | null): string {
     currencyDisplay: "narrowSymbol",
   }).format(amount);
 }
+
+export function formatTime(isoDate: string): string {
+  return new Intl.DateTimeFormat("es-HN", { hour: "numeric", minute: "2-digit" }).format(
+    new Date(isoDate),
+  );
+}

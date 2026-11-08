@@ -5,9 +5,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import {
-  ACTIVE_ORDER_STATUSES,
   PAGE_SIZE,
-  RoleName,
   calculateOrderSubtotal,
   calculateOrderTotal,
   canCreateOrders,
@@ -15,13 +13,12 @@ import {
   canViewAllOrders,
   canViewOrders,
   type AuthUser,
-  type DriverOrder,
   type OrderBranchOption,
   type OrderForm,
   type OrderSummary,
   type Paginated,
 } from '@vola/shared';
-import { and, asc, desc, eq, inArray, type SQL } from 'drizzle-orm';
+import { asc, desc, eq, type SQL } from 'drizzle-orm';
 import { branches } from '../branches/branches.schema.js';
 import { createFieldValidationException } from '../common/field-validation.js';
 import { getPageOffset, toPaginated } from '../common/pagination.js';
@@ -55,22 +52,33 @@ const orderSummaryColumns = {
   distanceKm: orders.distanceKm,
   driverId: orders.driverId,
   driverName: users.name,
+  statusChangedAt: orders.statusChangedAt,
+  cancellationReason: orders.cancellationReason,
   createdAt: orders.createdAt,
 };
 
-type OrderSummaryRow = Omit<OrderSummary, 'driver' | 'createdAt'> & {
+type OrderSummaryRow = Omit<
+  OrderSummary,
+  'driver' | 'statusChangedAt' | 'createdAt'
+> & {
   driverId: number | null;
   driverName: string | null;
+  statusChangedAt: Date;
   createdAt: Date;
 };
 
 function toOrderSummary(row: OrderSummaryRow): OrderSummary {
-  const { driverId, driverName, createdAt, ...order } = row;
+  const { driverId, driverName, statusChangedAt, createdAt, ...order } = row;
   const driver =
     driverId !== null && driverName !== null
       ? { id: driverId, name: driverName }
       : null;
-  return { ...order, driver, createdAt: createdAt.toISOString() };
+  return {
+    ...order,
+    driver,
+    statusChangedAt: statusChangedAt.toISOString(),
+    createdAt: createdAt.toISOString(),
+  };
 }
 
 interface NewOrder {
@@ -105,51 +113,6 @@ export class OrdersService {
       .offset(getPageOffset(page));
     const totalItems = await this.database.$count(orders, visibleOrders);
     return toPaginated(rows.map(toOrderSummary), page, totalItems);
-  }
-
-  // Solo las órdenes activas: las entregadas o canceladas ya no son trabajo pendiente del motorista.
-  async findAssignedToDriver(user: AuthUser): Promise<DriverOrder[]> {
-    if (user.role !== RoleName.Driver) {
-      throw new ForbiddenException('Only drivers have assigned orders');
-    }
-    const rows = await this.database
-      .select({
-        id: orders.id,
-        status: orders.status,
-        merchantName: merchants.name,
-        branchName: branches.name,
-        customerName: customers.name,
-        customerPhone: customers.phoneNumber,
-        deliveryAddress: orders.deliveryAddress,
-        deliveryLatitude: orders.deliveryLatitude,
-        deliveryLongitude: orders.deliveryLongitude,
-        total: orders.total,
-        currency: countries.currency,
-        assignedAt: orders.assignedAt,
-      })
-      .from(orders)
-      .innerJoin(drivers, eq(orders.driverId, drivers.id))
-      .innerJoin(customers, eq(orders.customerId, customers.id))
-      .innerJoin(branches, eq(orders.branchId, branches.id))
-      .innerJoin(merchants, eq(branches.merchantId, merchants.id))
-      .innerJoin(organizations, eq(orders.organizationId, organizations.id))
-      .leftJoin(countries, eq(organizations.countryId, countries.id))
-      .where(
-        and(
-          eq(drivers.userId, user.id),
-          inArray(orders.status, ACTIVE_ORDER_STATUSES),
-        ),
-      )
-      .orderBy(asc(orders.assignedAt), asc(orders.id));
-
-    return rows.map(({ assignedAt, ...order }) => {
-      if (assignedAt === null) {
-        throw new Error(
-          `Order ${order.id} has a driver but no assignment date`,
-        );
-      }
-      return { ...order, assignedAt: assignedAt.toISOString() };
-    });
   }
 
   async findBranchOptions(user: AuthUser): Promise<OrderBranchOption[]> {

@@ -1,0 +1,393 @@
+{
+  "type": "diff",
+  "version": "9",
+  "dialect": "postgres",
+  "id": "41cc8c4d-5461-4c90-9437-5ef23397cb60",
+  "prevIds": [
+    "2febfe5f-7d4e-4d04-9290-eb2ca30f1453"
+  ],
+  "footprints": [
+    {
+      "statementType": "alter_enum",
+      "statementTarget": [
+        "enum",
+        "public",
+        "order_statuses"
+      ],
+      "writes": [
+        "s|enum|public.order_statuses"
+      ],
+      "reads": [
+        "n|sch|public"
+      ]
+    },
+    {
+      "statementType": "create_table",
+      "statementTarget": [
+        "table",
+        "public",
+        "order_status_changes"
+      ],
+      "writes": [
+        "s|tbl|public.order_status_changes",
+        "n|tbl|public.order_status_changes",
+        "e|tbl|public.order_status_changes",
+        "n|rel|public.order_status_changes",
+        "n|type|public.order_status_changes",
+        "n|rel|public.order_status_changes_pkey"
+      ],
+      "reads": [
+        "n|sch|public",
+        "n|enum|public.order_statuses"
+      ]
+    },
+    {
+      "statementType": "add_column",
+      "statementTarget": [
+        "column",
+        "public",
+        "orders",
+        "status_changed_at"
+      ],
+      "writes": [
+        "s|col|public.orders.status_changed_at",
+        "n|col|public.orders.status_changed_at",
+        "e|col|public.orders.status_changed_at"
+      ],
+      "reads": [
+        "n|tbl|public.orders",
+        "n|sch|public"
+      ]
+    },
+    {
+      "statementType": "add_column",
+      "statementTarget": [
+        "column",
+        "public",
+        "orders",
+        "cancellation_reason"
+      ],
+      "writes": [
+        "s|col|public.orders.cancellation_reason",
+        "n|col|public.orders.cancellation_reason",
+        "e|col|public.orders.cancellation_reason"
+      ],
+      "reads": [
+        "n|tbl|public.orders",
+        "n|sch|public"
+      ]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "order_status_changes"
+      ],
+      "writes": [
+        "s|fk|public.order_status_changes.order_status_changes_order_id_orders_id_fkey",
+        "n|fk|public.order_status_changes.order_status_changes_order_id_orders_id_fkey",
+        "e|fk|public.order_status_changes.order_status_changes_order_id_orders_id_fkey",
+        "n|con|public.order_status_changes.order_status_changes_order_id_orders_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.order_status_changes",
+        "n|sch|public",
+        "n|tbl|public.orders",
+        "n|sch|public",
+        "n|col|public.order_status_changes.order_id",
+        "n|col|public.orders.id",
+        "e|uniqueness|public.orders.id"
+      ]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "order_status_changes"
+      ],
+      "writes": [
+        "s|fk|public.order_status_changes.order_status_changes_changed_by_user_id_users_id_fkey",
+        "n|fk|public.order_status_changes.order_status_changes_changed_by_user_id_users_id_fkey",
+        "e|fk|public.order_status_changes.order_status_changes_changed_by_user_id_users_id_fkey",
+        "n|con|public.order_status_changes.order_status_changes_changed_by_user_id_users_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.order_status_changes",
+        "n|sch|public",
+        "n|tbl|public.users",
+        "n|sch|public",
+        "n|col|public.order_status_changes.changed_by_user_id",
+        "n|col|public.users.id",
+        "e|uniqueness|public.users.id"
+      ]
+    },
+    {
+      "statementType": "add_check",
+      "statementTarget": [
+        "table",
+        "public",
+        "orders"
+      ],
+      "writes": [
+        "s|ck|public.orders.orders_cancellation_reason_only_when_cancelled",
+        "n|ck|public.orders.orders_cancellation_reason_only_when_cancelled",
+        "e|ck|public.orders.orders_cancellation_reason_only_when_cancelled",
+        "n|con|public.orders.orders_cancellation_reason_only_when_cancelled"
+      ],
+      "reads": [
+        "n|tbl|public.orders",
+        "n|sch|public",
+        "n|col|public.orders.status",
+        "n|col|public.orders.cancellation_reason"
+      ]
+    }
+  ],
+  "deltas": [
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "name": "order_status_changes",
+        "isRlsEnabled": false,
+        "entityType": "tables"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "order_status_changes",
+        "name": "id",
+        "type": "bigint",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": {
+          "type": "always",
+          "name": "order_status_changes_id_seq",
+          "increment": "1",
+          "startWith": "1",
+          "minValue": "1",
+          "maxValue": "9223372036854775807",
+          "cache": 1,
+          "cycle": false
+        },
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "order_status_changes",
+        "name": "order_id",
+        "type": "bigint",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "order_status_changes",
+        "name": "status",
+        "type": "order_statuses",
+        "typeSchema": "public",
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "order_status_changes",
+        "name": "cancellation_reason",
+        "type": "varchar",
+        "typeSchema": null,
+        "notNull": false,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "order_status_changes",
+        "name": "changed_by_user_id",
+        "type": "bigint",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "order_status_changes",
+        "name": "created_at",
+        "type": "timestamp",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": "now()",
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "orders",
+        "name": "status_changed_at",
+        "type": "timestamp",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": "now()",
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "orders",
+        "name": "cancellation_reason",
+        "type": "varchar",
+        "typeSchema": null,
+        "notNull": false,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "order_status_changes",
+        "name": "order_status_changes_order_id_orders_id_fkey",
+        "nameExplicit": false,
+        "columns": [
+          "order_id"
+        ],
+        "schemaTo": "public",
+        "tableTo": "orders",
+        "columnsTo": [
+          "id"
+        ],
+        "onUpdate": "NO ACTION",
+        "onDelete": "CASCADE",
+        "entityType": "fks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "order_status_changes",
+        "name": "order_status_changes_changed_by_user_id_users_id_fkey",
+        "nameExplicit": false,
+        "columns": [
+          "changed_by_user_id"
+        ],
+        "schemaTo": "public",
+        "tableTo": "users",
+        "columnsTo": [
+          "id"
+        ],
+        "onUpdate": "NO ACTION",
+        "onDelete": "RESTRICT",
+        "entityType": "fks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "order_status_changes",
+        "name": "order_status_changes_pkey",
+        "columns": [
+          "id"
+        ],
+        "nameExplicit": false,
+        "entityType": "pks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "order_status_changes",
+        "name": "order_status_changes_cancellation_reason_only_when_cancelled",
+        "value": "(\"status\" = 'cancelled') = (\"cancellation_reason\" IS NOT NULL)",
+        "entityType": "checks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "order_status_changes",
+        "name": "order_status_changes_cancellation_reason_not_blank",
+        "value": "btrim(\"cancellation_reason\") <> ''",
+        "entityType": "checks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "orders",
+        "name": "orders_cancellation_reason_only_when_cancelled",
+        "value": "(\"status\" = 'cancelled') = (\"cancellation_reason\" IS NOT NULL)",
+        "entityType": "checks"
+      }
+    },
+    {
+      "op": "alter",
+      "key": "enums\u0000[\"public\",\"order_statuses\"]",
+      "set": {
+        "values": [
+          "new",
+          "preparing",
+          "heading_to_branch",
+          "at_branch",
+          "on_the_way",
+          "delivered",
+          "cancelled"
+        ]
+      }
+    }
+  ]
+}
