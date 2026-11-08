@@ -8,7 +8,7 @@ erDiagram
   countries ||--o{ drivers : "tiene"
   organizations ||--o{ users : "tiene"
   organizations ||--o{ teams : "tiene"
-  organizations ||--o{ driver_merchant_assignments : "recibe"
+  merchants ||--o{ driver_merchant_assignments : "recibe"
   organizations ||--o{ merchants : "tiene"
   merchants ||--o| delivery_fee_rates : "cobra"
   merchants ||--o{ order_count_fee_ranges : "cobra"
@@ -79,7 +79,7 @@ erDiagram
   driver_merchant_assignments {
     bigint id PK
     bigint driver_id FK
-    bigint organization_id FK
+    bigint merchant_id FK
     timestamp created_at
   }
   teams {
@@ -187,7 +187,7 @@ erDiagram
 Relaciones:
 - Uno a muchos: un país tiene muchas organizaciones y muchos motoristas; una organización tiene muchos usuarios, equipos y comercios; un rol tiene muchos usuarios y permisos; un usuario tiene muchos permisos y sesiones; una tarifa de envío tiene muchos rangos; un comercio tiene muchos rangos de tarifa por cantidad de pedidos y muchas sucursales; una sucursal tiene un horario por cada día de la semana; una organización tiene muchos clientes; un cliente, una sucursal y un usuario tienen muchos pedidos; un pedido tiene muchos productos.
 - Uno a uno: un usuario puede ser un motorista; un comercio puede tener una tarifa de envío.
-- Muchos a muchos: motoristas y comercios, a través de driver_merchant_assignments; usuarios y equipos, a través de team_members.
+- Muchos a muchos: motoristas y comercios, a través de driver_merchant_assignments (un motorista atiende uno o más comercios); usuarios y equipos, a través de team_members.
 
 ## Diccionario de datos
 
@@ -244,9 +244,9 @@ Todas las tablas tienen `id` como llave primaria (bigint generado por la base) y
 
 ### driver_merchant_assignments
 
-- Llaves foráneas: driver_id → drivers y organization_id → organizations. Al borrar el motorista o la organización: se borran sus asignaciones.
-- NOT NULL: driver_id, organization_id.
-- UNIQUE: driver_id con organization_id.
+- Llaves foráneas: driver_id → drivers y merchant_id → merchants. Al borrar el motorista o el comercio: se borran sus asignaciones.
+- NOT NULL: driver_id, merchant_id.
+- UNIQUE: driver_id con merchant_id.
 - CHECK: ninguno.
 
 ### teams

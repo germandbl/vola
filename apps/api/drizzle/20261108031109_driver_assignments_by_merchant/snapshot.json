@@ -1,0 +1,199 @@
+{
+  "type": "diff",
+  "version": "9",
+  "dialect": "postgres",
+  "id": "720302a9-5843-43b7-b366-82813be954c6",
+  "prevIds": [
+    "7e080a6b-6cb2-44c0-94dc-cfd41e0bd075"
+  ],
+  "footprints": [
+    {
+      "statementType": "drop_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "driver_merchant_assignments"
+      ],
+      "writes": [
+        "s|fk|public.driver_merchant_assignments.driver_merchant_assignments_FrXDMPggKPSV_fkey",
+        "n|fk|public.driver_merchant_assignments.driver_merchant_assignments_FrXDMPggKPSV_fkey",
+        "e|fk|public.driver_merchant_assignments.driver_merchant_assignments_FrXDMPggKPSV_fkey",
+        "n|con|public.driver_merchant_assignments.driver_merchant_assignments_FrXDMPggKPSV_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.driver_merchant_assignments",
+        "n|sch|public",
+        "e|col|public.driver_merchant_assignments.organization_id"
+      ]
+    },
+    {
+      "statementType": "drop_unique",
+      "statementTarget": [
+        "table",
+        "public",
+        "driver_merchant_assignments"
+      ],
+      "writes": [
+        "s|uq|public.driver_merchant_assignments.driver_merchant_assignments_driver_id_organization_id_unique",
+        "n|uq|public.driver_merchant_assignments.driver_merchant_assignments_driver_id_organization_id_unique",
+        "e|uq|public.driver_merchant_assignments.driver_merchant_assignments_driver_id_organization_id_unique",
+        "n|con|public.driver_merchant_assignments.driver_merchant_assignments_driver_id_organization_id_unique",
+        "n|rel|public.driver_merchant_assignments_driver_id_organization_id_unique"
+      ],
+      "reads": [
+        "n|tbl|public.driver_merchant_assignments",
+        "n|sch|public",
+        "e|col|public.driver_merchant_assignments.driver_id",
+        "e|col|public.driver_merchant_assignments.organization_id"
+      ],
+      "sharedWrites": [
+        "e|uniqueness|public.driver_merchant_assignments.driver_id.organization_id"
+      ]
+    },
+    {
+      "statementType": "add_column",
+      "statementTarget": [
+        "column",
+        "public",
+        "driver_merchant_assignments",
+        "merchant_id"
+      ],
+      "writes": [
+        "s|col|public.driver_merchant_assignments.merchant_id",
+        "n|col|public.driver_merchant_assignments.merchant_id",
+        "e|col|public.driver_merchant_assignments.merchant_id"
+      ],
+      "reads": [
+        "n|tbl|public.driver_merchant_assignments",
+        "n|sch|public"
+      ]
+    },
+    {
+      "statementType": "drop_column",
+      "statementTarget": [
+        "column",
+        "public",
+        "driver_merchant_assignments",
+        "organization_id"
+      ],
+      "writes": [
+        "s|col|public.driver_merchant_assignments.organization_id",
+        "n|col|public.driver_merchant_assignments.organization_id",
+        "e|col|public.driver_merchant_assignments.organization_id"
+      ],
+      "reads": [
+        "n|tbl|public.driver_merchant_assignments",
+        "n|sch|public"
+      ]
+    },
+    {
+      "statementType": "add_unique",
+      "statementTarget": [
+        "table",
+        "public",
+        "driver_merchant_assignments"
+      ],
+      "writes": [
+        "s|uq|public.driver_merchant_assignments.driver_merchant_assignments_driver_id_merchant_id_unique",
+        "n|uq|public.driver_merchant_assignments.driver_merchant_assignments_driver_id_merchant_id_unique",
+        "e|uq|public.driver_merchant_assignments.driver_merchant_assignments_driver_id_merchant_id_unique",
+        "n|con|public.driver_merchant_assignments.driver_merchant_assignments_driver_id_merchant_id_unique",
+        "n|rel|public.driver_merchant_assignments_driver_id_merchant_id_unique"
+      ],
+      "reads": [
+        "n|tbl|public.driver_merchant_assignments",
+        "n|sch|public",
+        "n|col|public.driver_merchant_assignments.driver_id",
+        "n|col|public.driver_merchant_assignments.merchant_id"
+      ]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "driver_merchant_assignments"
+      ],
+      "writes": [
+        "s|fk|public.driver_merchant_assignments.driver_merchant_assignments_merchant_id_merchants_id_fkey",
+        "n|fk|public.driver_merchant_assignments.driver_merchant_assignments_merchant_id_merchants_id_fkey",
+        "e|fk|public.driver_merchant_assignments.driver_merchant_assignments_merchant_id_merchants_id_fkey",
+        "n|con|public.driver_merchant_assignments.driver_merchant_assignments_merchant_id_merchants_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.driver_merchant_assignments",
+        "n|sch|public",
+        "n|tbl|public.merchants",
+        "n|sch|public",
+        "n|col|public.driver_merchant_assignments.merchant_id",
+        "n|col|public.merchants.id",
+        "e|uniqueness|public.merchants.id"
+      ]
+    }
+  ],
+  "deltas": [
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "driver_merchant_assignments",
+        "name": "merchant_id",
+        "type": "bigint",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "driver_merchant_assignments",
+        "name": "driver_merchant_assignments_merchant_id_merchants_id_fkey",
+        "nameExplicit": false,
+        "columns": [
+          "merchant_id"
+        ],
+        "schemaTo": "public",
+        "tableTo": "merchants",
+        "columnsTo": [
+          "id"
+        ],
+        "onUpdate": "NO ACTION",
+        "onDelete": "CASCADE",
+        "entityType": "fks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "driver_merchant_assignments",
+        "name": "driver_merchant_assignments_driver_id_merchant_id_unique",
+        "nameExplicit": false,
+        "columns": [
+          "driver_id",
+          "merchant_id"
+        ],
+        "nullsNotDistinct": false,
+        "entityType": "uniques"
+      }
+    },
+    {
+      "op": "drop",
+      "key": "columns\u0000[\"public\",\"driver_merchant_assignments\",\"organization_id\"]"
+    },
+    {
+      "op": "drop",
+      "key": "fks\u0000[\"public\",\"driver_merchant_assignments\",\"driver_merchant_assignments_FrXDMPggKPSV_fkey\"]"
+    },
+    {
+      "op": "drop",
+      "key": "uniques\u0000[\"public\",\"driver_merchant_assignments\",\"driver_merchant_assignments_driver_id_organization_id_unique\"]"
+    }
+  ]
+}

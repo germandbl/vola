@@ -1,4 +1,5 @@
 import { existsSync } from 'node:fs';
+import { inArray } from 'drizzle-orm';
 import {
   OrganizationType,
   RoleName,
@@ -222,13 +223,21 @@ async function seedOrganization(
   return { organizationId: organization.id, driverIds };
 }
 
+// Cada motorista atiende a todos los comercios de las organizaciones que se le asignan.
 async function assignDrivers(
   database: Database,
   driverIds: number[],
   organizationIds: number[],
 ): Promise<void> {
+  const organizationMerchants = await database
+    .select({ id: merchants.id })
+    .from(merchants)
+    .where(inArray(merchants.organizationId, organizationIds));
   const assignments = driverIds.flatMap((driverId) =>
-    organizationIds.map((organizationId) => ({ driverId, organizationId })),
+    organizationMerchants.map((merchant) => ({
+      driverId,
+      merchantId: merchant.id,
+    })),
   );
   if (assignments.length === 0) return;
   await database.insert(driverMerchantAssignments).values(assignments);
@@ -265,10 +274,14 @@ async function seed(database: Database): Promise<void> {
     await assignDrivers(database, driverIds, [organizationId]);
   }
 
-  const merchantIds = PLATFORM_DRIVERS_MERCHANT_NAMES.map((name) =>
-    requireId(organizationIds, name),
+  const platformDriversOrganizationIds = PLATFORM_DRIVERS_MERCHANT_NAMES.map(
+    (name) => requireId(organizationIds, name),
   );
-  await assignDrivers(database, platformDriverIds, merchantIds);
+  await assignDrivers(
+    database,
+    platformDriverIds,
+    platformDriversOrganizationIds,
+  );
 }
 
 if (process.env.NODE_ENV === 'production') {
