@@ -10,12 +10,14 @@ import {
 } from '@nestjs/common';
 import {
   orderAssignmentFormSchema,
+  orderCancellationFormSchema,
   orderFormSchema,
   orderPreparationFormSchema,
   orderStatusChangeFormSchema,
   paginationQuerySchema,
   type AuthUser,
   type OrderAssignmentForm,
+  type OrderCancellationForm,
   type DriverOrder,
   type DriverOrderDetail,
   type OrderBranchOption,
@@ -116,6 +118,24 @@ export class OrdersController {
     form: OrderPreparationForm,
   ): Promise<OrderDetail> {
     return this.orderManagementService.changePreparation(user, orderId, form);
+  }
+
+  @Put(':orderId/complete')
+  completeOrder(
+    @CurrentUser() user: AuthUser,
+    @Param('orderId', ParseIntPipe) orderId: number,
+  ): Promise<OrderDetail> {
+    return this.orderManagementService.completeOrder(user, orderId);
+  }
+
+  @Put(':orderId/cancel')
+  cancelOrder(
+    @CurrentUser() user: AuthUser,
+    @Param('orderId', ParseIntPipe) orderId: number,
+    @Body(new ZodValidationPipe(orderCancellationFormSchema))
+    form: OrderCancellationForm,
+  ): Promise<OrderDetail> {
+    return this.orderManagementService.cancelOrder(user, orderId, form);
   }
 
   // Al final: ':orderId' no debe tapar rutas fijas como 'assigned-to-me' o 'branch-options'.

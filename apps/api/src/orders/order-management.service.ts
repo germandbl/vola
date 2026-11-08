@@ -7,17 +7,19 @@ import {
 } from '@nestjs/common';
 import {
   ACTIVE_ORDER_STATUSES,
+  OrderStatus,
   PreparationStatus,
   canManageOrders,
   findNextPreparationStatus,
   getPreparationStatus,
   type AuthUser,
+  type OrderCancellationForm,
   type OrderDetail,
   type OrderPreparationForm,
 } from '@vola/shared';
 import { and, eq, isNull } from 'drizzle-orm';
 import { DATABASE, type Database } from '../database/database.module.js';
-import { orders } from './orders.schema.js';
+import { orderStatusChanges, orders } from './orders.schema.js';
 import { OrdersService } from './orders.service.js';
 
 @Injectable()
@@ -70,6 +72,61 @@ export class OrderManagementService {
       );
     }
     return this.ordersService.findDetail(user, orderId);
+  }
+
+  async completeOrder(user: AuthUser, orderId: number): Promise<OrderDetail> {
+    await this.finishOrder(user, orderId, {
+      status: OrderStatus.Delivered,
+      cancellationReason: null,
+    });
+    return this.ordersService.findDetail(user, orderId);
+  }
+
+  async cancelOrder(
+    user: AuthUser,
+    orderId: number,
+    form: OrderCancellationForm,
+  ): Promise<OrderDetail> {
+    await this.finishOrder(user, orderId, {
+      status: OrderStatus.Cancelled,
+      cancellationReason: form.cancellationReason,
+    });
+    return this.ordersService.findDetail(user, orderId);
+  }
+
+  private async finishOrder(
+    user: AuthUser,
+    orderId: number,
+    ending: {
+      status: typeof OrderStatus.Delivered | typeof OrderStatus.Cancelled;
+      cancellationReason: string | null;
+    },
+  ): Promise<void> {
+    const order = await this.findManageableOrder(user, orderId);
+    if (!ACTIVE_ORDER_STATUSES.includes(order.status)) {
+      throw new ConflictException(`Order ${orderId} already finished`);
+    }
+
+    await this.database.transaction(async (transaction) => {
+      const changedAt = new Date();
+      // La condición sobre el estado actual evita pisar un cambio del motorista que llega al mismo tiempo.
+      const updatedOrders = await transaction
+        .update(orders)
+        .set({ ...ending, statusChangedAt: changedAt })
+        .where(and(eq(orders.id, orderId), eq(orders.status, order.status)))
+        .returning({ id: orders.id });
+      if (updatedOrders.length === 0) {
+        throw new ConflictException(
+          `Order ${orderId} changed status meanwhile`,
+        );
+      }
+      await transaction.insert(orderStatusChanges).values({
+        orderId,
+        ...ending,
+        changedByUserId: user.id,
+        createdAt: changedAt,
+      });
+    });
   }
 
   private async findManageableOrder(user: AuthUser, orderId: number) {

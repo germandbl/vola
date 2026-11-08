@@ -2,6 +2,7 @@
 
 import {
   orderDetailSchema,
+  type OrderCancellationForm,
   type OrderDetail,
   type OrderPreparationForm,
 } from "@vola/shared";
@@ -34,16 +35,28 @@ function toActionError(status: number): string {
   return "No pudimos guardar el cambio. Probá de nuevo en un momento.";
 }
 
-export async function changeOrderPreparation(
-  orderId: number,
-  form: OrderPreparationForm,
-): Promise<OrderActionResult> {
-  const response = await fetchWithSession(`/orders/${orderId}/preparation`, {
-    method: "PUT",
-    body: JSON.stringify(form),
-  });
+async function putOrderChange(path: string, body: object): Promise<OrderActionResult> {
+  const response = await fetchWithSession(path, { method: "PUT", body: JSON.stringify(body) });
   if (!response.ok) return { error: toActionError(response.status) };
 
   refresh();
   return { order: orderDetailSchema.parse(await response.json()) };
+}
+
+export async function changeOrderPreparation(
+  orderId: number,
+  form: OrderPreparationForm,
+): Promise<OrderActionResult> {
+  return putOrderChange(`/orders/${orderId}/preparation`, form);
+}
+
+export async function completeOrder(orderId: number): Promise<OrderActionResult> {
+  return putOrderChange(`/orders/${orderId}/complete`, {});
+}
+
+export async function cancelOrder(
+  orderId: number,
+  form: OrderCancellationForm,
+): Promise<OrderActionResult> {
+  return putOrderChange(`/orders/${orderId}/cancel`, form);
 }
