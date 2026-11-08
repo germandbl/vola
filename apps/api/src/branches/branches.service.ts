@@ -6,7 +6,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import {
-  canManageAllMerchants,
+  canManageMerchants,
   type AuthUser,
   type Branch,
   type BranchForm,
@@ -42,9 +42,12 @@ function toHoursAndMinutes(time: string | null): string | null {
   return time.slice(0, HOURS_AND_MINUTES_LENGTH);
 }
 
-function assertCanManageBranches(user: AuthUser): void {
-  if (!canManageAllMerchants(user)) {
-    throw new ForbiddenException('You cannot manage branches');
+// Las sucursales son parte del comercio: las gestiona quien puede gestionar los comercios de esa organización.
+function assertCanManageBranches(user: AuthUser, organizationId: number): void {
+  if (!canManageMerchants(user, organizationId)) {
+    throw new ForbiddenException(
+      `You cannot manage the branches of organization ${organizationId}`,
+    );
   }
 }
 
@@ -79,8 +82,8 @@ export class BranchesService {
     merchantId: number,
     form: BranchForm,
   ): Promise<Branch> {
-    assertCanManageBranches(user);
-    await this.merchantsService.findById(user, merchantId);
+    const merchant = await this.merchantsService.findById(user, merchantId);
+    assertCanManageBranches(user, merchant.organizationId);
     await this.assertNameIsFree(merchantId, form.name);
 
     const { openingHours, ...branchData } = form;
@@ -104,8 +107,12 @@ export class BranchesService {
     branchId: number,
     form: BranchForm,
   ): Promise<Branch> {
-    assertCanManageBranches(user);
     const branch = await this.findExistingById(branchId);
+    const merchant = await this.merchantsService.findById(
+      user,
+      branch.merchantId,
+    );
+    assertCanManageBranches(user, merchant.organizationId);
     await this.assertNameIsFree(branch.merchantId, form.name, branchId);
 
     const { openingHours, ...branchData } = form;

@@ -1,4 +1,4 @@
-import { canManageAllMerchants } from "@vola/shared";
+import { canManageMerchants } from "@vola/shared";
 import { Plus } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
@@ -25,7 +25,7 @@ async function MerchantBranches({ params }: Pick<MerchantBranchesPageProps, "par
     <section className="flex flex-col gap-4">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <h2 className="text-2xl font-bold">Sucursales</h2>
-        {canManageAllMerchants(currentUser) && (
+        {canManageMerchants(currentUser, organizationId) && (
           <Button asChild>
             <Link href={`${merchantPath}/sucursales/nueva`}>
               <Plus data-icon="inline-start" />

@@ -1,4 +1,4 @@
-import { canManageAllMerchants } from "@vola/shared";
+import { canManageMerchants } from "@vola/shared";
 import { ArrowLeft } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
@@ -42,7 +42,7 @@ async function BranchContent({ params }: Pick<BranchPageProps, "params">) {
         </Link>
       </Button>
       <PageHeader title={branch.name} description={merchant.name} />
-      {canManageAllMerchants(currentUser) ? (
+      {canManageMerchants(currentUser, merchant.organizationId) ? (
         <Card>
           <CardContent>
             <BranchForm
