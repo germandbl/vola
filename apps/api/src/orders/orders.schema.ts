@@ -11,6 +11,7 @@ import {
 } from 'drizzle-orm/pg-core';
 import { branches } from '../branches/branches.schema.js';
 import { customers } from '../customers/customers.schema.js';
+import { drivers } from '../drivers/drivers.schema.js';
 import { deliveryFeeBasis } from '../merchants/merchants.schema.js';
 import { organizations } from '../organizations/organizations.schema.js';
 import { users } from '../users/users.schema.js';
@@ -66,6 +67,11 @@ export const orders = pgTable(
       scale: 2,
       mode: 'number',
     }),
+    driverId: bigint('driver_id', { mode: 'number' }).references(
+      () => drivers.id,
+      { onDelete: 'restrict' },
+    ),
+    assignedAt: timestamp('assigned_at'),
     createdAt: timestamp('created_at').notNull().defaultNow(),
   },
   (table) => [
@@ -76,6 +82,10 @@ export const orders = pgTable(
     check(
       'orders_amounts_not_negative',
       sql`${table.subtotal} >= 0 AND ${table.customerDeliveryFee} >= 0 AND ${table.volaDeliveryFee} >= 0`,
+    ),
+    check(
+      'orders_driver_assigned_together',
+      sql`(${table.driverId} IS NULL) = (${table.assignedAt} IS NULL)`,
     ),
     check(
       'orders_total_matches',

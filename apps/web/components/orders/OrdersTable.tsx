@@ -1,4 +1,10 @@
-import { DeliveryFeeBasis, type OrderSummary } from "@vola/shared";
+import {
+  DeliveryFeeBasis,
+  canAssignOrders,
+  canOrderBeAssigned,
+  type AuthUser,
+  type OrderSummary,
+} from "@vola/shared";
 import { ReceiptText } from "lucide-react";
 import { ListPagination } from "@/components/ListPagination";
 import {
@@ -18,6 +24,7 @@ import {
 } from "@/components/ui/table";
 import { formatDate, formatMoney } from "@/lib/labels";
 import { getOrdersPage } from "@/lib/organizations-data";
+import { AssignDriverDialog } from "./AssignDriverDialog";
 import { OrderStatusChip } from "./OrderStatusChip";
 
 function describeVolaFeeBasis(order: OrderSummary): string {
@@ -25,12 +32,18 @@ function describeVolaFeeBasis(order: OrderSummary): string {
   return "Por cantidad de órdenes";
 }
 
+function canAssign(user: AuthUser, order: OrderSummary): boolean {
+  if (!canAssignOrders(user, order.organizationId)) return false;
+  return canOrderBeAssigned(order.status, order.driver !== null);
+}
+
 interface OrdersTableProps {
   page: number;
   showOrganization: boolean;
+  currentUser: AuthUser;
 }
 
-export async function OrdersTable({ page, showOrganization }: OrdersTableProps) {
+export async function OrdersTable({ page, showOrganization, currentUser }: OrdersTableProps) {
   const ordersPage = await getOrdersPage(page);
 
   if (ordersPage.totalItems === 0) {
@@ -61,6 +74,7 @@ export async function OrdersTable({ page, showOrganization }: OrdersTableProps) 
               <TableHead className="text-right">Total</TableHead>
               <TableHead className="text-right">Envío Volá!</TableHead>
               <TableHead>Estado</TableHead>
+              <TableHead>Motorista</TableHead>
               <TableHead>Creado</TableHead>
             </TableRow>
           </TableHeader>
@@ -87,6 +101,13 @@ export async function OrdersTable({ page, showOrganization }: OrdersTableProps) 
                 </TableCell>
                 <TableCell>
                   <OrderStatusChip status={order.status} />
+                </TableCell>
+                <TableCell>
+                  {canAssign(currentUser, order) ? (
+                    <AssignDriverDialog orderId={order.id} />
+                  ) : (
+                    (order.driver?.name ?? "Sin asignar")
+                  )}
                 </TableCell>
                 <TableCell>{formatDate(order.createdAt)}</TableCell>
               </TableRow>

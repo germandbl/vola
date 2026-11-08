@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { AuthUser } from "./auth.js";
 import {
+  canAssignOrders,
   canManageAllMerchants,
   canManageDriversOf,
   canManageMerchants,
@@ -134,5 +135,23 @@ describe("canManageDriversOf", () => {
     expect(
       canManageDriversOf(administrator, OTHER_CLIENT_ORGANIZATION_ID),
     ).toBe(false);
+  });
+});
+
+describe("canAssignOrders", () => {
+  it("lets a client administrator assign orders of their organization only", () => {
+    const administrator = createClientUser({ role: RoleName.Administrator });
+    expect(canAssignOrders(administrator, CLIENT_ORGANIZATION_ID)).toBe(true);
+    expect(canAssignOrders(administrator, OTHER_CLIENT_ORGANIZATION_ID)).toBe(
+      false,
+    );
+  });
+
+  it("lets a client agent assign orders only with the permission", () => {
+    expect(canAssignOrders(createClientUser({}), CLIENT_ORGANIZATION_ID)).toBe(
+      false,
+    );
+    const agent = createClientUser({ permissions: [Permission.AssignOrders] });
+    expect(canAssignOrders(agent, CLIENT_ORGANIZATION_ID)).toBe(true);
   });
 });

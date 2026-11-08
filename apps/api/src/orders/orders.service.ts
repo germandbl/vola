@@ -1,4 +1,9 @@
-import { ForbiddenException, Inject, Injectable } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import {
   PAGE_SIZE,
   calculateOrderSubtotal,
@@ -19,9 +24,11 @@ import { createFieldValidationException } from '../common/field-validation.js';
 import { getPageOffset, toPaginated } from '../common/pagination.js';
 import { countries } from '../countries/countries.schema.js';
 import { customers } from '../customers/customers.schema.js';
+import { drivers } from '../drivers/drivers.schema.js';
 import { DATABASE, type Database } from '../database/database.module.js';
 import { merchants } from '../merchants/merchants.schema.js';
 import { organizations } from '../organizations/organizations.schema.js';
+import { users } from '../users/users.schema.js';
 import { orderItems, orders } from './orders.schema.js';
 import {
   VolaDeliveryFeeService,
@@ -30,6 +37,7 @@ import {
 
 const orderSummaryColumns = {
   id: orders.id,
+  organizationId: orders.organizationId,
   organizationName: organizations.name,
   currency: countries.currency,
   status: orders.status,
@@ -42,13 +50,24 @@ const orderSummaryColumns = {
   volaDeliveryFee: orders.volaDeliveryFee,
   deliveryFeeBasis: orders.deliveryFeeBasis,
   distanceKm: orders.distanceKm,
+  driverId: orders.driverId,
+  driverName: users.name,
   createdAt: orders.createdAt,
 };
 
-type OrderSummaryRow = Omit<OrderSummary, 'createdAt'> & { createdAt: Date };
+type OrderSummaryRow = Omit<OrderSummary, 'driver' | 'createdAt'> & {
+  driverId: number | null;
+  driverName: string | null;
+  createdAt: Date;
+};
 
 function toOrderSummary(row: OrderSummaryRow): OrderSummary {
-  return { ...row, createdAt: row.createdAt.toISOString() };
+  const { driverId, driverName, createdAt, ...order } = row;
+  const driver =
+    driverId !== null && driverName !== null
+      ? { id: driverId, name: driverName }
+      : null;
+  return { ...order, driver, createdAt: createdAt.toISOString() };
 }
 
 interface NewOrder {
@@ -127,9 +146,16 @@ export class OrdersService {
       volaDeliveryFee,
     });
 
+    return this.findSummaryById(orderId);
+  }
+
+  async findSummaryById(orderId: number): Promise<OrderSummary> {
     const [row] = await this.selectOrderSummaries().where(
       eq(orders.id, orderId),
     );
+    if (!row) {
+      throw new NotFoundException(`Order ${orderId} not found`);
+    }
     return toOrderSummary(row);
   }
 
@@ -214,6 +240,8 @@ export class OrdersService {
       .innerJoin(merchants, eq(branches.merchantId, merchants.id))
       .innerJoin(organizations, eq(orders.organizationId, organizations.id))
       .leftJoin(countries, eq(organizations.countryId, countries.id))
+      .leftJoin(drivers, eq(orders.driverId, drivers.id))
+      .leftJoin(users, eq(drivers.userId, users.id))
       .$dynamic();
   }
 }

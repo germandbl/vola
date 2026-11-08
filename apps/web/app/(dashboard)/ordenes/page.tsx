@@ -45,7 +45,11 @@ async function OrdersContent({ searchParams }: Pick<PageProps<"/ordenes">, "sear
           )
         }
       />
-      <OrdersTable page={page} showOrganization={canViewAllOrders(currentUser)} />
+      <OrdersTable
+        page={page}
+        showOrganization={canViewAllOrders(currentUser)}
+        currentUser={currentUser}
+      />
     </>
   );
 }

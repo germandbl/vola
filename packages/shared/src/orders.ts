@@ -76,8 +76,16 @@ export function calculateOrderTotal(
   return roundToHundredths(subtotal + customerDeliveryFee);
 }
 
+export const orderDriverSchema = z.object({
+  id: z.number(),
+  name: z.string(),
+});
+
+export type OrderDriver = z.infer<typeof orderDriverSchema>;
+
 export const orderSummarySchema = z.object({
   id: z.number(),
+  organizationId: z.number(),
   organizationName: z.string(),
   currency: z.string().nullable(),
   status: orderStatusSchema,
@@ -90,10 +98,28 @@ export const orderSummarySchema = z.object({
   volaDeliveryFee: z.number(),
   deliveryFeeBasis: deliveryFeeBasisSchema,
   distanceKm: z.number().nullable(),
+  driver: orderDriverSchema.nullable(),
   createdAt: z.string(),
 });
 
 export type OrderSummary = z.infer<typeof orderSummarySchema>;
+
+export const orderAssignmentFormSchema = z.object({
+  driverId: z
+    .number({ error: "Elegí un motorista disponible." })
+    .int()
+    .positive("Elegí un motorista disponible."),
+});
+
+export type OrderAssignmentForm = z.infer<typeof orderAssignmentFormSchema>;
+
+// Por ahora solo se asigna una orden Nueva y sin motorista; reasignar es otra historia.
+export function canOrderBeAssigned(
+  status: OrderStatus,
+  hasDriver: boolean,
+): boolean {
+  return status === OrderStatus.New && !hasDriver;
+}
 
 export const orderBranchOptionSchema = z.object({
   branchId: z.number(),
