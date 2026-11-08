@@ -8,13 +8,16 @@ import {
   Put,
 } from '@nestjs/common';
 import {
+  driverAvailabilityFormSchema,
   driverFormSchema,
   driverMerchantsFormSchema,
   type AuthUser,
+  type DriverAvailabilityForm,
   type DriverForm,
   type DriverMerchant,
   type DriverMerchantsForm,
   type DriverOwner,
+  type DriverProfile,
   type DriverSummary,
 } from '@vola/shared';
 import { CurrentUser } from '../auth/current-user.decorator.js';
@@ -28,6 +31,21 @@ export class DriversController {
   @Get()
   findVisible(@CurrentUser() user: AuthUser): Promise<DriverSummary[]> {
     return this.driversService.findVisible(user);
+  }
+
+  // Antes de ':driverId': Nest prueba las rutas en orden y 'me' no es un número.
+  @Get('me')
+  findOwnProfile(@CurrentUser() user: AuthUser): Promise<DriverProfile> {
+    return this.driversService.findOwnProfile(user);
+  }
+
+  @Put('me/availability')
+  updateOwnAvailability(
+    @CurrentUser() user: AuthUser,
+    @Body(new ZodValidationPipe(driverAvailabilityFormSchema))
+    form: DriverAvailabilityForm,
+  ): Promise<DriverProfile> {
+    return this.driversService.updateOwnAvailability(user, form);
   }
 
   @Get('owner-options')

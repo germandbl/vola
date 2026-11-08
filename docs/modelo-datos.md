@@ -74,6 +74,7 @@ erDiagram
     bigint id PK
     bigint user_id FK, UK
     bigint country_id FK
+    boolean is_available
     timestamp created_at
   }
   driver_merchant_assignments {
@@ -238,7 +239,7 @@ Todas las tablas tienen `id` como llave primaria (bigint generado por la base) y
 ### drivers
 
 - Llaves foráneas: user_id → users y country_id → countries. Al borrar el usuario: se borra el motorista. Al borrar el país: se impide si tiene motoristas.
-- NOT NULL: user_id, country_id.
+- NOT NULL: user_id, country_id, is_available. is_available arranca en falso: el motorista se marca disponible cuando empieza a trabajar.
 - UNIQUE: user_id.
 - CHECK: ninguno.
 

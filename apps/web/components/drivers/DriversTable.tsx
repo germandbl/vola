@@ -1,6 +1,7 @@
 import type { DriverSummary } from "@vola/shared";
 import { Bike } from "lucide-react";
 import Link from "next/link";
+import { Badge } from "@/components/ui/badge";
 import {
   Empty,
   EmptyDescription,
@@ -67,6 +68,7 @@ export async function DriversTable({ showOwner }: DriversTableProps) {
             <TableHead>Email</TableHead>
             <TableHead>Teléfono</TableHead>
             <TableHead>Atiende</TableHead>
+            <TableHead>Estado</TableHead>
             <TableHead>Creado</TableHead>
           </TableRow>
         </TableHeader>
@@ -82,6 +84,11 @@ export async function DriversTable({ showOwner }: DriversTableProps) {
               <TableCell>{driver.email}</TableCell>
               <TableCell>{driver.phoneNumber}</TableCell>
               <TableCell className="whitespace-normal">{describeMerchants(driver)}</TableCell>
+              <TableCell>
+                <Badge variant={driver.isAvailable ? "secondary" : "outline"}>
+                  {driver.isAvailable ? "Disponible" : "No disponible"}
+                </Badge>
+              </TableCell>
               <TableCell>{formatDate(driver.createdAt)}</TableCell>
             </TableRow>
           ))}

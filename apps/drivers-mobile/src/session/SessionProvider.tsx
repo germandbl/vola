@@ -26,6 +26,15 @@ export function useSession(): SessionContextValue {
   return value;
 }
 
+// Para pantallas dentro de (app): Stack.Protected ya garantiza que hay sesión.
+export function useSignedInSession(): Session {
+  const { session } = useSession();
+  if (!session) {
+    throw new Error("useSignedInSession must be used inside the signed-in (app) routes");
+  }
+  return session;
+}
+
 // Confirma con el API que la sesión guardada sigue viva y trae los datos del usuario al día.
 async function verifyStoredSession(storedSession: Session): Promise<Session | null> {
   try {

@@ -1,0 +1,47 @@
+{
+  "type": "diff",
+  "version": "9",
+  "dialect": "postgres",
+  "id": "8160e082-23a1-4744-83dc-0f5c3639d13c",
+  "prevIds": [
+    "720302a9-5843-43b7-b366-82813be954c6"
+  ],
+  "footprints": [
+    {
+      "statementType": "add_column",
+      "statementTarget": [
+        "column",
+        "public",
+        "drivers",
+        "is_available"
+      ],
+      "writes": [
+        "s|col|public.drivers.is_available",
+        "n|col|public.drivers.is_available",
+        "e|col|public.drivers.is_available"
+      ],
+      "reads": [
+        "n|tbl|public.drivers",
+        "n|sch|public"
+      ]
+    }
+  ],
+  "deltas": [
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "drivers",
+        "name": "is_available",
+        "type": "boolean",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": "false",
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    }
+  ]
+}

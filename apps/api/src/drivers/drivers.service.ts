@@ -16,8 +16,10 @@ import {
   type AuthUser,
   type DriverForm,
   type DriverMerchant,
+  type DriverAvailabilityForm,
   type DriverMerchantsForm,
   type DriverOwner,
+  type DriverProfile,
   type DriverSummary,
 } from '@vola/shared';
 import { asc, desc, eq, inArray, type SQL } from 'drizzle-orm';
@@ -38,6 +40,7 @@ const driverColumns = {
   ownerId: organizations.id,
   ownerName: organizations.name,
   ownerType: organizations.type,
+  isAvailable: drivers.isAvailable,
   createdAt: drivers.createdAt,
 };
 
@@ -59,6 +62,7 @@ interface DriverRow {
   ownerId: number;
   ownerName: string;
   ownerType: OrganizationType;
+  isAvailable: boolean;
   createdAt: Date;
 }
 
@@ -68,6 +72,12 @@ function toOwner(
   type: OrganizationType,
 ): DriverOwner {
   return { id, name, isPlatform: type === OrganizationType.Platform };
+}
+
+function assertIsDriver(user: AuthUser): void {
+  if (user.role !== RoleName.Driver) {
+    throw new ForbiddenException('Only drivers have a driver profile');
+  }
 }
 
 function assertCanAccessDrivers(user: AuthUser): void {
@@ -103,6 +113,38 @@ export class DriversService {
     }
     const [driver] = await this.withMerchants([row]);
     return driver;
+  }
+
+  async findOwnProfile(user: AuthUser): Promise<DriverProfile> {
+    assertIsDriver(user);
+    const [profile] = await this.database
+      .select({
+        id: drivers.id,
+        name: users.name,
+        email: users.email,
+        phoneNumber: users.phoneNumber,
+        isAvailable: drivers.isAvailable,
+      })
+      .from(drivers)
+      .innerJoin(users, eq(drivers.userId, users.id))
+      .where(eq(drivers.userId, user.id));
+    if (!profile) {
+      throw new NotFoundException(`User ${user.id} has no driver profile`);
+    }
+    return profile;
+  }
+
+  // Marcarse no disponible no toca las órdenes ya asignadas: solo evita que le asignen nuevas.
+  async updateOwnAvailability(
+    user: AuthUser,
+    form: DriverAvailabilityForm,
+  ): Promise<DriverProfile> {
+    assertIsDriver(user);
+    await this.database
+      .update(drivers)
+      .set({ isAvailable: form.isAvailable })
+      .where(eq(drivers.userId, user.id));
+    return this.findOwnProfile(user);
   }
 
   async findOwnerOptions(user: AuthUser): Promise<DriverOwner[]> {
@@ -282,6 +324,7 @@ export class DriversService {
       email: row.email,
       phoneNumber: row.phoneNumber,
       owner: toOwner(row.ownerId, row.ownerName, row.ownerType),
+      isAvailable: row.isAvailable,
       merchants: assignments
         .filter((assignment) => assignment.driverId === row.id)
         .map(({ driverId: _driverId, ...merchant }) => merchant),

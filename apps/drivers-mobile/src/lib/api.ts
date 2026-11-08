@@ -10,7 +10,7 @@ function getApiUrl(path: string): string {
 }
 
 interface ApiRequest {
-  method?: "GET" | "POST";
+  method?: "GET" | "POST" | "PUT";
   token?: string;
   body?: unknown;
 }
