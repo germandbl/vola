@@ -12,3 +12,4 @@ export * from './merchants.js';
 export * from './branches.js';
 export * from "./orders.js";
 export * from './drivers.js';
+export * from './theme.js';
