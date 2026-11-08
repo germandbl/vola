@@ -1,5 +1,5 @@
 import { MapPin } from "lucide-react";
-import Link from "next/link";
+import { ViewDetailButton } from "@/components/ViewDetailButton";
 import {
   Empty,
   EmptyDescription,
@@ -46,17 +46,19 @@ export async function BranchesTable({ merchantPath, merchantId }: BranchesTableP
           <TableRow>
             <TableHead>Sucursal</TableHead>
             <TableHead>Dirección</TableHead>
+            <TableHead>
+              <span className="sr-only">Acciones</span>
+            </TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {branches.map((branch) => (
             <TableRow key={branch.id}>
-              <TableCell className="font-semibold">
-                <Link href={`${merchantPath}/sucursales/${branch.id}`} className="hover:underline">
-                  {branch.name}
-                </Link>
-              </TableCell>
+              <TableCell className="font-semibold">{branch.name}</TableCell>
               <TableCell className="whitespace-normal">{branch.address}</TableCell>
+              <TableCell className="text-right">
+                <ViewDetailButton href={`${merchantPath}/sucursales/${branch.id}`} />
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>
