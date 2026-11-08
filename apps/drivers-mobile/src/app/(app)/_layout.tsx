@@ -13,7 +13,10 @@ export default function AppLayout() {
       }}
     >
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-      <Stack.Screen name="orders/[orderId]" options={{ title: "Orden", headerBackTitle: "Órdenes" }} />
+      <Stack.Screen
+        name="orders/[orderId]"
+        options={{ title: "Detalle de la orden", headerBackTitle: "Órdenes" }}
+      />
     </Stack>
   );
 }

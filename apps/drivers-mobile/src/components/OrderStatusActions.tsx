@@ -2,7 +2,6 @@ import { OrderStatus, canDriverCancel, findDriverNextStatus, spacing } from "@vo
 import { useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { AppText } from "./AppText";
-import { Card } from "./Card";
 import { PrimaryButton } from "./PrimaryButton";
 import { SecondaryButton } from "./SecondaryButton";
 import { TextField } from "./TextField";
@@ -37,10 +36,9 @@ export function OrderStatusActions({
 
   if (!nextActionLabel) {
     return (
-      <Card>
-        <AppText variant="titulo3">Esta orden ya terminó</AppText>
-        <AppText tone="tintaSuave">No hay nada más que hacer con ella.</AppText>
-      </Card>
+      <AppText tone="tintaSuave" style={styles.finished}>
+        Esta orden ya terminó. No hay nada más que hacer con ella.
+      </AppText>
     );
   }
 
@@ -77,4 +75,5 @@ export function OrderStatusActions({
 
 const styles = StyleSheet.create({
   actions: { gap: spacing[4] },
+  finished: { textAlign: "center" },
 });

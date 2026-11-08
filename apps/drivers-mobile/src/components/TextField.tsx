@@ -1,5 +1,5 @@
 import { colors, radius, spacing } from "@vola/shared";
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { StyleSheet, TextInput, View, type TextInputProps } from "react-native";
 import { getTextStyle } from "@/theme/fonts";
 import { AppText } from "./AppText";
@@ -18,28 +18,35 @@ function getBorderColor(hasError: boolean, isFocused: boolean): string {
 interface TextFieldProps extends TextInputProps {
   label: string;
   error?: string;
+  // Un botón dentro del campo, a la derecha (por ejemplo, mostrar la contraseña).
+  trailing?: ReactNode;
 }
 
-export function TextField({ label, error, ...inputProps }: TextFieldProps) {
+export function TextField({ label, error, trailing, ...inputProps }: TextFieldProps) {
   const [isFocused, setIsFocused] = useState(false);
   const borderColor = getBorderColor(Boolean(error), isFocused);
 
   return (
     <View style={styles.field}>
       <AppText variant="pequeno">{label}</AppText>
-      <TextInput
-        placeholderTextColor={colors.tintaSuave}
-        onFocus={() => setIsFocused(true)}
-        onBlur={() => setIsFocused(false)}
-        aria-label={label}
-        aria-invalid={Boolean(error)}
+      <View
         style={[
-          styles.input,
-          inputProps.multiline && styles.multilineInput,
+          styles.box,
+          inputProps.multiline && styles.multilineBox,
           { borderColor, borderWidth: isFocused ? FOCUSED_BORDER_WIDTH : BORDER_WIDTH },
         ]}
-        {...inputProps}
-      />
+      >
+        <TextInput
+          placeholderTextColor={colors.tintaSuave}
+          onFocus={() => setIsFocused(true)}
+          onBlur={() => setIsFocused(false)}
+          aria-label={label}
+          aria-invalid={Boolean(error)}
+          style={[styles.input, inputProps.multiline && styles.multilineInput]}
+          {...inputProps}
+        />
+        {trailing}
+      </View>
       {error && (
         <AppText variant="pequeno" tone="error">
           {error}
@@ -51,18 +58,21 @@ export function TextField({ label, error, ...inputProps }: TextFieldProps) {
 
 const styles = StyleSheet.create({
   field: { gap: spacing[1] },
-  input: {
-    ...getTextStyle("cuerpo"),
+  box: {
     height: FIELD_HEIGHT,
+    flexDirection: "row",
+    alignItems: "center",
     paddingHorizontal: spacing[4],
+    gap: spacing[2],
     borderRadius: radius.sm,
     backgroundColor: colors.blanco,
-    color: colors.tinta,
   },
-  multilineInput: {
+  multilineBox: {
     height: undefined,
     minHeight: MULTILINE_MIN_HEIGHT,
+    alignItems: "flex-start",
     paddingVertical: spacing[2],
-    textAlignVertical: "top",
   },
+  input: { ...getTextStyle("cuerpo"), flex: 1, height: "100%", color: colors.tinta },
+  multilineInput: { textAlignVertical: "top" },
 });

@@ -10,3 +10,9 @@ export function openDirections(latitude: number, longitude: number): Promise<voi
 export function callPhone(phoneNumber: string): Promise<void> {
   return Linking.openURL(`tel:${phoneNumber}`);
 }
+
+// wa.me necesita el número solo con dígitos, sin el + ni espacios.
+export function openWhatsApp(phoneNumber: string): Promise<void> {
+  const digits = phoneNumber.replace(/\D/g, "");
+  return Linking.openURL(`https://wa.me/${digits}`);
+}
