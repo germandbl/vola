@@ -3,7 +3,7 @@ import { router } from "expo-router";
 import { Pressable, StyleSheet, View } from "react-native";
 import { formatMoney, formatTime } from "@/lib/format";
 import { AppText } from "./AppText";
-import { OrderStatusChip } from "./OrderStatusChip";
+import { PreparationChip } from "./PreparationChip";
 
 interface OrderCardProps {
   order: DriverOrder;
@@ -26,7 +26,7 @@ export function OrderCard({ order }: OrderCardProps) {
             {order.customerName}
           </AppText>
         </View>
-        <OrderStatusChip status={order.status} />
+        <PreparationChip status={order.preparationStatus} />
       </View>
 
       <View style={styles.divider} />

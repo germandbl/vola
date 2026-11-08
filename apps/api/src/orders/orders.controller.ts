@@ -11,6 +11,7 @@ import {
 import {
   orderAssignmentFormSchema,
   orderFormSchema,
+  orderPreparationFormSchema,
   orderStatusChangeFormSchema,
   paginationQuerySchema,
   type AuthUser,
@@ -19,6 +20,7 @@ import {
   type DriverOrderDetail,
   type OrderBranchOption,
   type OrderDetail,
+  type OrderPreparationForm,
   type OrderDriver,
   type OrderForm,
   type OrderStatusChangeForm,
@@ -30,6 +32,7 @@ import { CurrentUser } from '../auth/current-user.decorator.js';
 import { ZodValidationPipe } from '../common/zod-validation.pipe.js';
 import { DriverOrdersService } from './driver-orders.service.js';
 import { OrderAssignmentsService } from './order-assignments.service.js';
+import { OrderManagementService } from './order-management.service.js';
 import { OrdersService } from './orders.service.js';
 
 @Controller('orders')
@@ -38,6 +41,7 @@ export class OrdersController {
     private readonly ordersService: OrdersService,
     private readonly orderAssignmentsService: OrderAssignmentsService,
     private readonly driverOrdersService: DriverOrdersService,
+    private readonly orderManagementService: OrderManagementService,
   ) {}
 
   @Get()
@@ -102,6 +106,16 @@ export class OrdersController {
     form: OrderStatusChangeForm,
   ): Promise<DriverOrderDetail> {
     return this.driverOrdersService.changeStatus(user, orderId, form);
+  }
+
+  @Put(':orderId/preparation')
+  changePreparation(
+    @CurrentUser() user: AuthUser,
+    @Param('orderId', ParseIntPipe) orderId: number,
+    @Body(new ZodValidationPipe(orderPreparationFormSchema))
+    form: OrderPreparationForm,
+  ): Promise<OrderDetail> {
+    return this.orderManagementService.changePreparation(user, orderId, form);
   }
 
   // Al final: ':orderId' no debe tapar rutas fijas como 'assigned-to-me' o 'branch-options'.

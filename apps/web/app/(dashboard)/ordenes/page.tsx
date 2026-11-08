@@ -51,6 +51,7 @@ async function OrdersContent({ searchParams }: Pick<PageProps<"/ordenes">, "sear
         showOrganization={canViewAllOrders(currentUser)}
         currentUser={currentUser}
       />
+      <OrderDetailSheet currentUser={currentUser} />
     </>
   );
 }
@@ -58,9 +59,6 @@ async function OrdersContent({ searchParams }: Pick<PageProps<"/ordenes">, "sear
 export default function OrdersPage({ searchParams }: PageProps<"/ordenes">) {
   return (
     <div className="flex flex-col gap-6">
-      <Suspense fallback={null}>
-        <OrderDetailSheet />
-      </Suspense>
       <Suspense fallback={<TableSkeleton />}>
         <OrdersContent searchParams={searchParams} />
       </Suspense>

@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
 import {
   OrderStatus,
+  PreparationStatus,
+  findNextPreparationStatus,
+  getPreparationStatus,
   calculateOrderSubtotal,
   canDriverMoveTo,
   findDriverNextStatus,
@@ -114,5 +117,24 @@ describe("orderStatusChangeFormSchema", () => {
       cancellationReason: "  ",
     });
     expect(result.error?.issues[0].path).toEqual(["cancellationReason"]);
+  });
+});
+
+describe("getPreparationStatus", () => {
+  it("goes from new to preparing to ready", () => {
+    expect(getPreparationStatus(null, null)).toBe(PreparationStatus.New);
+    expect(getPreparationStatus("2026-11-08T10:00:00Z", null)).toBe(
+      PreparationStatus.Preparing,
+    );
+    expect(
+      getPreparationStatus("2026-11-08T10:00:00Z", "2026-11-08T10:20:00Z"),
+    ).toBe(PreparationStatus.Ready);
+  });
+
+  it("advances one step at a time", () => {
+    expect(findNextPreparationStatus(PreparationStatus.New)).toBe(
+      PreparationStatus.Preparing,
+    );
+    expect(findNextPreparationStatus(PreparationStatus.Ready)).toBeNull();
   });
 });

@@ -173,6 +173,8 @@ erDiagram
     timestamp assigned_at
     timestamp status_changed_at
     varchar cancellation_reason
+    timestamp preparation_started_at
+    timestamp ready_at
     timestamp created_at
   }
   order_status_changes {
@@ -235,7 +237,7 @@ Todas las tablas tienen `id` como llave primaria (bigint generado por la base) y
 - Llaves foráneas: role_id → roles. Al borrar el rol: se borran sus permisos.
 - NOT NULL: role_id, permission_key.
 - UNIQUE: role_id con permission_key.
-- CHECK: permission_key solo puede ser organizations.view, delivery_fees.manage, merchants.manage, orders.create, drivers.manage u orders.assign.
+- CHECK: permission_key solo puede ser organizations.view, delivery_fees.manage, merchants.manage, orders.create, drivers.manage, orders.assign u orders.manage.
 
 ### users
 
@@ -249,7 +251,7 @@ Todas las tablas tienen `id` como llave primaria (bigint generado por la base) y
 - Llaves foráneas: user_id → users. Al borrar el usuario: se borran sus permisos.
 - NOT NULL: user_id, permission_key.
 - UNIQUE: user_id con permission_key.
-- CHECK: permission_key solo puede ser organizations.view, delivery_fees.manage, merchants.manage, orders.create, drivers.manage u orders.assign.
+- CHECK: permission_key solo puede ser organizations.view, delivery_fees.manage, merchants.manage, orders.create, drivers.manage, orders.assign u orders.manage.
 
 ### drivers
 
@@ -331,9 +333,9 @@ Todas las tablas tienen `id` como llave primaria (bigint generado por la base) y
 ### orders
 
 - Llaves foráneas: organization_id → organizations, branch_id → branches, customer_id → customers, created_by_user_id → users y driver_id → drivers. Al borrar cualquiera de ellos: se impide si tiene pedidos.
-- NOT NULL: todo menos distance_km, que solo se llena cuando el costo de Volá! se calculó por distancia, driver_id y assigned_at, que se llenan al asignar la orden a un motorista, y cancellation_reason, que solo tiene la orden cancelada. status_changed_at guarda la hora del último cambio de estado.
+- NOT NULL: todo menos distance_km, que solo se llena cuando el costo de Volá! se calculó por distancia, driver_id y assigned_at, que se llenan al asignar la orden a un motorista, y cancellation_reason, que solo tiene la orden cancelada. status_changed_at guarda la hora del último cambio de estado. preparation_started_at y ready_at los marca el comercio cuando empieza a preparar la orden y cuando queda lista para recoger.
 - UNIQUE: ninguna.
-- CHECK: status solo puede ser new, preparing, heading_to_branch, at_branch, on_the_way, delivered o cancelled. cancellation_reason se llena solo cuando status es cancelled. delivery_address no puede estar vacía. Los montos no pueden ser negativos. total es subtotal más customer_delivery_fee. driver_id y assigned_at se llenan juntos o ninguno.
+- CHECK: status solo puede ser new, preparing, heading_to_branch, at_branch, on_the_way, delivered o cancelled. cancellation_reason se llena solo cuando status es cancelled. delivery_address no puede estar vacía. Los montos no pueden ser negativos. total es subtotal más customer_delivery_fee. driver_id y assigned_at se llenan juntos o ninguno. ready_at solo se llena si ya hay preparation_started_at.
 
 ### order_status_changes
 

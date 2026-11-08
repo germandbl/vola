@@ -27,6 +27,57 @@ export const ORDER_STATUS_LABEL: Record<OrderStatus, string> = {
   [OrderStatus.Cancelled]: "Cancelada",
 };
 
+// La preparación la lleva el comercio, en paralelo al recorrido del motorista.
+export const PreparationStatus = {
+  New: "new",
+  Preparing: "preparing",
+  Ready: "ready",
+} as const;
+
+export type PreparationStatus =
+  (typeof PreparationStatus)[keyof typeof PreparationStatus];
+
+export const preparationStatusSchema = z.enum(PreparationStatus);
+
+export const PREPARATION_STATUS_LABEL: Record<PreparationStatus, string> = {
+  [PreparationStatus.New]: "Nueva",
+  [PreparationStatus.Preparing]: "En preparación",
+  [PreparationStatus.Ready]: "Lista para recoger",
+};
+
+const NEXT_PREPARATION_STATUS: Record<
+  PreparationStatus,
+  PreparationStatus | null
+> = {
+  [PreparationStatus.New]: PreparationStatus.Preparing,
+  [PreparationStatus.Preparing]: PreparationStatus.Ready,
+  [PreparationStatus.Ready]: null,
+};
+
+export function findNextPreparationStatus(
+  status: PreparationStatus,
+): PreparationStatus | null {
+  return NEXT_PREPARATION_STATUS[status];
+}
+
+export function getPreparationStatus(
+  preparationStartedAt: string | Date | null,
+  readyAt: string | Date | null,
+): PreparationStatus {
+  if (readyAt !== null) return PreparationStatus.Ready;
+  if (preparationStartedAt !== null) return PreparationStatus.Preparing;
+  return PreparationStatus.New;
+}
+
+export const orderPreparationFormSchema = z.object({
+  preparationStatus: z.enum([
+    PreparationStatus.Preparing,
+    PreparationStatus.Ready,
+  ]),
+});
+
+export type OrderPreparationForm = z.infer<typeof orderPreparationFormSchema>;
+
 // Las órdenes en estos estados son trabajo pendiente del motorista.
 export const ACTIVE_ORDER_STATUSES: OrderStatus[] = [
   OrderStatus.New,
@@ -178,6 +229,9 @@ export const orderSummarySchema = z.object({
   statusChangedAt: z.string(),
   cancellationReason: z.string().nullable(),
   createdAt: z.string(),
+  preparationStatus: preparationStatusSchema,
+  preparationStartedAt: z.string().nullable(),
+  readyAt: z.string().nullable(),
 });
 
 export type OrderSummary = z.infer<typeof orderSummarySchema>;
@@ -224,6 +278,9 @@ export const driverOrderSchema = z.object({
   currency: z.string().nullable(),
   assignedAt: z.string(),
   statusChangedAt: z.string(),
+  preparationStatus: preparationStatusSchema,
+  preparationStartedAt: z.string().nullable(),
+  readyAt: z.string().nullable(),
 });
 
 export type DriverOrder = z.infer<typeof driverOrderSchema>;

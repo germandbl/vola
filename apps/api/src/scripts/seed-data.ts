@@ -92,6 +92,7 @@ export const SEED_ORGANIZATIONS: SeedOrganization[] = [
           Permission.ManageMerchants,
           Permission.CreateOrders,
           Permission.AssignOrders,
+          Permission.ManageOrders,
         ],
       },
       {
@@ -176,6 +177,7 @@ export const SEED_ORGANIZATIONS: SeedOrganization[] = [
         permissions: [
           Permission.CreateOrders,
           Permission.AssignOrders,
+          Permission.ManageOrders,
           Permission.ManageMerchants,
         ],
       },
