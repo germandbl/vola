@@ -45,6 +45,7 @@ export const driverSummarySchema = z.object({
   phoneNumber: z.string(),
   owner: driverOwnerSchema,
   merchants: z.array(driverMerchantSchema),
+  isAvailable: z.boolean(),
   createdAt: z.string(),
 });
 
@@ -58,3 +59,19 @@ export function canDriverServeMerchant(
   if (owner.isPlatform) return true;
   return merchant.organizationId === owner.id;
 }
+
+export const driverAvailabilityFormSchema = z.object({
+  isAvailable: z.boolean(),
+});
+
+export type DriverAvailabilityForm = z.infer<typeof driverAvailabilityFormSchema>;
+
+export const driverProfileSchema = z.object({
+  id: z.number(),
+  name: z.string(),
+  email: z.string(),
+  phoneNumber: z.string(),
+  isAvailable: z.boolean(),
+});
+
+export type DriverProfile = z.infer<typeof driverProfileSchema>;

@@ -2,28 +2,18 @@ import { spacing } from "@vola/shared";
 import { StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { AppText } from "@/components/AppText";
-import { ErrorMessage } from "@/components/ErrorMessage";
-import { SecondaryButton } from "@/components/SecondaryButton";
-import { useSignOut } from "@/hooks/use-sign-out";
-import { useSession } from "@/session/SessionProvider";
+import { useSignedInSession } from "@/session/SessionProvider";
 
 export default function HomeScreen() {
-  const { session } = useSession();
-  const signOut = useSignOut();
+  const { user } = useSignedInSession();
 
   return (
-    <SafeAreaView style={styles.screen}>
+    <SafeAreaView edges={["top"]} style={styles.screen}>
       <View style={styles.content}>
-        <View style={styles.heading}>
-          <AppText variant="titulo1">Hola, {session?.user.name}</AppText>
-          <AppText tone="tintaSuave">Ya estás dentro. Pronto vas a ver acá tus órdenes.</AppText>
-        </View>
-        {signOut.error && <ErrorMessage message={signOut.error} />}
-        <SecondaryButton
-          label="Cerrar sesión"
-          isLoading={signOut.isPending}
-          onPress={signOut.confirmSignOut}
-        />
+        <AppText variant="titulo1">Hola, {user.name}</AppText>
+        <AppText tone="tintaSuave">
+          Pronto vas a ver acá tus órdenes. Para recibirlas, marcate disponible en Perfil.
+        </AppText>
       </View>
     </SafeAreaView>
   );
@@ -31,6 +21,5 @@ export default function HomeScreen() {
 
 const styles = StyleSheet.create({
   screen: { flex: 1 },
-  content: { flex: 1, justifyContent: "space-between", padding: spacing[4] },
-  heading: { gap: spacing[2] },
+  content: { gap: spacing[2], padding: spacing[4] },
 });

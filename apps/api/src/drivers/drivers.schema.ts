@@ -1,4 +1,10 @@
-import { bigint, pgTable, timestamp, unique } from 'drizzle-orm/pg-core';
+import {
+  bigint,
+  boolean,
+  pgTable,
+  timestamp,
+  unique,
+} from 'drizzle-orm/pg-core';
 import { countries } from '../countries/countries.schema.js';
 import { merchants } from '../merchants/merchants.schema.js';
 import { users } from '../users/users.schema.js';
@@ -12,6 +18,8 @@ export const drivers = pgTable('drivers', {
   countryId: bigint('country_id', { mode: 'number' })
     .notNull()
     .references(() => countries.id, { onDelete: 'restrict' }),
+  // Un motorista nuevo arranca no disponible: recibe órdenes solo cuando él mismo se marca disponible.
+  isAvailable: boolean('is_available').notNull().default(false),
   createdAt: timestamp('created_at').notNull().defaultNow(),
 });
 
