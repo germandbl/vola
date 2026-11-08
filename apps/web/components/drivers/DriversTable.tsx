@@ -1,7 +1,7 @@
 import type { DriverSummary } from "@vola/shared";
 import { Bike } from "lucide-react";
-import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
+import { ViewDetailButton } from "@/components/ViewDetailButton";
 import {
   Empty,
   EmptyDescription,
@@ -70,16 +70,15 @@ export async function DriversTable({ showOwner }: DriversTableProps) {
             <TableHead>Atiende</TableHead>
             <TableHead>Estado</TableHead>
             <TableHead>Creado</TableHead>
+            <TableHead>
+              <span className="sr-only">Acciones</span>
+            </TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {drivers.map((driver) => (
             <TableRow key={driver.id}>
-              <TableCell className="font-semibold">
-                <Link href={`/motoristas/${driver.id}`} className="hover:underline">
-                  {driver.name}
-                </Link>
-              </TableCell>
+              <TableCell className="font-semibold">{driver.name}</TableCell>
               {showOwner && <TableCell>{driver.owner.name}</TableCell>}
               <TableCell>{driver.email}</TableCell>
               <TableCell>{driver.phoneNumber}</TableCell>
@@ -90,6 +89,9 @@ export async function DriversTable({ showOwner }: DriversTableProps) {
                 </Badge>
               </TableCell>
               <TableCell>{formatDate(driver.createdAt)}</TableCell>
+              <TableCell className="text-right">
+                <ViewDetailButton href={`/motoristas/${driver.id}`} />
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>

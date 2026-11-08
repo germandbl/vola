@@ -1,5 +1,5 @@
 import { Store } from "lucide-react";
-import Link from "next/link";
+import { ViewDetailButton } from "@/components/ViewDetailButton";
 import {
   Empty,
   EmptyDescription,
@@ -47,22 +47,23 @@ export async function MerchantsTable({ organizationId }: MerchantsTableProps) {
             <TableHead>Encargado</TableHead>
             <TableHead>Correo</TableHead>
             <TableHead>Teléfono</TableHead>
+            <TableHead>
+              <span className="sr-only">Acciones</span>
+            </TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {merchants.map((merchant) => (
             <TableRow key={merchant.id}>
-              <TableCell className="font-semibold">
-                <Link
-                  href={`/organizaciones/${organizationId}/comercios/${merchant.id}`}
-                  className="hover:underline"
-                >
-                  {merchant.name}
-                </Link>
-              </TableCell>
+              <TableCell className="font-semibold">{merchant.name}</TableCell>
               <TableCell>{merchant.contactName}</TableCell>
               <TableCell>{merchant.contactEmail}</TableCell>
               <TableCell>{merchant.contactPhone}</TableCell>
+              <TableCell className="text-right">
+                <ViewDetailButton
+                  href={`/organizaciones/${organizationId}/comercios/${merchant.id}`}
+                />
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>

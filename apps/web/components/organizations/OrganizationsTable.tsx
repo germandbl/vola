@@ -1,6 +1,6 @@
 import { Building2 } from "lucide-react";
-import Link from "next/link";
 import { ListPagination } from "@/components/ListPagination";
+import { ViewDetailButton } from "@/components/ViewDetailButton";
 import { Badge } from "@/components/ui/badge";
 import {
   Empty,
@@ -51,21 +51,23 @@ export async function OrganizationsTable({ page }: OrganizationsTableProps) {
               <TableHead>Tipo</TableHead>
               <TableHead>País</TableHead>
               <TableHead>Creada</TableHead>
+              <TableHead>
+                <span className="sr-only">Acciones</span>
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {organizationsPage.items.map((organization) => (
               <TableRow key={organization.id}>
-                <TableCell className="font-semibold">
-                  <Link href={`/organizaciones/${organization.id}`} className="hover:underline">
-                    {organization.name}
-                  </Link>
-                </TableCell>
+                <TableCell className="font-semibold">{organization.name}</TableCell>
                 <TableCell>
                   <Badge variant="secondary">{ORGANIZATION_TYPE_LABEL[organization.type]}</Badge>
                 </TableCell>
                 <TableCell>{organization.countryName ?? "Sin país"}</TableCell>
                 <TableCell>{formatDate(organization.createdAt)}</TableCell>
+                <TableCell className="text-right">
+                  <ViewDetailButton href={`/organizaciones/${organization.id}`} />
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>

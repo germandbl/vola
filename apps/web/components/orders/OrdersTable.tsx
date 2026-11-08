@@ -6,8 +6,8 @@ import {
   type OrderSummary,
 } from "@vola/shared";
 import { ReceiptText } from "lucide-react";
-import Link from "next/link";
 import { ListPagination } from "@/components/ListPagination";
+import { ViewDetailButton } from "@/components/ViewDetailButton";
 import {
   Empty,
   EmptyDescription,
@@ -78,20 +78,15 @@ export async function OrdersTable({ page, showOrganization, currentUser }: Order
               <TableHead>Estado</TableHead>
               <TableHead>Motorista</TableHead>
               <TableHead>Creado</TableHead>
+              <TableHead>
+                <span className="sr-only">Acciones</span>
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {ordersPage.items.map((order) => (
               <TableRow key={order.id}>
-                <TableCell className="font-semibold">
-                  <Link
-                    href={`/ordenes?page=${ordersPage.page}&${ORDER_DETAIL_PARAM}=${order.id}`}
-                    scroll={false}
-                    className="text-accion underline-offset-4 hover:underline"
-                  >
-                    #{order.id}
-                  </Link>
-                </TableCell>
+                <TableCell className="font-semibold">#{order.id}</TableCell>
                 {showOrganization && <TableCell>{order.organizationName}</TableCell>}
                 <TableCell>
                   <p>{order.customerName}</p>
@@ -130,6 +125,12 @@ export async function OrdersTable({ page, showOrganization, currentUser }: Order
                   )}
                 </TableCell>
                 <TableCell>{formatDate(order.createdAt)}</TableCell>
+                <TableCell className="text-right">
+                  <ViewDetailButton
+                    href={`/ordenes?page=${ordersPage.page}&${ORDER_DETAIL_PARAM}=${order.id}`}
+                    shouldScroll={false}
+                  />
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>
