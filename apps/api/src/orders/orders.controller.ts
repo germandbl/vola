@@ -14,6 +14,7 @@ import {
   paginationQuerySchema,
   type AuthUser,
   type OrderAssignmentForm,
+  type DriverOrder,
   type OrderBranchOption,
   type OrderDriver,
   type OrderForm,
@@ -39,6 +40,11 @@ export class OrdersController {
     @Query(new ZodValidationPipe(paginationQuerySchema)) query: PaginationQuery,
   ): Promise<Paginated<OrderSummary>> {
     return this.ordersService.findPage(user, query.page);
+  }
+
+  @Get('assigned-to-me')
+  findAssignedToMe(@CurrentUser() user: AuthUser): Promise<DriverOrder[]> {
+    return this.ordersService.findAssignedToDriver(user);
   }
 
   @Get('branch-options')

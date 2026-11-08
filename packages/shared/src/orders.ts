@@ -14,6 +14,22 @@ export type OrderStatus = (typeof OrderStatus)[keyof typeof OrderStatus];
 
 export const orderStatusSchema = z.enum(OrderStatus);
 
+// Textos del chip de estado según DESIGN.md; los usan el panel web y la app de motoristas.
+export const ORDER_STATUS_LABEL: Record<OrderStatus, string> = {
+  [OrderStatus.New]: "Nueva",
+  [OrderStatus.Preparing]: "Preparando",
+  [OrderStatus.OnTheWay]: "Va volando",
+  [OrderStatus.Delivered]: "Entregada",
+  [OrderStatus.Cancelled]: "Cancelada",
+};
+
+// Las órdenes en estos estados son trabajo pendiente del motorista.
+export const ACTIVE_ORDER_STATUSES: OrderStatus[] = [
+  OrderStatus.New,
+  OrderStatus.Preparing,
+  OrderStatus.OnTheWay,
+];
+
 const MAX_ITEMS = 50;
 const MAX_ITEM_QUANTITY = 999;
 const CHOOSE_SUGGESTED_ADDRESS = "Elegí una dirección de las sugerencias.";
@@ -131,3 +147,20 @@ export const orderBranchOptionSchema = z.object({
 });
 
 export type OrderBranchOption = z.infer<typeof orderBranchOptionSchema>;
+
+export const driverOrderSchema = z.object({
+  id: z.number(),
+  status: orderStatusSchema,
+  merchantName: z.string(),
+  branchName: z.string(),
+  customerName: z.string(),
+  customerPhone: z.string(),
+  deliveryAddress: z.string(),
+  deliveryLatitude: z.number(),
+  deliveryLongitude: z.number(),
+  total: z.number(),
+  currency: z.string().nullable(),
+  assignedAt: z.string(),
+});
+
+export type DriverOrder = z.infer<typeof driverOrderSchema>;

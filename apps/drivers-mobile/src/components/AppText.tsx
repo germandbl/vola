@@ -2,7 +2,7 @@ import { colors, type TypographyVariant } from "@vola/shared";
 import { Text, type TextProps } from "react-native";
 import { getTextStyle } from "@/theme/fonts";
 
-type AppTextTone = "tinta" | "tintaSuave" | "error" | "blanco";
+type AppTextTone = "tinta" | "tintaSuave" | "accion" | "error" | "blanco";
 
 interface AppTextProps extends TextProps {
   variant?: TypographyVariant;
