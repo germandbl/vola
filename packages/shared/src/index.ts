@@ -11,3 +11,4 @@ export * from './order-count-fees.js';
 export * from './merchants.js';
 export * from './branches.js';
 export * from "./orders.js";
+export * from './drivers.js';

@@ -167,7 +167,7 @@ export class UsersService {
     });
   }
 
-  private async findRoleIdByName(roleName: string): Promise<number> {
+  async findRoleIdByName(roleName: string): Promise<number> {
     const [role] = await this.database
       .select({ id: roles.id })
       .from(roles)

@@ -1,0 +1,2 @@
+ALTER TABLE "role_permissions" DROP CONSTRAINT "role_permissions_permission_key_known", ADD CONSTRAINT "role_permissions_permission_key_known" CHECK ("permission_key" IN ('organizations.view', 'delivery_fees.manage', 'merchants.manage', 'orders.create', 'drivers.manage'));--> statement-breakpoint
+ALTER TABLE "user_permissions" DROP CONSTRAINT "user_permissions_permission_key_known", ADD CONSTRAINT "user_permissions_permission_key_known" CHECK ("permission_key" IN ('organizations.view', 'delivery_fees.manage', 'merchants.manage', 'orders.create', 'drivers.manage'));
