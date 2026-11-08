@@ -13,6 +13,8 @@ import { FormErrorAlert } from "@/components/FormErrorAlert";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { useOrderActions } from "@/hooks/use-order-actions";
+import { CancelOrderDialog } from "./CancelOrderDialog";
+import { CompleteOrderDialog } from "./CompleteOrderDialog";
 
 interface OrderDetailActionsProps {
   order: OrderDetail;
@@ -57,6 +59,10 @@ export function OrderDetailActions({ order, currentUser, onUpdated }: OrderDetai
             Marcar lista para recoger
           </Button>
         )}
+      </div>
+      <div className="flex flex-wrap gap-3">
+        <CompleteOrderDialog order={order} onUpdated={onUpdated} />
+        <CancelOrderDialog order={order} onUpdated={onUpdated} />
       </div>
     </div>
   );

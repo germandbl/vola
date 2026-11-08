@@ -1,6 +1,11 @@
-import type { OrderDetail, OrderPreparationForm } from "@vola/shared";
+import type { OrderCancellationForm, OrderDetail, OrderPreparationForm } from "@vola/shared";
 import { useState, useTransition } from "react";
-import { changeOrderPreparation, type OrderActionResult } from "@/lib/order-detail-actions";
+import {
+  cancelOrder,
+  changeOrderPreparation,
+  completeOrder,
+  type OrderActionResult,
+} from "@/lib/order-detail-actions";
 
 export function useOrderActions(order: OrderDetail, onUpdated: (order: OrderDetail) => void) {
   const [error, setError] = useState<string>();
@@ -19,5 +24,13 @@ export function useOrderActions(order: OrderDetail, onUpdated: (order: OrderDeta
     run(() => changeOrderPreparation(order.id, { preparationStatus }));
   }
 
-  return { error, isPending, changePreparation };
+  function complete() {
+    run(() => completeOrder(order.id));
+  }
+
+  function cancel(form: OrderCancellationForm) {
+    run(() => cancelOrder(order.id, form));
+  }
+
+  return { error, isPending, changePreparation, complete, cancel };
 }

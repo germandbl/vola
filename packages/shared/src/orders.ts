@@ -117,6 +117,15 @@ export function canDriverMoveTo(
 
 const MAX_CANCELLATION_REASON_LENGTH = 300;
 
+const cancellationReasonSchema = z
+  .string()
+  .trim()
+  .min(1, "Escribí el motivo de la cancelación.")
+  .max(
+    MAX_CANCELLATION_REASON_LENGTH,
+    `El motivo no puede pasar de ${MAX_CANCELLATION_REASON_LENGTH} caracteres.`,
+  );
+
 export const orderStatusChangeFormSchema = z.discriminatedUnion("status", [
   z.object({
     status: z.enum([
@@ -128,18 +137,18 @@ export const orderStatusChangeFormSchema = z.discriminatedUnion("status", [
   }),
   z.object({
     status: z.literal(OrderStatus.Cancelled),
-    cancellationReason: z
-      .string()
-      .trim()
-      .min(1, "Escribí el motivo de la cancelación.")
-      .max(
-        MAX_CANCELLATION_REASON_LENGTH,
-        `El motivo no puede pasar de ${MAX_CANCELLATION_REASON_LENGTH} caracteres.`,
-      ),
+    cancellationReason: cancellationReasonSchema,
   }),
 ]);
 
 export type OrderStatusChangeForm = z.infer<typeof orderStatusChangeFormSchema>;
+
+// El comercio o Volá! cancelan con el mismo motivo obligatorio que el motorista.
+export const orderCancellationFormSchema = z.object({
+  cancellationReason: cancellationReasonSchema,
+});
+
+export type OrderCancellationForm = z.infer<typeof orderCancellationFormSchema>;
 
 const MAX_ITEMS = 50;
 const MAX_ITEM_QUANTITY = 999;

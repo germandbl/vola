@@ -4,6 +4,7 @@ import {
   PreparationStatus,
   findNextPreparationStatus,
   getPreparationStatus,
+  orderCancellationFormSchema,
   calculateOrderSubtotal,
   canDriverMoveTo,
   findDriverNextStatus,
@@ -136,5 +137,16 @@ describe("getPreparationStatus", () => {
       PreparationStatus.Preparing,
     );
     expect(findNextPreparationStatus(PreparationStatus.Ready)).toBeNull();
+  });
+});
+
+describe("orderCancellationFormSchema", () => {
+  it("requires a reason", () => {
+    const result = orderCancellationFormSchema.safeParse({
+      cancellationReason: "",
+    });
+    expect(result.error?.issues[0].message).toBe(
+      "Escribí el motivo de la cancelación.",
+    );
   });
 });
