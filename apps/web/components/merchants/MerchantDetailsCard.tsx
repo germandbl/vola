@@ -21,7 +21,7 @@ export function MerchantDetailsCard({ merchant, currentUser }: MerchantDetailsCa
         <CardTitle className="text-lg font-semibold">Datos del comercio</CardTitle>
       </CardHeader>
       <CardContent>
-        {canManageMerchants(currentUser) ? (
+        {canManageMerchants(currentUser, merchant.organizationId) ? (
           <MerchantForm
             action={updateMerchant.bind(null, merchant.id)}
             merchant={merchant}

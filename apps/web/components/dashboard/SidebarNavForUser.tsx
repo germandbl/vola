@@ -1,4 +1,9 @@
-import { RoleName, canViewAllOrganizations, canViewOrders, type AuthUser } from "@vola/shared";
+import {
+  canViewAllOrganizations,
+  canViewOrganization,
+  canViewOrders,
+  type AuthUser,
+} from "@vola/shared";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getCurrentUser } from "@/lib/current-user";
 import { SidebarNav, type NavItem } from "./SidebarNav";
@@ -12,7 +17,7 @@ function getNavItems(user: AuthUser): NavItem[] {
     items.push({ href: "/organizaciones", label: "Organizaciones", icon: "organizations" });
     return items;
   }
-  if (user.role === RoleName.Administrator) {
+  if (canViewOrganization(user, user.organizationId)) {
     items.push({
       href: `/organizaciones/${user.organizationId}`,
       label: "Mi organización",

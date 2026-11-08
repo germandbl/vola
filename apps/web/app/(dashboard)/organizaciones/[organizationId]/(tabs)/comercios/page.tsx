@@ -21,7 +21,7 @@ async function OrganizationMerchants({ params }: Pick<OrganizationMerchantsPageP
     <section className="flex flex-col gap-4">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <h2 className="text-2xl font-bold">Comercios</h2>
-        {canManageMerchants(currentUser) && (
+        {canManageMerchants(currentUser, organizationId) && (
           <Button asChild>
             <Link href={`/organizaciones/${organizationId}/comercios/nuevo`}>
               <Plus data-icon="inline-start" />

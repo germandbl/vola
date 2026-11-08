@@ -172,7 +172,7 @@ export const SEED_ORGANIZATIONS: SeedOrganization[] = [
         phoneNumber: '+50433087719',
         role: RoleName.Agent,
         teamName: 'Despacho',
-        permissions: [Permission.CreateOrders],
+        permissions: [Permission.CreateOrders, Permission.ManageMerchants],
       },
       {
         name: 'Óscar Mendoza',

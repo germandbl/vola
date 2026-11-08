@@ -1,11 +1,26 @@
-import type { AuthUser } from './auth.js';
-import { OrganizationType } from './organizations.js';
-import { Permission } from './permissions.js';
-import { RoleName } from './roles.js';
+import type { AuthUser } from "./auth.js";
+import { OrganizationType } from "./organizations.js";
+import { Permission } from "./permissions.js";
+import { RoleName } from "./roles.js";
 
 // Estos permisos dan acceso a todos los comercios, así que solo cuentan para usuarios de Volá!, no de un comercio.
-function hasPlatformPermission(user: AuthUser, permission: Permission): boolean {
+function hasPlatformPermission(
+  user: AuthUser,
+  permission: Permission,
+): boolean {
   if (user.organizationType !== OrganizationType.Platform) return false;
+  return user.permissions.includes(permission);
+}
+
+// Un usuario del cliente actúa en su propia organización: el administrador siempre, un agent solo con el permiso.
+function canActInOwnOrganization(
+  user: AuthUser,
+  organizationId: number,
+  permission: Permission,
+): boolean {
+  if (user.organizationId !== organizationId) return false;
+  if (user.role === RoleName.Administrator) return true;
+  if (user.role !== RoleName.Agent) return false;
   return user.permissions.includes(permission);
 }
 
@@ -39,12 +54,29 @@ export function canViewOrganization(
   organizationId: number,
 ): boolean {
   if (canViewAllOrganizations(user)) return true;
-  return canManageOrganization(user, organizationId);
+  if (canManageOrganization(user, organizationId)) return true;
+  return canActInOwnOrganization(
+    user,
+    organizationId,
+    Permission.ManageMerchants,
+  );
 }
 
-export function canManageMerchants(user: AuthUser): boolean {
+export function canManageAllMerchants(user: AuthUser): boolean {
   if (user.role === RoleName.Superadmin) return true;
   return hasPlatformPermission(user, Permission.ManageMerchants);
+}
+
+export function canManageMerchants(
+  user: AuthUser,
+  organizationId: number,
+): boolean {
+  if (canManageAllMerchants(user)) return true;
+  return canActInOwnOrganization(
+    user,
+    organizationId,
+    Permission.ManageMerchants,
+  );
 }
 
 export function canCreateOrders(
@@ -53,10 +85,7 @@ export function canCreateOrders(
 ): boolean {
   if (user.role === RoleName.Superadmin) return true;
   if (hasPlatformPermission(user, Permission.CreateOrders)) return true;
-  if (user.organizationId !== organizationId) return false;
-  if (user.role === RoleName.Administrator) return true;
-  if (user.role !== RoleName.Agent) return false;
-  return user.permissions.includes(Permission.CreateOrders);
+  return canActInOwnOrganization(user, organizationId, Permission.CreateOrders);
 }
 
 export function canCreateOrdersForAnyOrganization(user: AuthUser): boolean {

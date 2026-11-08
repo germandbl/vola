@@ -6,7 +6,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import {
-  canManageMerchants,
+  canManageAllMerchants,
   type AuthUser,
   type Branch,
   type BranchForm,
@@ -43,7 +43,7 @@ function toHoursAndMinutes(time: string | null): string | null {
 }
 
 function assertCanManageBranches(user: AuthUser): void {
-  if (!canManageMerchants(user)) {
+  if (!canManageAllMerchants(user)) {
     throw new ForbiddenException('You cannot manage branches');
   }
 }
