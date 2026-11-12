@@ -23,6 +23,11 @@ export function AvailabilityCard({ isAvailable, isUpdating, onChange }: Availabi
        {/*  <AppText variant="pequeno" tone="tintaSuave">
           {describeAvailability(isAvailable)}
         </AppText> */}
+        {isAvailable && (
+          <AppText variant="pequeno" tone="tintaSuave">
+            Compartiendo tu ubicación.
+          </AppText>
+        )}
       </View>
       {isUpdating ? (
         <ActivityIndicator color={colors.tinta} />

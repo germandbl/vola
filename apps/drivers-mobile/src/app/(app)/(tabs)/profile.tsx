@@ -6,6 +6,7 @@ import { AppText } from "@/components/AppText";
 import { AvailabilityCard } from "@/components/AvailabilityCard";
 import { Avatar } from "@/components/Avatar";
 import { ErrorMessage } from "@/components/ErrorMessage";
+import { LocationPermissionNotice } from "@/components/LocationPermissionNotice";
 import { SecondaryButton } from "@/components/SecondaryButton";
 import { useDriverProfile } from "@/hooks/use-driver-profile";
 import { useSignOut } from "@/hooks/use-sign-out";
@@ -58,6 +59,7 @@ export default function ProfileScreen() {
             onChange={driverProfile.changeAvailability}
           />
         )}
+        {driverProfile.isLocationPermissionMissing && <LocationPermissionNotice />}
         {signOut.error && <ErrorMessage message={signOut.error} />}
         <SecondaryButton
           label="Cerrar sesión"
