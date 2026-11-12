@@ -17,12 +17,13 @@ import {
   type DriverForm,
   type DriverMerchant,
   type DriverAvailabilityForm,
+  type DriverLocationForm,
   type DriverMerchantsForm,
   type DriverOwner,
   type DriverProfile,
   type DriverSummary,
 } from '@vola/shared';
-import { asc, desc, eq, inArray, type SQL } from 'drizzle-orm';
+import { and, asc, desc, eq, inArray, type SQL } from 'drizzle-orm';
 import { hashPassword } from '../auth/passwords.js';
 import { createFieldValidationException } from '../common/field-validation.js';
 import { DATABASE, type Database } from '../database/database.module.js';
@@ -72,6 +73,19 @@ function toOwner(
   type: OrganizationType,
 ): DriverOwner {
   return { id, name, isPlatform: type === OrganizationType.Platform };
+}
+
+const CLEARED_LOCATION = {
+  latitude: null,
+  longitude: null,
+  locationAccuracyMeters: null,
+  locationRecordedAt: null,
+};
+
+// Al dejar de estar disponible se borra la ubicación: nadie debe ver dónde está un motorista fuera de turno.
+function toAvailabilityLocation(form: DriverAvailabilityForm) {
+  if (form.isAvailable) return {};
+  return CLEARED_LOCATION;
 }
 
 function assertIsDriver(user: AuthUser): void {
@@ -142,9 +156,32 @@ export class DriversService {
     assertIsDriver(user);
     await this.database
       .update(drivers)
-      .set({ isAvailable: form.isAvailable })
+      .set({ isAvailable: form.isAvailable, ...toAvailabilityLocation(form) })
       .where(eq(drivers.userId, user.id));
     return this.findOwnProfile(user);
+  }
+
+  async updateOwnLocation(
+    user: AuthUser,
+    form: DriverLocationForm,
+  ): Promise<void> {
+    assertIsDriver(user);
+    // La condición va en el mismo UPDATE: una ubicación que llega tarde no revive a quien ya se marcó no disponible.
+    const updated = await this.database
+      .update(drivers)
+      .set({
+        latitude: form.latitude,
+        longitude: form.longitude,
+        locationAccuracyMeters: form.accuracyMeters,
+        locationRecordedAt: new Date(form.recordedAt),
+      })
+      .where(and(eq(drivers.userId, user.id), eq(drivers.isAvailable, true)))
+      .returning({ id: drivers.id });
+    if (updated.length === 0) {
+      throw new ConflictException(
+        `Driver for user ${user.id} is not available; location is not shared`,
+      );
+    }
   }
 
   async findOwnerOptions(user: AuthUser): Promise<DriverOwner[]> {

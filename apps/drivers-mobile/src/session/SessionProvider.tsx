@@ -2,6 +2,7 @@ import { RoleName, type LoginRequest } from "@vola/shared";
 import { createContext, use, useEffect, useState, type ReactNode } from "react";
 import { ApiUnreachableError } from "@/lib/api";
 import { SignInError, requestCurrentUser, requestLogin, requestLogout } from "@/lib/auth-api";
+import { stopLocationSharing } from "@/lib/location-sharing";
 import {
   deleteStoredSession,
   readStoredSession,
@@ -85,6 +86,7 @@ export function SessionProvider({ children }: SessionProviderProps) {
   async function signOut() {
     if (!session) return;
     await requestLogout(session.token);
+    await stopLocationSharing();
     await deleteStoredSession();
     setSession(null);
   }

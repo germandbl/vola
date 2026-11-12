@@ -1,0 +1,9 @@
+{
+  "platforms": ["apple", "android"],
+  "apple": {
+    "modules": ["VolaLocationModule"]
+  },
+  "android": {
+    "modules": ["expo.modules.volalocation.VolaLocationModule"]
+  }
+}

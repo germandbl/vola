@@ -1,12 +1,16 @@
 // Se distingue de un error del API: sin conexión, un motorista con sesión guardada puede seguir dentro.
 export class ApiUnreachableError extends Error {}
 
-function getApiUrl(path: string): string {
+export function getApiBaseUrl(): string {
   const apiUrl = process.env.EXPO_PUBLIC_API_URL;
   if (!apiUrl) {
     throw new Error("EXPO_PUBLIC_API_URL is not defined. Add it to apps/drivers-mobile/.env.local");
   }
-  return `${apiUrl}${path}`;
+  return apiUrl;
+}
+
+function getApiUrl(path: string): string {
+  return `${getApiBaseUrl()}${path}`;
 }
 
 interface ApiRequest {
