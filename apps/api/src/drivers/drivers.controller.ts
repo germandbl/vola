@@ -2,6 +2,8 @@ import {
   Body,
   Controller,
   Get,
+  HttpCode,
+  HttpStatus,
   Param,
   ParseIntPipe,
   Post,
@@ -10,10 +12,12 @@ import {
 import {
   driverAvailabilityFormSchema,
   driverFormSchema,
+  driverLocationFormSchema,
   driverMerchantsFormSchema,
   type AuthUser,
   type DriverAvailabilityForm,
   type DriverForm,
+  type DriverLocationForm,
   type DriverMerchant,
   type DriverMerchantsForm,
   type DriverOwner,
@@ -46,6 +50,16 @@ export class DriversController {
     form: DriverAvailabilityForm,
   ): Promise<DriverProfile> {
     return this.driversService.updateOwnAvailability(user, form);
+  }
+
+  @Put('me/location')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  updateOwnLocation(
+    @CurrentUser() user: AuthUser,
+    @Body(new ZodValidationPipe(driverLocationFormSchema))
+    form: DriverLocationForm,
+  ): Promise<void> {
+    return this.driversService.updateOwnLocation(user, form);
   }
 
   @Get('owner-options')

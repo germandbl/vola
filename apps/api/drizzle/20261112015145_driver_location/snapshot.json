@@ -1,0 +1,180 @@
+{
+  "type": "diff",
+  "version": "9",
+  "dialect": "postgres",
+  "id": "846c29e1-d088-45fd-a1b6-a3cb42934a24",
+  "prevIds": [
+    "94f8cf34-7b8e-4bd6-b92c-432dfde839e2"
+  ],
+  "footprints": [
+    {
+      "statementType": "add_column",
+      "statementTarget": [
+        "column",
+        "public",
+        "drivers",
+        "latitude"
+      ],
+      "writes": [
+        "s|col|public.drivers.latitude",
+        "n|col|public.drivers.latitude",
+        "e|col|public.drivers.latitude"
+      ],
+      "reads": [
+        "n|tbl|public.drivers",
+        "n|sch|public"
+      ]
+    },
+    {
+      "statementType": "add_column",
+      "statementTarget": [
+        "column",
+        "public",
+        "drivers",
+        "longitude"
+      ],
+      "writes": [
+        "s|col|public.drivers.longitude",
+        "n|col|public.drivers.longitude",
+        "e|col|public.drivers.longitude"
+      ],
+      "reads": [
+        "n|tbl|public.drivers",
+        "n|sch|public"
+      ]
+    },
+    {
+      "statementType": "add_column",
+      "statementTarget": [
+        "column",
+        "public",
+        "drivers",
+        "location_accuracy_meters"
+      ],
+      "writes": [
+        "s|col|public.drivers.location_accuracy_meters",
+        "n|col|public.drivers.location_accuracy_meters",
+        "e|col|public.drivers.location_accuracy_meters"
+      ],
+      "reads": [
+        "n|tbl|public.drivers",
+        "n|sch|public"
+      ]
+    },
+    {
+      "statementType": "add_column",
+      "statementTarget": [
+        "column",
+        "public",
+        "drivers",
+        "location_recorded_at"
+      ],
+      "writes": [
+        "s|col|public.drivers.location_recorded_at",
+        "n|col|public.drivers.location_recorded_at",
+        "e|col|public.drivers.location_recorded_at"
+      ],
+      "reads": [
+        "n|tbl|public.drivers",
+        "n|sch|public"
+      ]
+    },
+    {
+      "statementType": "add_check",
+      "statementTarget": [
+        "table",
+        "public",
+        "drivers"
+      ],
+      "writes": [
+        "s|ck|public.drivers.drivers_location_complete",
+        "n|ck|public.drivers.drivers_location_complete",
+        "e|ck|public.drivers.drivers_location_complete",
+        "n|con|public.drivers.drivers_location_complete"
+      ],
+      "reads": [
+        "n|tbl|public.drivers",
+        "n|sch|public",
+        "n|col|public.drivers.latitude",
+        "n|col|public.drivers.longitude",
+        "n|col|public.drivers.location_recorded_at"
+      ]
+    }
+  ],
+  "deltas": [
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "drivers",
+        "name": "latitude",
+        "type": "double precision",
+        "typeSchema": null,
+        "notNull": false,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "drivers",
+        "name": "longitude",
+        "type": "double precision",
+        "typeSchema": null,
+        "notNull": false,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "drivers",
+        "name": "location_accuracy_meters",
+        "type": "double precision",
+        "typeSchema": null,
+        "notNull": false,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "drivers",
+        "name": "location_recorded_at",
+        "type": "timestamp",
+        "typeSchema": null,
+        "notNull": false,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "drivers",
+        "name": "drivers_location_complete",
+        "value": "(\"latitude\" IS NULL) = (\"longitude\" IS NULL) AND (\"latitude\" IS NULL) = (\"location_recorded_at\" IS NULL)",
+        "entityType": "checks"
+      }
+    }
+  ]
+}
