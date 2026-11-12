@@ -75,3 +75,12 @@ export const driverProfileSchema = z.object({
 });
 
 export type DriverProfile = z.infer<typeof driverProfileSchema>;
+
+export const driverLocationFormSchema = z.object({
+  latitude: z.number().min(-90).max(90),
+  longitude: z.number().min(-180).max(180),
+  accuracyMeters: z.number().nonnegative(),
+  recordedAt: z.iso.datetime(),
+});
+
+export type DriverLocationForm = z.infer<typeof driverLocationFormSchema>;
