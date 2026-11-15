@@ -9,6 +9,7 @@ export function proxy(request: NextRequest) {
   return NextResponse.redirect(new URL("/login", request.url));
 }
 
+// seguimiento es público: lo abre el cliente desde el enlace que le mandan, sin cuenta.
 export const config = {
-  matcher: ["/((?!login|_next/static|_next/image|favicon.ico).*)"],
+  matcher: ["/((?!login|seguimiento|_next/static|_next/image|favicon.ico).*)"],
 };

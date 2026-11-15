@@ -1,49 +1,31 @@
 "use client";
 
-import { APIProvider, Map, Marker } from "@vis.gl/react-google-maps";
+import { APIProvider, Map } from "@vis.gl/react-google-maps";
+import type { OrderDetail } from "@vola/shared";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { useState } from "react";
+import branchMarker from "@/assets/markers/branch.png";
 import customerMarker from "@/assets/markers/customer.png";
 import { FormErrorAlert } from "@/components/FormErrorAlert";
+import { MapImageMarker } from "@/components/maps/MapImageMarker";
 import {
   MAP_AUTH_FAILURE_MESSAGE,
   MISSING_MAPS_KEY_MESSAGE,
   useMapAuthFailure,
 } from "@/hooks/use-map-auth-failure";
-
-const MAP_ZOOM = 15;
-const MARKER_HEIGHT = 48;
-const MARKER_WIDTH = Math.round((customerMarker.width / customerMarker.height) * MARKER_HEIGHT);
-
-interface CustomerMarkerProps {
-  position: google.maps.LatLngLiteral;
-}
-
-// Va en su propio componente: así se renderiza dentro de <Map>, cuando google.maps ya cargó.
-function CustomerMarker({ position }: CustomerMarkerProps) {
-  return (
-    <Marker
-      position={position}
-      title="Cliente"
-      icon={{
-        url: customerMarker.src,
-        scaledSize: new google.maps.Size(MARKER_WIDTH, MARKER_HEIGHT),
-      }}
-    />
-  );
-}
+import { findBounds } from "@/lib/map-bounds";
 
 interface OrderDetailMapProps {
-  latitude: number;
-  longitude: number;
+  order: OrderDetail;
 }
 
 // El mapa arranca cerrado: cada vez que se abre cuesta una carga de Google Maps.
-export function OrderDetailMap({ latitude, longitude }: OrderDetailMapProps) {
+export function OrderDetailMap({ order }: OrderDetailMapProps) {
   const [isOpen, setIsOpen] = useState(false);
   const hasAuthFailed = useMapAuthFailure();
   const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
-  const position = { lat: latitude, lng: longitude };
+  const branchPosition = { lat: order.branchLatitude, lng: order.branchLongitude };
+  const customerPosition = { lat: order.deliveryLatitude, lng: order.deliveryLongitude };
 
   return (
     <div className="border-b">
@@ -62,8 +44,15 @@ export function OrderDetailMap({ latitude, longitude }: OrderDetailMapProps) {
           {!apiKey && <FormErrorAlert message={MISSING_MAPS_KEY_MESSAGE} />}
           {apiKey && !hasAuthFailed && (
             <APIProvider apiKey={apiKey}>
-              <Map defaultCenter={position} defaultZoom={MAP_ZOOM} disableDefaultUI zoomControl>
-                <CustomerMarker position={position} />
+              {/* key: al pasar a otra orden, el mapa se arma de nuevo con el encuadre de esa orden. */}
+              <Map
+                key={order.id}
+                defaultBounds={findBounds([branchPosition, customerPosition])}
+                disableDefaultUI
+                zoomControl
+              >
+                <MapImageMarker position={branchPosition} image={branchMarker} title="Sucursal" />
+                <MapImageMarker position={customerPosition} image={customerMarker} title="Cliente" />
               </Map>
             </APIProvider>
           )}
