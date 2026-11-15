@@ -17,6 +17,7 @@ function getNavItems(user: AuthUser): NavItem[] {
   }
   if (canAccessDrivers(user)) {
     items.push({ href: "/motoristas", label: "Motoristas", icon: "drivers" });
+    items.push({ href: "/mapa", label: "Mapa", icon: "map" });
   }
   if (canAccessSettlements(user)) {
     items.push({ href: "/liquidaciones", label: "Liquidaciones", icon: "settlements" });

@@ -9,6 +9,7 @@ import {
   countrySchema,
   deliveryFeeBasisSettingSchema,
   deliveryFeeRateSchema,
+  driverMapLocationSchema,
   driverMerchantSchema,
   driverOwnerSchema,
   driverSummarySchema,
@@ -32,6 +33,7 @@ import {
   type OrderSummary,
   type Organization,
   type CashSettlement,
+  type DriverMapLocation,
   type OrderGroup,
   type CashWithPlatform,
   type Paginated,
@@ -186,4 +188,8 @@ export function getCashWithPlatform(): Promise<CashWithPlatform> {
 
 export function getSettlementHistory(page: number): Promise<Paginated<CashSettlement>> {
   return getFromApi(`/settlements/history?page=${page}`, paginatedSchema(cashSettlementSchema));
+}
+
+export function getDriverLocations(): Promise<DriverMapLocation[]> {
+  return getFromApi("/drivers/locations", z.array(driverMapLocationSchema));
 }

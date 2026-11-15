@@ -2,8 +2,8 @@ import { OrderGroup, canViewAllOrders, canViewOrders } from "@vola/shared";
 import { notFound } from "next/navigation";
 import { getCurrentUser } from "@/lib/current-user";
 import { readPageNumber } from "@/lib/route-params";
-import { LiveOrdersProvider } from "./LiveOrdersProvider";
-import { LiveOrdersToolbar } from "./LiveOrdersToolbar";
+import { LiveRefreshProvider } from "@/components/LiveRefreshProvider";
+import { LiveRefreshToolbar } from "@/components/LiveRefreshToolbar";
 import { OrderDetailSheet } from "./OrderDetailSheet";
 import { OrdersTable } from "./OrdersTable";
 
@@ -32,11 +32,11 @@ export async function OrdersGroupContent({ group, searchParams }: OrdersGroupCon
   // Solo las activas se actualizan solas: son las que todavía cambian de estado, preparación o motorista.
   if (group !== OrderGroup.Active) return content;
   return (
-    <LiveOrdersProvider>
+    <LiveRefreshProvider>
       <div className="flex flex-col gap-3">
-        <LiveOrdersToolbar />
+        <LiveRefreshToolbar description="Las órdenes activas se actualizan solas cada 10 segundos." />
         {content}
       </div>
-    </LiveOrdersProvider>
+    </LiveRefreshProvider>
   );
 }
