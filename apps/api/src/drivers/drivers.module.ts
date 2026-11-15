@@ -8,5 +8,6 @@ import { DriversService } from './drivers.service.js';
   imports: [UsersModule],
   controllers: [DriversController],
   providers: [DriversService, DriverLocationsService],
+  exports: [DriverLocationsService],
 })
 export class DriversModule {}
