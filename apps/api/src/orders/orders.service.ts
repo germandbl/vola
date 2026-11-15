@@ -196,6 +196,7 @@ export class OrdersService {
     const [extra] = await this.database
       .select({
         trackingCode: orders.trackingCode,
+        paymentMethod: orders.paymentMethod,
         branchAddress: branches.address,
         branchLatitude: branches.latitude,
         branchLongitude: branches.longitude,
@@ -288,6 +289,7 @@ export class OrdersService {
           deliveryLongitude: form.deliveryLongitude,
           subtotal,
           customerDeliveryFee: form.customerDeliveryFee,
+          paymentMethod: form.paymentMethod,
           total: calculateOrderTotal(subtotal, form.customerDeliveryFee),
           volaDeliveryFee: volaDeliveryFee.fee,
           deliveryFeeBasis: volaDeliveryFee.basis,

@@ -150,6 +150,20 @@ export const orderCancellationFormSchema = z.object({
 
 export type OrderCancellationForm = z.infer<typeof orderCancellationFormSchema>;
 
+export const PaymentMethod = {
+  Card: "card",
+  Cash: "cash",
+} as const;
+
+export type PaymentMethod = (typeof PaymentMethod)[keyof typeof PaymentMethod];
+
+export const paymentMethodSchema = z.enum(PaymentMethod);
+
+export const PAYMENT_METHOD_LABEL: Record<PaymentMethod, string> = {
+  [PaymentMethod.Card]: "Tarjeta",
+  [PaymentMethod.Cash]: "Efectivo",
+};
+
 const MAX_ITEMS = 50;
 const MAX_ITEM_QUANTITY = 999;
 const CHOOSE_SUGGESTED_ADDRESS = "Buscá la dirección o ubicala en el mapa.";
@@ -185,6 +199,7 @@ export const orderFormSchema = z.object({
     .min(1, "Agregá al menos un producto.")
     .max(MAX_ITEMS, `Podés agregar hasta ${MAX_ITEMS} productos.`),
   customerDeliveryFee: feeAmountSchema,
+  paymentMethod: z.enum(PaymentMethod, { error: "Elegí cómo paga el cliente." }),
 });
 
 export type OrderForm = z.infer<typeof orderFormSchema>;
@@ -293,6 +308,7 @@ export const driverOrderSchema = z.object({
   deliveryLongitude: z.number(),
   total: z.number(),
   currency: z.string().nullable(),
+  paymentMethod: paymentMethodSchema,
   assignedAt: z.string(),
   statusChangedAt: z.string(),
   preparationStatus: preparationStatusSchema,
@@ -332,6 +348,7 @@ export const orderDetailItemSchema = z.object({
 
 export const orderDetailSchema = orderSummarySchema.extend({
   trackingCode: z.string(),
+  paymentMethod: paymentMethodSchema,
   branchAddress: z.string(),
   branchLatitude: z.number(),
   branchLongitude: z.number(),

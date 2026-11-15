@@ -17,6 +17,8 @@ import { deliveryFeeBasis } from '../merchants/merchants.schema.js';
 import { organizations } from '../organizations/organizations.schema.js';
 import { users } from '../users/users.schema.js';
 
+export const paymentMethod = pgEnum('payment_methods', ['card', 'cash']);
+
 export const orderStatus = pgEnum('order_statuses', [
   'new',
   'preparing',
@@ -62,6 +64,7 @@ export const orders = pgTable(
     }).notNull(),
     subtotal: money('subtotal').notNull(),
     customerDeliveryFee: money('customer_delivery_fee').notNull(),
+    paymentMethod: paymentMethod('payment_method').notNull(),
     total: money('total').notNull(),
     volaDeliveryFee: money('vola_delivery_fee').notNull(),
     deliveryFeeBasis: deliveryFeeBasis('delivery_fee_basis').notNull(),

@@ -9,6 +9,7 @@ import {
   ACTIVE_ORDER_STATUSES,
   OrderStatus,
   RoleName,
+  type PaymentMethod,
   canDriverMoveTo,
   getPreparationStatus,
   type AuthUser,
@@ -39,6 +40,7 @@ const driverOrderColumns = {
   deliveryLongitude: orders.deliveryLongitude,
   total: orders.total,
   currency: countries.currency,
+  paymentMethod: orders.paymentMethod,
   cancellationReason: orders.cancellationReason,
   assignedAt: orders.assignedAt,
   statusChangedAt: orders.statusChangedAt,
@@ -59,6 +61,7 @@ interface DriverOrderRow {
   deliveryLongitude: number;
   total: number;
   currency: string | null;
+  paymentMethod: PaymentMethod;
   cancellationReason: string | null;
   assignedAt: Date | null;
   statusChangedAt: Date;
@@ -82,6 +85,7 @@ function toDriverOrder(row: DriverOrderRow): DriverOrder {
     deliveryLongitude: row.deliveryLongitude,
     total: row.total,
     currency: row.currency,
+    paymentMethod: row.paymentMethod,
     assignedAt: row.assignedAt.toISOString(),
     statusChangedAt: row.statusChangedAt.toISOString(),
     preparationStatus: getPreparationStatus(

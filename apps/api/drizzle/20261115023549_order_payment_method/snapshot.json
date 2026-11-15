@@ -1,0 +1,77 @@
+{
+  "type": "diff",
+  "version": "9",
+  "dialect": "postgres",
+  "id": "571a9ed6-aa36-46f2-9463-22348ccacfb0",
+  "prevIds": [
+    "ee8e3ab9-573a-4fef-94dc-84478aaa8cd8"
+  ],
+  "footprints": [
+    {
+      "statementType": "create_enum",
+      "statementTarget": [
+        "enum",
+        "public",
+        "payment_methods"
+      ],
+      "writes": [
+        "s|enum|public.payment_methods",
+        "n|enum|public.payment_methods",
+        "e|enum|public.payment_methods",
+        "n|type|public.payment_methods"
+      ],
+      "reads": [
+        "n|sch|public"
+      ]
+    },
+    {
+      "statementType": "add_column",
+      "statementTarget": [
+        "column",
+        "public",
+        "orders",
+        "payment_method"
+      ],
+      "writes": [
+        "s|col|public.orders.payment_method",
+        "n|col|public.orders.payment_method",
+        "e|col|public.orders.payment_method"
+      ],
+      "reads": [
+        "n|tbl|public.orders",
+        "n|sch|public",
+        "n|enum|public.payment_methods"
+      ]
+    }
+  ],
+  "deltas": [
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "name": "payment_methods",
+        "values": [
+          "card",
+          "cash"
+        ],
+        "entityType": "enums"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "orders",
+        "name": "payment_method",
+        "type": "payment_methods",
+        "typeSchema": "public",
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    }
+  ]
+}
