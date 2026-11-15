@@ -1,56 +1,59 @@
-import { canAccessDrivers, canManageAllDrivers } from "@vola/shared";
+import { canAccessDrivers, canManageAllDrivers, canViewAllOrders, canViewOrders } from "@vola/shared";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { LiveRefreshProvider } from "@/components/LiveRefreshProvider";
-import { LiveRefreshToolbar } from "@/components/LiveRefreshToolbar";
 import { PageHeader } from "@/components/PageHeader";
-import { DriversMap } from "@/components/drivers-map/DriversMap";
+import type { OperationLayer } from "@/components/operation-map/LayerToggles";
+import { OperationMap } from "@/components/operation-map/OperationMap";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getCurrentUser } from "@/lib/current-user";
 import { getDefaultMapCenter } from "@/lib/map-defaults";
-import { getDriverLocations, getOrganization } from "@/lib/organizations-data";
+import { getOperationMap, getOrganization } from "@/lib/organizations-data";
 
-export const metadata: Metadata = { title: "Mapa de motoristas · Volá!" };
+export const metadata: Metadata = { title: "Mapa de la operación · Volá!" };
 
-async function DriversMapContent() {
+async function OperationMapContent() {
   const currentUser = await getCurrentUser();
-  if (!canAccessDrivers(currentUser)) notFound();
-  const [drivers, organization] = await Promise.all([
-    getDriverLocations(),
+  const canSeeOrders = canViewOrders(currentUser);
+  const canSeeDrivers = canAccessDrivers(currentUser);
+  if (!canSeeOrders && !canSeeDrivers) notFound();
+  const [operation, organization] = await Promise.all([
+    getOperationMap(),
     getOrganization(currentUser.organizationId),
   ]);
-  const isPlatformUser = canManageAllDrivers(currentUser);
+  // Cada capa aparece solo si el usuario puede ver ese dato.
+  const layers: OperationLayer[] = [];
+  if (canSeeDrivers) layers.push("drivers");
+  if (canSeeOrders) layers.push("orders", "branches");
 
   return (
     <>
       <PageHeader
-        title="Mapa de motoristas"
+        title="Mapa de la operación"
         description={
-          isPlatformUser
-            ? "Dónde están los motoristas que están trabajando, de Volá! y de cada cliente."
-            : "Dónde están tus motoristas y los de Volá! que llevan tus órdenes."
+          canViewAllOrders(currentUser)
+            ? "Los motoristas trabajando, las órdenes activas y las sucursales de todos los comercios."
+            : "Tus motoristas, tus órdenes activas y tus sucursales."
         }
       />
       <LiveRefreshProvider>
-        <div className="flex flex-col gap-3">
-          <LiveRefreshToolbar description="El mapa se actualiza solo cada 10 segundos." />
-          <DriversMap
-            drivers={drivers}
-            defaultCenter={getDefaultMapCenter(organization.countryCode)}
-            showOwner={isPlatformUser}
-          />
-        </div>
+        <OperationMap
+          operation={operation}
+          layers={layers}
+          defaultCenter={getDefaultMapCenter(organization.countryCode)}
+          showDriverOwner={canManageAllDrivers(currentUser)}
+        />
       </LiveRefreshProvider>
     </>
   );
 }
 
-export default function DriversMapPage() {
+export default function OperationMapPage() {
   return (
     <div className="flex flex-col gap-6">
       <Suspense fallback={<Skeleton className="h-[calc(100dvh-12rem)] w-full" />}>
-        <DriversMapContent />
+        <OperationMapContent />
       </Suspense>
     </div>
   );
