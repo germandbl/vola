@@ -7,6 +7,7 @@ import { TableSkeleton } from "@/components/TableSkeleton";
 import { OrganizationUsersTable } from "@/components/organizations/OrganizationUsersTable";
 import { Button } from "@/components/ui/button";
 import { getCurrentUser } from "@/lib/current-user";
+import { getOrganization } from "@/lib/organizations-data";
 import { readIdParam, readPageNumber } from "@/lib/route-params";
 
 export const metadata: Metadata = { title: "Usuarios y permisos · Volá!" };
@@ -16,13 +17,17 @@ type OrganizationUsersPageProps = PageProps<"/organizaciones/[organizationId]/us
 async function OrganizationUsers({ params, searchParams }: OrganizationUsersPageProps) {
   const organizationId = readIdParam((await params).organizationId);
   const page = readPageNumber((await searchParams).page);
-  const currentUser = await getCurrentUser();
+  const [currentUser, organization] = await Promise.all([
+    getCurrentUser(),
+    getOrganization(organizationId),
+  ]);
+  const canManage = canManageOrganization(currentUser, organizationId);
 
   return (
     <section className="flex flex-col gap-4">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <h2 className="text-2xl font-bold">Usuarios</h2>
-        {canManageOrganization(currentUser, organizationId) && (
+        {canManage && (
           <Button asChild>
             <Link href={`/organizaciones/${organizationId}/usuarios/nuevo`}>
               <Plus data-icon="inline-start" />
@@ -31,7 +36,12 @@ async function OrganizationUsers({ params, searchParams }: OrganizationUsersPage
           </Button>
         )}
       </div>
-      <OrganizationUsersTable organizationId={organizationId} page={page} />
+      <OrganizationUsersTable
+        organizationId={organizationId}
+        organizationType={organization.type}
+        canEditPermissions={canManage}
+        page={page}
+      />
     </section>
   );
 }

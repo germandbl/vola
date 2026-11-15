@@ -1,22 +1,27 @@
 import {
+  BadRequestException,
   ConflictException,
   ForbiddenException,
   Inject,
   Injectable,
+  NotFoundException,
 } from '@nestjs/common';
 import {
   PAGE_SIZE,
+  RoleName,
   canManageOrganization,
+  findAssignablePermissions,
   organizationTypeSchema,
   permissionSchema,
   roleNameSchema,
+  type AgentPermissionsForm,
   type AuthUser,
   type Paginated,
   type Permission,
   type UserForm,
   type UserSummary,
 } from '@vola/shared';
-import { desc, eq } from 'drizzle-orm';
+import { and, desc, eq, inArray } from 'drizzle-orm';
 import { hashPassword } from '../auth/passwords.js';
 import { getPageOffset, toPaginated } from '../common/pagination.js';
 import { DATABASE, type Database } from '../database/database.module.js';
@@ -130,12 +135,97 @@ export class UsersService {
       eq(users.organizationId, organizationId),
     );
 
+    const permissionsByUser = await this.findOwnPermissionsByUser(
+      rows.map((row) => row.id),
+    );
     const items = rows.map((row) => ({
       ...row,
       role: roleNameSchema.parse(row.role),
+      permissions: permissionsByUser.get(row.id) ?? [],
       createdAt: row.createdAt.toISOString(),
     }));
     return toPaginated(items, page, totalItems);
+  }
+
+  // Reemplaza la lista completa: lo que no viene en el formulario se le quita al agent.
+  async updateAgentPermissions(
+    currentUser: AuthUser,
+    organizationId: number,
+    userId: number,
+    form: AgentPermissionsForm,
+  ): Promise<void> {
+    if (!canManageOrganization(currentUser, organizationId)) {
+      throw new ForbiddenException(
+        `You cannot change permissions in organization ${organizationId}`,
+      );
+    }
+    const target = await this.findPermissionTarget(organizationId, userId);
+    if (target.role !== RoleName.Agent) {
+      throw new BadRequestException(
+        `User ${userId} is not an agent; administrators and drivers have fixed permissions`,
+      );
+    }
+    const assignablePermissions = findAssignablePermissions(
+      organizationTypeSchema.parse(target.organizationType),
+    );
+    const unassignable = form.permissions.filter(
+      (permission) => !assignablePermissions.includes(permission),
+    );
+    if (unassignable.length > 0) {
+      throw new BadRequestException(
+        `Permissions ${unassignable.join(', ')} have no effect in organization ${organizationId}`,
+      );
+    }
+
+    const permissions = [...new Set(form.permissions)];
+    await this.database.transaction(async (transaction) => {
+      await transaction
+        .delete(userPermissions)
+        .where(eq(userPermissions.userId, userId));
+      if (permissions.length === 0) return;
+      await transaction
+        .insert(userPermissions)
+        .values(
+          permissions.map((permissionKey) => ({ userId, permissionKey })),
+        );
+    });
+  }
+
+  private async findPermissionTarget(organizationId: number, userId: number) {
+    const [target] = await this.database
+      .select({ role: roles.name, organizationType: organizations.type })
+      .from(users)
+      .innerJoin(roles, eq(users.roleId, roles.id))
+      .innerJoin(organizations, eq(users.organizationId, organizations.id))
+      .where(
+        and(eq(users.id, userId), eq(users.organizationId, organizationId)),
+      );
+    if (!target) {
+      throw new NotFoundException(
+        `User ${userId} not found in organization ${organizationId}`,
+      );
+    }
+    return target;
+  }
+
+  private async findOwnPermissionsByUser(
+    userIds: number[],
+  ): Promise<Map<number, Permission[]>> {
+    const permissionsByUser = new Map<number, Permission[]>();
+    if (userIds.length === 0) return permissionsByUser;
+    const rows = await this.database
+      .select({
+        userId: userPermissions.userId,
+        permissionKey: userPermissions.permissionKey,
+      })
+      .from(userPermissions)
+      .where(inArray(userPermissions.userId, userIds));
+    for (const row of rows) {
+      const permissions = permissionsByUser.get(row.userId) ?? [];
+      permissions.push(permissionSchema.parse(row.permissionKey));
+      permissionsByUser.set(row.userId, permissions);
+    }
+    return permissionsByUser;
   }
 
   async create(

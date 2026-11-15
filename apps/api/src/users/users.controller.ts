@@ -4,12 +4,17 @@ import {
   Get,
   Param,
   ParseIntPipe,
+  HttpCode,
+  HttpStatus,
   Post,
+  Put,
   Query,
 } from '@nestjs/common';
 import {
+  agentPermissionsFormSchema,
   paginationQuerySchema,
   userFormSchema,
+  type AgentPermissionsForm,
   type AuthUser,
   type Paginated,
   type PaginationQuery,
@@ -44,5 +49,22 @@ export class UsersController {
     @Body(new ZodValidationPipe(userFormSchema)) form: UserForm,
   ): Promise<void> {
     return this.usersService.create(user, organizationId, form);
+  }
+
+  @Put(':userId/permissions')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  updatePermissions(
+    @CurrentUser() user: AuthUser,
+    @Param('organizationId', ParseIntPipe) organizationId: number,
+    @Param('userId', ParseIntPipe) userId: number,
+    @Body(new ZodValidationPipe(agentPermissionsFormSchema))
+    form: AgentPermissionsForm,
+  ): Promise<void> {
+    return this.usersService.updateAgentPermissions(
+      user,
+      organizationId,
+      userId,
+      form,
+    );
   }
 }

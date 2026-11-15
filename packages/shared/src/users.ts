@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { permissionSchema } from './permissions.js';
 import { RoleName, roleNameSchema } from './roles.js';
 
 export const MIN_PASSWORD_LENGTH = 8;
@@ -39,6 +40,8 @@ export const userSummarySchema = z.object({
   email: z.string(),
   phoneNumber: z.string(),
   role: roleNameSchema,
+  // Solo los sueltos del usuario: los de un administrator o driver son fijos por su rol.
+  permissions: z.array(permissionSchema),
   createdAt: z.string(),
 });
 
