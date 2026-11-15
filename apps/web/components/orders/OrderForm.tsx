@@ -21,6 +21,7 @@ import { DeliveryAddressPicker } from "./DeliveryAddressPicker";
 import { BranchSelect } from "./BranchSelect";
 import { OrderItemFields } from "./OrderItemFields";
 import { OrderTotals } from "./OrderTotals";
+import { PaymentMethodField } from "./PaymentMethodField";
 
 interface OrderFormProps {
   save: (form: OrderFormValues) => Promise<OrderSaveResult>;
@@ -137,6 +138,11 @@ export function OrderForm({ save, branchOptions }: OrderFormProps) {
               customerDeliveryFee={form.customerDeliveryFeeAmount}
               total={form.total}
               currency={currency}
+            />
+            <PaymentMethodField
+              value={form.paymentMethod}
+              error={fieldErrors.paymentMethod}
+              onChange={form.setPaymentMethod}
             />
           </FieldGroup>
         </div>
