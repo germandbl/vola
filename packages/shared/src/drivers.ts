@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { orderStatusSchema } from "./orders.js";
 import { userFormSchema } from "./users.js";
 
 const merchantIdsSchema = z
@@ -84,3 +85,24 @@ export const driverLocationFormSchema = z.object({
 });
 
 export type DriverLocationForm = z.infer<typeof driverLocationFormSchema>;
+
+// Un motorista en el mapa de seguimiento del panel, con la orden que lleva en este momento.
+export const driverMapLocationSchema = z.object({
+  driverId: z.number(),
+  name: z.string(),
+  ownerName: z.string(),
+  isPlatformDriver: z.boolean(),
+  isAvailable: z.boolean(),
+  latitude: z.number(),
+  longitude: z.number(),
+  recordedAt: z.string(),
+  currentOrder: z
+    .object({
+      id: z.number(),
+      status: orderStatusSchema,
+      merchantName: z.string(),
+    })
+    .nullable(),
+});
+
+export type DriverMapLocation = z.infer<typeof driverMapLocationSchema>;

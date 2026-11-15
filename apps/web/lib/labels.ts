@@ -59,3 +59,9 @@ export function formatOrderCount(orderCount: number): string {
   if (orderCount === 1) return "1 orden";
   return `${orderCount} órdenes`;
 }
+
+const timeFormatter = new Intl.DateTimeFormat("es-HN", { timeStyle: "short" });
+
+export function formatTime(isoDate: string): string {
+  return timeFormatter.format(new Date(isoDate));
+}

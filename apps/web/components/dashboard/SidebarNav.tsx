@@ -1,6 +1,14 @@
 "use client";
 
-import { Bike, Building2, HandCoins, House, ReceiptText, type LucideIcon } from "lucide-react";
+import {
+  Bike,
+  Building2,
+  HandCoins,
+  House,
+  MapPinned,
+  ReceiptText,
+  type LucideIcon,
+} from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -11,7 +19,7 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 
-export type NavIcon = "home" | "orders" | "drivers" | "settlements" | "organizations";
+export type NavIcon = "home" | "orders" | "drivers" | "map" | "settlements" | "organizations";
 
 export interface NavItem {
   href: string;
@@ -23,6 +31,7 @@ const NAV_ICON: Record<NavIcon, LucideIcon> = {
   home: House,
   orders: ReceiptText,
   drivers: Bike,
+  map: MapPinned,
   settlements: HandCoins,
   organizations: Building2,
 };
