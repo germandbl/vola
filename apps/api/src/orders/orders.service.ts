@@ -5,6 +5,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import {
+  ORDER_GROUP_STATUSES,
   PAGE_SIZE,
   calculateOrderSubtotal,
   calculateOrderTotal,
@@ -18,10 +19,11 @@ import {
   type OrderDetail,
   type OrderStatusChange,
   type OrderForm,
+  type OrderListQuery,
   type OrderSummary,
   type Paginated,
 } from '@vola/shared';
-import { asc, desc, eq, type SQL } from 'drizzle-orm';
+import { and, asc, desc, eq, inArray, type SQL } from 'drizzle-orm';
 import { branches } from '../branches/branches.schema.js';
 import { createFieldValidationException } from '../common/field-validation.js';
 import { getPageOffset, toPaginated } from '../common/pagination.js';
@@ -120,15 +122,19 @@ export class OrdersService {
 
   async findPage(
     user: AuthUser,
-    page: number,
+    query: OrderListQuery,
   ): Promise<Paginated<OrderSummary>> {
     if (!canViewOrders(user)) {
       throw new ForbiddenException('You cannot see orders');
     }
+    const { page, group } = query;
     // Volá! ve las órdenes de todos los clientes; un cliente solo ve las suyas.
-    const visibleOrders = canViewAllOrders(user)
-      ? undefined
-      : eq(orders.organizationId, user.organizationId);
+    const visibleOrders = and(
+      inArray(orders.status, ORDER_GROUP_STATUSES[group]),
+      canViewAllOrders(user)
+        ? undefined
+        : eq(orders.organizationId, user.organizationId),
+    );
     const rows = await this.selectOrderSummaries()
       .where(visibleOrders)
       .orderBy(desc(orders.createdAt), desc(orders.id))
