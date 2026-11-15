@@ -9,6 +9,7 @@ import { DatabaseModule } from './database/database.module.js';
 import { DriversModule } from './drivers/drivers.module.js';
 import { MerchantsModule } from './merchants/merchants.module.js';
 import { OrdersModule } from './orders/orders.module.js';
+import { OperationMapModule } from './operation-map/operation-map.module.js';
 import { OrganizationsModule } from './organizations/organizations.module.js';
 import { SettlementsModule } from './settlements/settlements.module.js';
 import { TrackingModule } from './tracking/tracking.module.js';
@@ -24,6 +25,7 @@ import { UsersModule } from './users/users.module.js';
     DriversModule,
     MerchantsModule,
     OrdersModule,
+    OperationMapModule,
     OrganizationsModule,
     SettlementsModule,
     TrackingModule,

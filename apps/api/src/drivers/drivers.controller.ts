@@ -18,7 +18,6 @@ import {
   type DriverAvailabilityForm,
   type DriverForm,
   type DriverLocationForm,
-  type DriverMapLocation,
   type DriverMerchant,
   type DriverMerchantsForm,
   type DriverOwner,
@@ -27,15 +26,11 @@ import {
 } from '@vola/shared';
 import { CurrentUser } from '../auth/current-user.decorator.js';
 import { ZodValidationPipe } from '../common/zod-validation.pipe.js';
-import { DriverLocationsService } from './driver-locations.service.js';
 import { DriversService } from './drivers.service.js';
 
 @Controller('drivers')
 export class DriversController {
-  constructor(
-    private readonly driversService: DriversService,
-    private readonly driverLocationsService: DriverLocationsService,
-  ) {}
+  constructor(private readonly driversService: DriversService) {}
 
   @Get()
   findVisible(@CurrentUser() user: AuthUser): Promise<DriverSummary[]> {
@@ -65,11 +60,6 @@ export class DriversController {
     form: DriverLocationForm,
   ): Promise<void> {
     return this.driversService.updateOwnLocation(user, form);
-  }
-
-  @Get('locations')
-  findLocations(@CurrentUser() user: AuthUser): Promise<DriverMapLocation[]> {
-    return this.driverLocationsService.findVisible(user);
   }
 
   @Get('owner-options')
