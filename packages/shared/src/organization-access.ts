@@ -156,3 +156,20 @@ export function canManageOrders(
   if (hasPlatformPermission(user, Permission.ManageOrders)) return true;
   return canActInOwnOrganization(user, organizationId, Permission.ManageOrders);
 }
+
+// Volá! recibe el efectivo de sus motoristas y se lo liquida a los comercios.
+export function canSettlePlatformCash(user: AuthUser): boolean {
+  if (canManageAllOrganizations(user)) return true;
+  return hasPlatformPermission(user, Permission.SettleCash);
+}
+
+// Un comercio recibe el efectivo de su flota propia y ve lo que Volá! le debe.
+export function canSettleOwnCash(user: AuthUser): boolean {
+  if (user.organizationType !== OrganizationType.Merchant) return false;
+  return canActInOwnOrganization(user, user.organizationId, Permission.SettleCash);
+}
+
+export function canAccessSettlements(user: AuthUser): boolean {
+  if (canSettlePlatformCash(user)) return true;
+  return canSettleOwnCash(user);
+}
