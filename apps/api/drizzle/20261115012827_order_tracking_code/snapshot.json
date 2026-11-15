@@ -1,0 +1,81 @@
+{
+  "type": "diff",
+  "version": "9",
+  "dialect": "postgres",
+  "id": "ee8e3ab9-573a-4fef-94dc-84478aaa8cd8",
+  "prevIds": [
+    "846c29e1-d088-45fd-a1b6-a3cb42934a24"
+  ],
+  "footprints": [
+    {
+      "statementType": "add_column",
+      "statementTarget": [
+        "column",
+        "public",
+        "orders",
+        "tracking_code"
+      ],
+      "writes": [
+        "s|col|public.orders.tracking_code",
+        "n|col|public.orders.tracking_code",
+        "e|col|public.orders.tracking_code"
+      ],
+      "reads": [
+        "n|tbl|public.orders",
+        "n|sch|public"
+      ]
+    },
+    {
+      "statementType": "add_unique",
+      "statementTarget": [
+        "table",
+        "public",
+        "orders"
+      ],
+      "writes": [
+        "s|uq|public.orders.orders_tracking_code_key",
+        "n|uq|public.orders.orders_tracking_code_key",
+        "e|uq|public.orders.orders_tracking_code_key",
+        "n|con|public.orders.orders_tracking_code_key",
+        "n|rel|public.orders_tracking_code_key"
+      ],
+      "reads": [
+        "n|tbl|public.orders",
+        "n|sch|public",
+        "n|col|public.orders.tracking_code"
+      ]
+    }
+  ],
+  "deltas": [
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "orders",
+        "name": "tracking_code",
+        "type": "uuid",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": "gen_random_uuid()",
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "orders",
+        "name": "orders_tracking_code_key",
+        "nameExplicit": false,
+        "columns": [
+          "tracking_code"
+        ],
+        "nullsNotDistinct": false,
+        "entityType": "uniques"
+      }
+    }
+  ]
+}

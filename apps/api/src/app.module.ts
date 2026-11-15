@@ -10,6 +10,7 @@ import { DriversModule } from './drivers/drivers.module.js';
 import { MerchantsModule } from './merchants/merchants.module.js';
 import { OrdersModule } from './orders/orders.module.js';
 import { OrganizationsModule } from './organizations/organizations.module.js';
+import { TrackingModule } from './tracking/tracking.module.js';
 import { UsersModule } from './users/users.module.js';
 
 @Module({
@@ -23,6 +24,7 @@ import { UsersModule } from './users/users.module.js';
     MerchantsModule,
     OrdersModule,
     OrganizationsModule,
+    TrackingModule,
     UsersModule,
   ],
   controllers: [AppController],

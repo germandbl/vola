@@ -7,6 +7,7 @@ import {
   pgEnum,
   pgTable,
   timestamp,
+  uuid,
   varchar,
 } from 'drizzle-orm/pg-core';
 import { branches } from '../branches/branches.schema.js';
@@ -78,6 +79,8 @@ export const orders = pgTable(
     cancellationReason: varchar('cancellation_reason'),
     preparationStartedAt: timestamp('preparation_started_at'),
     readyAt: timestamp('ready_at'),
+    // Va en el enlace público de seguimiento en vez del id: un UUID aleatorio no se adivina cambiando números.
+    trackingCode: uuid('tracking_code').notNull().defaultRandom().unique(),
     createdAt: timestamp('created_at').notNull().defaultNow(),
   },
   (table) => [

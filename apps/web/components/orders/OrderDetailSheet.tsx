@@ -15,6 +15,7 @@ import { Badge } from "@/components/ui/badge";
 import { OrderDetailActions } from "./OrderDetailActions";
 import { OrderDetailBody } from "./OrderDetailBody";
 import { OrderDetailMap } from "./OrderDetailMap";
+import { OrderTrackingLink } from "./OrderTrackingLink";
 import { OrderStatusChip } from "./OrderStatusChip";
 
 interface OrderDetailSheetProps {
@@ -62,10 +63,8 @@ export function OrderDetailSheet({ currentUser }: OrderDetailSheetProps) {
         )}
         {state.kind === "loaded" && (
           <>
-            <OrderDetailMap
-              latitude={state.order.deliveryLatitude}
-              longitude={state.order.deliveryLongitude}
-            />
+            <OrderDetailMap order={state.order} />
+            <OrderTrackingLink trackingCode={state.order.trackingCode} />
             <div className="flex-1 overflow-y-auto">
               <OrderDetailBody order={state.order} />
             </div>

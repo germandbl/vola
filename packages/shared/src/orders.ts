@@ -331,7 +331,10 @@ export const orderDetailItemSchema = z.object({
 });
 
 export const orderDetailSchema = orderSummarySchema.extend({
+  trackingCode: z.string(),
   branchAddress: z.string(),
+  branchLatitude: z.number(),
+  branchLongitude: z.number(),
   deliveryLatitude: z.number(),
   deliveryLongitude: z.number(),
   subtotal: z.number(),
@@ -343,3 +346,34 @@ export const orderDetailSchema = orderSummarySchema.extend({
 });
 
 export type OrderDetail = z.infer<typeof orderDetailSchema>;
+
+export const orderDriverLocationSchema = z.object({
+  latitude: z.number(),
+  longitude: z.number(),
+  recordedAt: z.string(),
+});
+
+export type OrderDriverLocation = z.infer<typeof orderDriverLocationSchema>;
+
+// Lo que ve cualquiera con el enlace de seguimiento: sin datos del cliente, productos ni montos.
+export const publicOrderTrackingSchema = z.object({
+  merchantName: z.string(),
+  status: orderStatusSchema,
+  branchLatitude: z.number(),
+  branchLongitude: z.number(),
+  deliveryLatitude: z.number(),
+  deliveryLongitude: z.number(),
+  driverFirstName: z.string().nullable(),
+  driverLocation: orderDriverLocationSchema.nullable(),
+});
+
+export type PublicOrderTracking = z.infer<typeof publicOrderTrackingSchema>;
+
+// El motorista se muestra solo mientras lleva el pedido al cliente; antes y después de esa etapa, no.
+export function canTrackOrderDriver(
+  status: OrderStatus,
+  hasDriver: boolean,
+): boolean {
+  if (!hasDriver) return false;
+  return status === OrderStatus.OnTheWay;
+}
