@@ -8,6 +8,7 @@ export const Permission = {
   ManageDrivers: 'drivers.manage',
   AssignOrders: 'orders.assign',
   ManageOrders: 'orders.manage',
+  SettleCash: 'cash.settle',
 } as const;
 
 export type Permission = (typeof Permission)[keyof typeof Permission];

@@ -13,3 +13,4 @@ export * from './branches.js';
 export * from "./orders.js";
 export * from './drivers.js';
 export * from './theme.js';
+export * from './settlements.js';

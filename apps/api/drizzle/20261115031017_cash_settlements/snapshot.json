@@ -1,0 +1,559 @@
+{
+  "type": "diff",
+  "version": "9",
+  "dialect": "postgres",
+  "id": "4e619207-e11a-4952-a269-0ea7f9d71730",
+  "prevIds": [
+    "571a9ed6-aa36-46f2-9463-22348ccacfb0"
+  ],
+  "footprints": [
+    {
+      "statementType": "create_enum",
+      "statementTarget": [
+        "enum",
+        "public",
+        "settlement_types"
+      ],
+      "writes": [
+        "s|enum|public.settlement_types",
+        "n|enum|public.settlement_types",
+        "e|enum|public.settlement_types",
+        "n|type|public.settlement_types"
+      ],
+      "reads": [
+        "n|sch|public"
+      ]
+    },
+    {
+      "statementType": "create_table",
+      "statementTarget": [
+        "table",
+        "public",
+        "cash_settlements"
+      ],
+      "writes": [
+        "s|tbl|public.cash_settlements",
+        "n|tbl|public.cash_settlements",
+        "e|tbl|public.cash_settlements",
+        "n|rel|public.cash_settlements",
+        "n|type|public.cash_settlements",
+        "n|rel|public.cash_settlements_pkey"
+      ],
+      "reads": [
+        "n|sch|public",
+        "n|enum|public.settlement_types"
+      ]
+    },
+    {
+      "statementType": "add_column",
+      "statementTarget": [
+        "column",
+        "public",
+        "orders",
+        "driver_settlement_id"
+      ],
+      "writes": [
+        "s|col|public.orders.driver_settlement_id",
+        "n|col|public.orders.driver_settlement_id",
+        "e|col|public.orders.driver_settlement_id"
+      ],
+      "reads": [
+        "n|tbl|public.orders",
+        "n|sch|public"
+      ]
+    },
+    {
+      "statementType": "add_column",
+      "statementTarget": [
+        "column",
+        "public",
+        "orders",
+        "merchant_settlement_id"
+      ],
+      "writes": [
+        "s|col|public.orders.merchant_settlement_id",
+        "n|col|public.orders.merchant_settlement_id",
+        "e|col|public.orders.merchant_settlement_id"
+      ],
+      "reads": [
+        "n|tbl|public.orders",
+        "n|sch|public"
+      ]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "orders"
+      ],
+      "writes": [
+        "s|fk|public.orders.orders_driver_settlement_id_cash_settlements_id_fkey",
+        "n|fk|public.orders.orders_driver_settlement_id_cash_settlements_id_fkey",
+        "e|fk|public.orders.orders_driver_settlement_id_cash_settlements_id_fkey",
+        "n|con|public.orders.orders_driver_settlement_id_cash_settlements_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.orders",
+        "n|sch|public",
+        "n|tbl|public.cash_settlements",
+        "n|sch|public",
+        "n|col|public.orders.driver_settlement_id",
+        "n|col|public.cash_settlements.id",
+        "e|uniqueness|public.cash_settlements.id"
+      ]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "orders"
+      ],
+      "writes": [
+        "s|fk|public.orders.orders_merchant_settlement_id_cash_settlements_id_fkey",
+        "n|fk|public.orders.orders_merchant_settlement_id_cash_settlements_id_fkey",
+        "e|fk|public.orders.orders_merchant_settlement_id_cash_settlements_id_fkey",
+        "n|con|public.orders.orders_merchant_settlement_id_cash_settlements_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.orders",
+        "n|sch|public",
+        "n|tbl|public.cash_settlements",
+        "n|sch|public",
+        "n|col|public.orders.merchant_settlement_id",
+        "n|col|public.cash_settlements.id",
+        "e|uniqueness|public.cash_settlements.id"
+      ]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "cash_settlements"
+      ],
+      "writes": [
+        "s|fk|public.cash_settlements.cash_settlements_driver_id_drivers_id_fkey",
+        "n|fk|public.cash_settlements.cash_settlements_driver_id_drivers_id_fkey",
+        "e|fk|public.cash_settlements.cash_settlements_driver_id_drivers_id_fkey",
+        "n|con|public.cash_settlements.cash_settlements_driver_id_drivers_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.cash_settlements",
+        "n|sch|public",
+        "n|tbl|public.drivers",
+        "n|sch|public",
+        "n|col|public.cash_settlements.driver_id",
+        "n|col|public.drivers.id",
+        "e|uniqueness|public.drivers.id"
+      ]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "cash_settlements"
+      ],
+      "writes": [
+        "s|fk|public.cash_settlements.cash_settlements_organization_id_organizations_id_fkey",
+        "n|fk|public.cash_settlements.cash_settlements_organization_id_organizations_id_fkey",
+        "e|fk|public.cash_settlements.cash_settlements_organization_id_organizations_id_fkey",
+        "n|con|public.cash_settlements.cash_settlements_organization_id_organizations_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.cash_settlements",
+        "n|sch|public",
+        "n|tbl|public.organizations",
+        "n|sch|public",
+        "n|col|public.cash_settlements.organization_id",
+        "n|col|public.organizations.id",
+        "e|uniqueness|public.organizations.id"
+      ]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "cash_settlements"
+      ],
+      "writes": [
+        "s|fk|public.cash_settlements.cash_settlements_settled_by_user_id_users_id_fkey",
+        "n|fk|public.cash_settlements.cash_settlements_settled_by_user_id_users_id_fkey",
+        "e|fk|public.cash_settlements.cash_settlements_settled_by_user_id_users_id_fkey",
+        "n|con|public.cash_settlements.cash_settlements_settled_by_user_id_users_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.cash_settlements",
+        "n|sch|public",
+        "n|tbl|public.users",
+        "n|sch|public",
+        "n|col|public.cash_settlements.settled_by_user_id",
+        "n|col|public.users.id",
+        "e|uniqueness|public.users.id"
+      ]
+    },
+    {
+      "statementType": "alter_check",
+      "statementTarget": [
+        "table",
+        "public",
+        "role_permissions"
+      ],
+      "writes": [
+        "s|ck|public.role_permissions.role_permissions_permission_key_known"
+      ],
+      "reads": [
+        "n|tbl|public.role_permissions",
+        "n|sch|public",
+        "n|col|public.role_permissions.permission_key",
+        "e|col|public.role_permissions.permission_key"
+      ],
+      "sqlHash": "0e6180a18618b757"
+    },
+    {
+      "statementType": "alter_check",
+      "statementTarget": [
+        "table",
+        "public",
+        "user_permissions"
+      ],
+      "writes": [
+        "s|ck|public.user_permissions.user_permissions_permission_key_known"
+      ],
+      "reads": [
+        "n|tbl|public.user_permissions",
+        "n|sch|public",
+        "n|col|public.user_permissions.permission_key",
+        "e|col|public.user_permissions.permission_key"
+      ],
+      "sqlHash": "a93de9e217f3bf46"
+    }
+  ],
+  "deltas": [
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "name": "cash_settlements",
+        "isRlsEnabled": false,
+        "entityType": "tables"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "name": "settlement_types",
+        "values": [
+          "driver_to_platform",
+          "driver_to_merchant",
+          "platform_to_merchant"
+        ],
+        "entityType": "enums"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "orders",
+        "name": "driver_settlement_id",
+        "type": "bigint",
+        "typeSchema": null,
+        "notNull": false,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "orders",
+        "name": "merchant_settlement_id",
+        "type": "bigint",
+        "typeSchema": null,
+        "notNull": false,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "cash_settlements",
+        "name": "id",
+        "type": "bigint",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": {
+          "type": "always",
+          "name": "cash_settlements_id_seq",
+          "increment": "1",
+          "startWith": "1",
+          "minValue": "1",
+          "maxValue": "9223372036854775807",
+          "cache": 1,
+          "cycle": false
+        },
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "cash_settlements",
+        "name": "type",
+        "type": "settlement_types",
+        "typeSchema": "public",
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "cash_settlements",
+        "name": "driver_id",
+        "type": "bigint",
+        "typeSchema": null,
+        "notNull": false,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "cash_settlements",
+        "name": "organization_id",
+        "type": "bigint",
+        "typeSchema": null,
+        "notNull": false,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "cash_settlements",
+        "name": "amount",
+        "type": "numeric(12,2)",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "cash_settlements",
+        "name": "settled_by_user_id",
+        "type": "bigint",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "cash_settlements",
+        "name": "created_at",
+        "type": "timestamp",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": "now()",
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "orders",
+        "name": "orders_driver_settlement_id_cash_settlements_id_fkey",
+        "nameExplicit": false,
+        "columns": [
+          "driver_settlement_id"
+        ],
+        "schemaTo": "public",
+        "tableTo": "cash_settlements",
+        "columnsTo": [
+          "id"
+        ],
+        "onUpdate": "NO ACTION",
+        "onDelete": "RESTRICT",
+        "entityType": "fks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "orders",
+        "name": "orders_merchant_settlement_id_cash_settlements_id_fkey",
+        "nameExplicit": false,
+        "columns": [
+          "merchant_settlement_id"
+        ],
+        "schemaTo": "public",
+        "tableTo": "cash_settlements",
+        "columnsTo": [
+          "id"
+        ],
+        "onUpdate": "NO ACTION",
+        "onDelete": "RESTRICT",
+        "entityType": "fks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "cash_settlements",
+        "name": "cash_settlements_driver_id_drivers_id_fkey",
+        "nameExplicit": false,
+        "columns": [
+          "driver_id"
+        ],
+        "schemaTo": "public",
+        "tableTo": "drivers",
+        "columnsTo": [
+          "id"
+        ],
+        "onUpdate": "NO ACTION",
+        "onDelete": "RESTRICT",
+        "entityType": "fks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "cash_settlements",
+        "name": "cash_settlements_organization_id_organizations_id_fkey",
+        "nameExplicit": false,
+        "columns": [
+          "organization_id"
+        ],
+        "schemaTo": "public",
+        "tableTo": "organizations",
+        "columnsTo": [
+          "id"
+        ],
+        "onUpdate": "NO ACTION",
+        "onDelete": "RESTRICT",
+        "entityType": "fks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "cash_settlements",
+        "name": "cash_settlements_settled_by_user_id_users_id_fkey",
+        "nameExplicit": false,
+        "columns": [
+          "settled_by_user_id"
+        ],
+        "schemaTo": "public",
+        "tableTo": "users",
+        "columnsTo": [
+          "id"
+        ],
+        "onUpdate": "NO ACTION",
+        "onDelete": "RESTRICT",
+        "entityType": "fks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "cash_settlements",
+        "name": "cash_settlements_pkey",
+        "columns": [
+          "id"
+        ],
+        "nameExplicit": false,
+        "entityType": "pks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "cash_settlements",
+        "name": "cash_settlements_amount_positive",
+        "value": "\"amount\" > 0",
+        "entityType": "checks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "cash_settlements",
+        "name": "cash_settlements_parties_match_type",
+        "value": "CASE \"type\"\n        WHEN 'driver_to_platform' THEN \"driver_id\" IS NOT NULL AND \"organization_id\" IS NULL\n        WHEN 'driver_to_merchant' THEN \"driver_id\" IS NOT NULL AND \"organization_id\" IS NOT NULL\n        WHEN 'platform_to_merchant' THEN \"driver_id\" IS NULL AND \"organization_id\" IS NOT NULL\n      END",
+        "entityType": "checks"
+      }
+    },
+    {
+      "op": "alter",
+      "key": "checks\u0000[\"public\",\"role_permissions\",\"role_permissions_permission_key_known\"]",
+      "set": {
+        "value": "\"permission_key\" IN ('organizations.view', 'delivery_fees.manage', 'merchants.manage', 'orders.create', 'drivers.manage', 'orders.assign', 'orders.manage', 'cash.settle')"
+      }
+    },
+    {
+      "op": "alter",
+      "key": "checks\u0000[\"public\",\"user_permissions\",\"user_permissions_permission_key_known\"]",
+      "set": {
+        "value": "\"permission_key\" IN ('organizations.view', 'delivery_fees.manage', 'merchants.manage', 'orders.create', 'drivers.manage', 'orders.assign', 'orders.manage', 'cash.settle')"
+      }
+    }
+  ]
+}

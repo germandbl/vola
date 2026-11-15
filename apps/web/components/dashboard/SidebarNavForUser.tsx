@@ -1,5 +1,6 @@
 import {
   canAccessDrivers,
+  canAccessSettlements,
   canViewAllOrganizations,
   canViewOrganization,
   canViewOrders,
@@ -16,6 +17,9 @@ function getNavItems(user: AuthUser): NavItem[] {
   }
   if (canAccessDrivers(user)) {
     items.push({ href: "/motoristas", label: "Motoristas", icon: "drivers" });
+  }
+  if (canAccessSettlements(user)) {
+    items.push({ href: "/liquidaciones", label: "Liquidaciones", icon: "settlements" });
   }
   if (canViewAllOrganizations(user)) {
     items.push({ href: "/organizaciones", label: "Organizaciones", icon: "organizations" });

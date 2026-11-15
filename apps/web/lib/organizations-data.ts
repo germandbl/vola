@@ -1,6 +1,10 @@
 import "server-only";
 import {
   branchSchema,
+  cashSettlementSchema,
+  cashWithPlatformSchema,
+  pendingDriverCashSchema,
+  pendingMerchantCashSchema,
   branchSummarySchema,
   countrySchema,
   deliveryFeeBasisSettingSchema,
@@ -27,7 +31,11 @@ import {
   type OrderCountFeeRate,
   type OrderSummary,
   type Organization,
+  type CashSettlement,
+  type CashWithPlatform,
   type Paginated,
+  type PendingDriverCash,
+  type PendingMerchantCash,
   type UserSummary,
 } from "@vola/shared";
 import { notFound, redirect } from "next/navigation";
@@ -161,4 +169,20 @@ export function getDriverMerchantOptions(): Promise<DriverMerchant[]> {
 
 export function getDriverOwnerOptions(): Promise<DriverOwner[]> {
   return getFromApi("/drivers/owner-options", z.array(driverOwnerSchema));
+}
+
+export function getPendingDriverCash(): Promise<PendingDriverCash[]> {
+  return getFromApi("/settlements/drivers", z.array(pendingDriverCashSchema));
+}
+
+export function getPendingMerchantCash(): Promise<PendingMerchantCash[]> {
+  return getFromApi("/settlements/merchants", z.array(pendingMerchantCashSchema));
+}
+
+export function getCashWithPlatform(): Promise<CashWithPlatform> {
+  return getFromApi("/settlements/cash-with-platform", cashWithPlatformSchema);
+}
+
+export function getSettlementHistory(page: number): Promise<Paginated<CashSettlement>> {
+  return getFromApi(`/settlements/history?page=${page}`, paginatedSchema(cashSettlementSchema));
 }

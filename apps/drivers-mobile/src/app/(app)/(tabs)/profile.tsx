@@ -7,8 +7,10 @@ import { AvailabilityCard } from "@/components/AvailabilityCard";
 import { Avatar } from "@/components/Avatar";
 import { ErrorMessage } from "@/components/ErrorMessage";
 import { LocationPermissionNotice } from "@/components/LocationPermissionNotice";
+import { PendingCashCard } from "@/components/PendingCashCard";
 import { SecondaryButton } from "@/components/SecondaryButton";
 import { useDriverProfile } from "@/hooks/use-driver-profile";
+import { usePendingCash } from "@/hooks/use-pending-cash";
 import { useSignOut } from "@/hooks/use-sign-out";
 import { useSignedInSession } from "@/session/SessionProvider";
 
@@ -20,6 +22,7 @@ const AVATAR_OVERLAP = 44;
 export default function ProfileScreen() {
   const { user } = useSignedInSession();
   const driverProfile = useDriverProfile();
+  const pendingCash = usePendingCash();
   const signOut = useSignOut();
   const { profile } = driverProfile;
 
@@ -60,6 +63,7 @@ export default function ProfileScreen() {
           />
         )}
         {driverProfile.isLocationPermissionMissing && <LocationPermissionNotice />}
+        {pendingCash && <PendingCashCard pendingCash={pendingCash} />}
         {signOut.error && <ErrorMessage message={signOut.error} />}
         <SecondaryButton
           label="Cerrar sesión"

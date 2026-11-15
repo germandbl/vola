@@ -15,6 +15,7 @@ import { customers } from '../customers/customers.schema.js';
 import { drivers } from '../drivers/drivers.schema.js';
 import { deliveryFeeBasis } from '../merchants/merchants.schema.js';
 import { organizations } from '../organizations/organizations.schema.js';
+import { cashSettlements } from '../settlements/settlements.schema.js';
 import { users } from '../users/users.schema.js';
 
 export const paymentMethod = pgEnum('payment_methods', ['card', 'cash']);
@@ -82,6 +83,14 @@ export const orders = pgTable(
     cancellationReason: varchar('cancellation_reason'),
     preparationStartedAt: timestamp('preparation_started_at'),
     readyAt: timestamp('ready_at'),
+    // En qué liquidación entregó el motorista el efectivo de esta orden; null mientras lo tiene él.
+    driverSettlementId: bigint('driver_settlement_id', {
+      mode: 'number',
+    }).references(() => cashSettlements.id, { onDelete: 'restrict' }),
+    // Solo para motoristas de Volá!: en qué liquidación Volá! le pasó ese efectivo al comercio.
+    merchantSettlementId: bigint('merchant_settlement_id', {
+      mode: 'number',
+    }).references(() => cashSettlements.id, { onDelete: 'restrict' }),
     // Va en el enlace público de seguimiento en vez del id: un UUID aleatorio no se adivina cambiando números.
     trackingCode: uuid('tracking_code').notNull().defaultRandom().unique(),
     createdAt: timestamp('created_at').notNull().defaultNow(),
