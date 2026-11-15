@@ -15,7 +15,7 @@ import {
   orderFormSchema,
   orderPreparationFormSchema,
   orderStatusChangeFormSchema,
-  paginationQuerySchema,
+  orderListQuerySchema,
   type AuthUser,
   type OrderAssignmentForm,
   type OrderCancellationForm,
@@ -29,7 +29,7 @@ import {
   type OrderStatusChangeForm,
   type OrderSummary,
   type Paginated,
-  type PaginationQuery,
+  type OrderListQuery,
 } from '@vola/shared';
 import { CurrentUser } from '../auth/current-user.decorator.js';
 import { ZodValidationPipe } from '../common/zod-validation.pipe.js';
@@ -50,9 +50,9 @@ export class OrdersController {
   @Get()
   findPage(
     @CurrentUser() user: AuthUser,
-    @Query(new ZodValidationPipe(paginationQuerySchema)) query: PaginationQuery,
+    @Query(new ZodValidationPipe(orderListQuerySchema)) query: OrderListQuery,
   ): Promise<Paginated<OrderSummary>> {
-    return this.ordersService.findPage(user, query.page);
+    return this.ordersService.findPage(user, query);
   }
 
   @Get('assigned-to-me')

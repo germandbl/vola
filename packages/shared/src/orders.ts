@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { deliveryFeeBasisSchema, feeAmountSchema } from "./delivery-fees.js";
+import { paginationQuerySchema } from "./pagination.js";
 import { phoneNumberSchema } from "./users.js";
 
 export const OrderStatus = {
@@ -86,6 +87,27 @@ export const ACTIVE_ORDER_STATUSES: OrderStatus[] = [
   OrderStatus.AtBranch,
   OrderStatus.OnTheWay,
 ];
+
+// Los grupos en que se separa la lista de órdenes: las activas son las que todavía cambian.
+export const OrderGroup = {
+  Active: "active",
+  Completed: "completed",
+  Cancelled: "cancelled",
+} as const;
+
+export type OrderGroup = (typeof OrderGroup)[keyof typeof OrderGroup];
+
+export const ORDER_GROUP_STATUSES: Record<OrderGroup, OrderStatus[]> = {
+  [OrderGroup.Active]: ACTIVE_ORDER_STATUSES,
+  [OrderGroup.Completed]: [OrderStatus.Delivered],
+  [OrderGroup.Cancelled]: [OrderStatus.Cancelled],
+};
+
+export const orderListQuerySchema = paginationQuerySchema.extend({
+  group: z.enum(OrderGroup).default(OrderGroup.Active),
+});
+
+export type OrderListQuery = z.infer<typeof orderListQuerySchema>;
 
 // El paso que sigue para el motorista; null cuando la orden ya terminó.
 const DRIVER_NEXT_STATUS: Record<OrderStatus, OrderStatus | null> = {

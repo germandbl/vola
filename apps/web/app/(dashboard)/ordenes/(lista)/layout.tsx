@@ -1,37 +1,36 @@
 import {
+  OrderGroup,
   canCreateOrders,
   canCreateOrdersForAnyOrganization,
-  canViewAllOrders,
   canViewOrders,
   type AuthUser,
 } from "@vola/shared";
 import { Plus } from "lucide-react";
-import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { PageHeader } from "@/components/PageHeader";
-import { TableSkeleton } from "@/components/TableSkeleton";
-import { OrderDetailSheet } from "@/components/orders/OrderDetailSheet";
-import { OrdersTable } from "@/components/orders/OrdersTable";
+import { SectionTabs, type SectionTab } from "@/components/SectionTabs";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import { getCurrentUser } from "@/lib/current-user";
-import { readPageNumber } from "@/lib/route-params";
+import { ORDER_GROUP_LABEL, ORDER_GROUP_PATH } from "@/lib/order-groups";
 
-export const metadata: Metadata = { title: "Órdenes · Volá!" };
+const ORDER_GROUP_TABS: SectionTab[] = [OrderGroup.Active, OrderGroup.Completed, OrderGroup.Cancelled].map(
+  (group) => ({ href: ORDER_GROUP_PATH[group], label: ORDER_GROUP_LABEL[group] }),
+);
 
 function canCreateAnyOrder(user: AuthUser): boolean {
   if (canCreateOrdersForAnyOrganization(user)) return true;
   return canCreateOrders(user, user.organizationId);
 }
 
-async function OrdersContent({ searchParams }: Pick<PageProps<"/ordenes">, "searchParams">) {
-  const page = readPageNumber((await searchParams).page);
+async function OrdersHeader() {
   const currentUser = await getCurrentUser();
   if (!canViewOrders(currentUser)) notFound();
 
   return (
-    <>
+    <div className="flex flex-col gap-4">
       <PageHeader
         title="Órdenes"
         description="Las órdenes que se mandan a entregar."
@@ -46,22 +45,28 @@ async function OrdersContent({ searchParams }: Pick<PageProps<"/ordenes">, "sear
           )
         }
       />
-      <OrdersTable
-        page={page}
-        showOrganization={canViewAllOrders(currentUser)}
-        currentUser={currentUser}
-      />
-      <OrderDetailSheet currentUser={currentUser} />
-    </>
+      <SectionTabs label="Órdenes por estado" tabs={ORDER_GROUP_TABS} />
+    </div>
   );
 }
 
-export default function OrdersPage({ searchParams }: PageProps<"/ordenes">) {
+function OrdersHeaderSkeleton() {
+  return (
+    <div className="flex flex-col gap-4">
+      <Skeleton className="h-10 w-72" />
+      <Skeleton className="h-4 w-96 max-w-full" />
+      <Skeleton className="h-8 w-80 max-w-full" />
+    </div>
+  );
+}
+
+export default function OrdersLayout({ children }: LayoutProps<"/ordenes">) {
   return (
     <div className="flex flex-col gap-6">
-      <Suspense fallback={<TableSkeleton />}>
-        <OrdersContent searchParams={searchParams} />
+      <Suspense fallback={<OrdersHeaderSkeleton />}>
+        <OrdersHeader />
       </Suspense>
+      {children}
     </div>
   );
 }
