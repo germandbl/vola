@@ -1,7 +1,8 @@
 import VolaLocation from "@/modules/vola-location";
 import { getApiBaseUrl } from "./api";
 
-const LOCATION_UPDATE_INTERVAL_SECONDS = 30;
+// Cada 10 s: el seguimiento de la orden en la web mueve el pin del motorista con cada envío.
+const LOCATION_UPDATE_INTERVAL_SECONDS = 10;
 
 // El envío lo hace el módulo nativo y no JavaScript: en segundo plano el sistema suspende JavaScript.
 export async function startLocationSharing(token: string): Promise<void> {
