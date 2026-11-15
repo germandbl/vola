@@ -54,3 +54,8 @@ export function getCurrencySymbol(currency: string): string {
   }).formatToParts(0);
   return parts.find((part) => part.type === "currency")?.value ?? currency;
 }
+
+export function formatOrderCount(orderCount: number): string {
+  if (orderCount === 1) return "1 orden";
+  return `${orderCount} órdenes`;
+}
