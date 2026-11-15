@@ -1,7 +1,9 @@
-import { canViewAllOrders, canViewOrders, type OrderGroup } from "@vola/shared";
+import { OrderGroup, canViewAllOrders, canViewOrders } from "@vola/shared";
 import { notFound } from "next/navigation";
 import { getCurrentUser } from "@/lib/current-user";
 import { readPageNumber } from "@/lib/route-params";
+import { LiveOrdersProvider } from "./LiveOrdersProvider";
+import { LiveOrdersToolbar } from "./LiveOrdersToolbar";
 import { OrderDetailSheet } from "./OrderDetailSheet";
 import { OrdersTable } from "./OrdersTable";
 
@@ -16,7 +18,7 @@ export async function OrdersGroupContent({ group, searchParams }: OrdersGroupCon
   const currentUser = await getCurrentUser();
   if (!canViewOrders(currentUser)) notFound();
 
-  return (
+  const content = (
     <>
       <OrdersTable
         group={group}
@@ -26,5 +28,15 @@ export async function OrdersGroupContent({ group, searchParams }: OrdersGroupCon
       />
       <OrderDetailSheet currentUser={currentUser} />
     </>
+  );
+  // Solo las activas se actualizan solas: son las que todavía cambian de estado, preparación o motorista.
+  if (group !== OrderGroup.Active) return content;
+  return (
+    <LiveOrdersProvider>
+      <div className="flex flex-col gap-3">
+        <LiveOrdersToolbar />
+        {content}
+      </div>
+    </LiveOrdersProvider>
   );
 }

@@ -1,6 +1,7 @@
 import type { OrderDetail } from "@vola/shared";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useEffectEvent, useState } from "react";
+import { useLiveOrders } from "@/components/orders/LiveOrdersProvider";
 import { loadOrderDetail } from "@/lib/order-detail-actions";
 import { ORDER_DETAIL_PARAM } from "@/lib/order-detail-param";
 
@@ -30,6 +31,20 @@ export function useOrderDetailSheet() {
     setLoadedOrderId(orderId);
     setState({ kind: "loading" });
   }
+
+  // En Activas, el detalle abierto se recarga en el mismo ciclo que la tabla.
+  const liveCycle = useLiveOrders()?.cycle;
+  const reloadOpenOrder = useEffectEvent(() => {
+    if (orderId === null || state.kind !== "loaded") return;
+    loadOrderDetail(orderId).then((order) => {
+      if (order) setState({ kind: "loaded", order });
+    });
+  });
+
+  useEffect(() => {
+    if (!liveCycle) return;
+    reloadOpenOrder();
+  }, [liveCycle]);
 
   useEffect(() => {
     if (orderId === null) return;
