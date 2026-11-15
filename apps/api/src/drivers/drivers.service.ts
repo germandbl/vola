@@ -75,19 +75,6 @@ function toOwner(
   return { id, name, isPlatform: type === OrganizationType.Platform };
 }
 
-const CLEARED_LOCATION = {
-  latitude: null,
-  longitude: null,
-  locationAccuracyMeters: null,
-  locationRecordedAt: null,
-};
-
-// Al dejar de estar disponible se borra la ubicación: nadie debe ver dónde está un motorista fuera de turno.
-function toAvailabilityLocation(form: DriverAvailabilityForm) {
-  if (form.isAvailable) return {};
-  return CLEARED_LOCATION;
-}
-
 function assertIsDriver(user: AuthUser): void {
   if (user.role !== RoleName.Driver) {
     throw new ForbiddenException('Only drivers have a driver profile');
@@ -148,7 +135,8 @@ export class DriversService {
     return profile;
   }
 
-  // Marcarse no disponible no toca las órdenes ya asignadas: solo evita que le asignen nuevas.
+  // Marcarse no disponible no toca las órdenes ya asignadas ni borra la última ubicación:
+  // solo evita que le asignen nuevas, y el seguimiento de sus órdenes muestra dónde se le vio por última vez.
   async updateOwnAvailability(
     user: AuthUser,
     form: DriverAvailabilityForm,
@@ -156,7 +144,7 @@ export class DriversService {
     assertIsDriver(user);
     await this.database
       .update(drivers)
-      .set({ isAvailable: form.isAvailable, ...toAvailabilityLocation(form) })
+      .set({ isAvailable: form.isAvailable })
       .where(eq(drivers.userId, user.id));
     return this.findOwnProfile(user);
   }

@@ -195,7 +195,10 @@ export class OrdersService {
 
     const [extra] = await this.database
       .select({
+        trackingCode: orders.trackingCode,
         branchAddress: branches.address,
+        branchLatitude: branches.latitude,
+        branchLongitude: branches.longitude,
         deliveryLatitude: orders.deliveryLatitude,
         deliveryLongitude: orders.deliveryLongitude,
         subtotal: orders.subtotal,
