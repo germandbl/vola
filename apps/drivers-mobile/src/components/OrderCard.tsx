@@ -1,9 +1,15 @@
-import { colors, radius, spacing, type DriverOrder } from "@vola/shared";
+import { PaymentMethod, colors, radius, spacing, type DriverOrder } from "@vola/shared";
 import { router } from "expo-router";
 import { Pressable, StyleSheet, View } from "react-native";
 import { formatMoney, formatTime } from "@/lib/format";
 import { AppText } from "./AppText";
 import { PreparationChip } from "./PreparationChip";
+
+// En la lista el motorista ve de un vistazo si tiene que cobrar y cuánto.
+function describePayment(order: DriverOrder): string {
+  if (order.paymentMethod === PaymentMethod.Card) return "Pagada con tarjeta";
+  return `Cobrar ${formatMoney(order.total, order.currency)} en efectivo`;
+}
 
 interface OrderCardProps {
   order: DriverOrder;
@@ -36,7 +42,7 @@ export function OrderCard({ order }: OrderCardProps) {
       </AppText>
       <View style={styles.footer}>
         <AppText variant="pequeno" style={styles.total}>
-          {formatMoney(order.total, order.currency)}
+          {describePayment(order)}
         </AppText>
         <AppText variant="pequeno" tone="tintaSuave">
           Asignada a las {formatTime(order.assignedAt)}

@@ -4,6 +4,7 @@ import {
   orderFormSchema,
   type OrderForm,
   type OrderItemForm,
+  type PaymentMethod,
 } from "@vola/shared";
 import { useState, useTransition, type FormEvent } from "react";
 import type { SelectedAddress } from "@/hooks/use-address-suggestions";
@@ -51,6 +52,8 @@ export function useOrderForm(save: (form: OrderForm) => Promise<OrderSaveResult>
   const [location, setLocation] = useState<Coordinates | null>(null);
   const [items, setItems] = useState(() => [createItemInput()]);
   const [customerDeliveryFee, setCustomerDeliveryFee] = useState("");
+  // Arranca sin elegir: quien crea la orden tiene que decir cómo paga el cliente.
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod | null>(null);
   const [result, setResult] = useState<OrderSaveResult>({ fieldErrors: {} });
   const [isPending, startTransition] = useTransition();
 
@@ -90,7 +93,8 @@ export function useOrderForm(save: (form: OrderForm) => Promise<OrderSaveResult>
     );
   }
 
-  function toForm(): OrderForm {
+  // paymentMethod puede faltar todavía: la validación lo reporta como "Elegí cómo paga el cliente.".
+  function toForm(): Omit<OrderForm, "paymentMethod"> & { paymentMethod: PaymentMethod | null } {
     return {
       branchId: toNumber(branchId),
       ...customer,
@@ -99,6 +103,7 @@ export function useOrderForm(save: (form: OrderForm) => Promise<OrderSaveResult>
       deliveryLongitude: location?.longitude ?? Number.NaN,
       items: items.map(toItemForm),
       customerDeliveryFee: toNumber(customerDeliveryFee),
+      paymentMethod,
     };
   }
 
@@ -121,6 +126,7 @@ export function useOrderForm(save: (form: OrderForm) => Promise<OrderSaveResult>
     location,
     items,
     customerDeliveryFee,
+    paymentMethod,
     subtotal,
     customerDeliveryFeeAmount,
     total,
@@ -135,6 +141,7 @@ export function useOrderForm(save: (form: OrderForm) => Promise<OrderSaveResult>
     removeItem,
     updateItem,
     setCustomerDeliveryFee,
+    setPaymentMethod,
     submit,
   };
 }

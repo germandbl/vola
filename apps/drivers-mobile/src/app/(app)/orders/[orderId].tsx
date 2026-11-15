@@ -1,4 +1,10 @@
-import { PREPARATION_STATUS_LABEL, colors, findDriverNextStatus, spacing } from "@vola/shared";
+import {
+  PREPARATION_STATUS_LABEL,
+  PaymentMethod,
+  colors,
+  findDriverNextStatus,
+  spacing,
+} from "@vola/shared";
 import { useLocalSearchParams } from "expo-router";
 import { ActivityIndicator, RefreshControl, ScrollView, StyleSheet, View } from "react-native";
 import { AppText } from "@/components/AppText";
@@ -6,11 +12,17 @@ import { Card } from "@/components/Card";
 import { ErrorMessage } from "@/components/ErrorMessage";
 import { MapPreview } from "@/components/MapPreview";
 import { OrderStatusActions } from "@/components/OrderStatusActions";
+import { PaymentTile } from "@/components/PaymentTile";
 import { SecondaryButton } from "@/components/SecondaryButton";
 import { StatTile } from "@/components/StatTile";
 import { useOrderDetail } from "@/hooks/use-order-detail";
 import { callPhone, openDirections, openWhatsApp } from "@/lib/external-links";
 import { formatMoney, formatTime } from "@/lib/format";
+
+const TOTAL_LABEL: Record<PaymentMethod, string> = {
+  [PaymentMethod.Card]: "Total, ya pagado con tarjeta",
+  [PaymentMethod.Cash]: "Total a cobrar en efectivo",
+};
 
 export default function OrderDetailScreen() {
   const { orderId } = useLocalSearchParams<{ orderId: string }>();
@@ -58,9 +70,7 @@ export default function OrderDetailScreen() {
           <StatTile icon="clock" label="Estado de la orden" tone="nube">
             {PREPARATION_STATUS_LABEL[order.preparationStatus]}
           </StatTile>
-          <StatTile icon="dollar-sign" label="Total a cobrar" tone="bruma">
-            {formatMoney(order.total, order.currency)}
-          </StatTile>
+          <PaymentTile paymentMethod={order.paymentMethod} total={order.total} currency={order.currency} />
         </View>
         <AppText variant="pequeno" tone="tintaSuave" style={styles.centeredText}>
           Último cambio a las {formatTime(order.statusChangedAt)}
@@ -115,7 +125,7 @@ export default function OrderDetailScreen() {
         </View>
         <View style={styles.divider} />
         <View style={styles.totalRow}>
-          <AppText tone="tintaSuave">Total a cobrar</AppText>
+          <AppText tone="tintaSuave">{TOTAL_LABEL[order.paymentMethod]}</AppText>
           <AppText variant="titulo3">{formatMoney(order.total, order.currency)}</AppText>
         </View>
       </Card>

@@ -1,4 +1,9 @@
-import { DeliveryFeeBasis, calculateItemTotal, type OrderDetail } from "@vola/shared";
+import {
+  DeliveryFeeBasis,
+  PAYMENT_METHOD_LABEL,
+  calculateItemTotal,
+  type OrderDetail,
+} from "@vola/shared";
 import type { ReactNode } from "react";
 import { formatMoney } from "@/lib/labels";
 import { OrderTimeline } from "./OrderTimeline";
@@ -68,6 +73,10 @@ export function OrderDetailBody({ order }: OrderDetailBodyProps) {
           <div className="flex justify-between text-base font-semibold">
             <dt>Total del cliente</dt>
             <dd>{formatMoney(order.total, currency)}</dd>
+          </div>
+          <div className="flex justify-between">
+            <dt>Método de pago</dt>
+            <dd>{PAYMENT_METHOD_LABEL[order.paymentMethod]}</dd>
           </div>
           <div className="flex justify-between text-muted-foreground">
             <dt>Envío que cobra Volá!</dt>
