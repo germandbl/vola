@@ -1,7 +1,8 @@
 "use client";
 
 import { APIProvider, Map, type MapCameraChangedEvent } from "@vis.gl/react-google-maps";
-import { MapPin } from "lucide-react";
+import Image from "next/image";
+import branchMarker from "@/assets/markers/branch.png";
 import { FormErrorAlert } from "@/components/FormErrorAlert";
 import {
   MAP_AUTH_FAILURE_MESSAGE,
@@ -53,9 +54,11 @@ export function LocationPicker({ initialLocation, location, onChange }: Location
             onCameraChanged={updateLocation}
           />
           {/* El marcador no se mueve: el punto de la ubicación es el centro del mapa, donde apunta la punta. */}
-          <MapPin
+          <Image
+            src={branchMarker}
+            alt=""
             aria-hidden="true"
-            className="pointer-events-none absolute top-1/2 left-1/2 size-10 -translate-x-1/2 -translate-y-full fill-blanco text-tinta"
+            className="pointer-events-none absolute top-1/2 left-1/2 h-12 w-auto -translate-x-1/2 -translate-y-full"
           />
         </div>
       </APIProvider>

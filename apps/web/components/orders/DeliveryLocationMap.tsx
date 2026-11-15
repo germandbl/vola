@@ -1,8 +1,9 @@
 "use client";
 
 import { Map, useMap, type MapEvent } from "@vis.gl/react-google-maps";
-import { MapPin } from "lucide-react";
+import Image from "next/image";
 import { useEffect } from "react";
+import customerMarker from "@/assets/markers/customer.png";
 import type { Coordinates } from "@/lib/map-defaults";
 
 const CITY_ZOOM = 13;
@@ -66,9 +67,11 @@ export function DeliveryLocationMap({ location, defaultCenter, onChange }: Deliv
           onIdle={updateLocation}
         />
         {/* El marcador no se mueve: el punto de entrega es el centro del mapa, donde apunta la punta. */}
-        <MapPin
+        <Image
+          src={customerMarker}
+          alt=""
           aria-hidden="true"
-          className="pointer-events-none absolute top-1/2 left-1/2 size-10 -translate-x-1/2 -translate-y-full fill-blanco text-tinta"
+          className="pointer-events-none absolute top-1/2 left-1/2 h-12 w-auto -translate-x-1/2 -translate-y-full"
         />
       </div>
       <p className="text-sm text-muted-foreground">

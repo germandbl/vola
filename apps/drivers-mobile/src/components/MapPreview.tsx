@@ -5,6 +5,10 @@ import MapView, { Marker } from "react-native-maps";
 const MAP_HEIGHT = 140;
 // Cerca de 1 km alrededor del punto: se ve la cuadra y las calles de acceso.
 const MAP_DELTA = 0.01;
+const MARKER_HEIGHT = 48;
+// La imagen tiene la punta del pin en el borde inferior: así apunta a la dirección y no queda centrada sobre ella.
+const MARKER_TIP_ANCHOR = { x: 0.5, y: 1 };
+const MARKER_TIP_OFFSET = { x: 0, y: -MARKER_HEIGHT / 2 };
 
 interface MapPreviewProps {
   latitude: number;
@@ -34,7 +38,12 @@ export function MapPreview({ latitude, longitude, onPress }: MapPreviewProps) {
         rotateEnabled={false}
         pitchEnabled={false}
       >
-        <Marker coordinate={{ latitude, longitude }} pinColor={colors.tinta} />
+        <Marker
+          coordinate={{ latitude, longitude }}
+          image={require("@/assets/images/markers/customer.png")}
+          anchor={MARKER_TIP_ANCHOR}
+          centerOffset={MARKER_TIP_OFFSET}
+        />
       </MapView>
     </Pressable>
   );
