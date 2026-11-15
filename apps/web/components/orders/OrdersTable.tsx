@@ -3,6 +3,7 @@ import {
   canAssignOrders,
   canOrderBeAssigned,
   type AuthUser,
+  type OrderGroup,
   type OrderSummary,
 } from "@vola/shared";
 import { ReceiptText } from "lucide-react";
@@ -24,6 +25,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { formatDate, formatDateTime, formatMoney } from "@/lib/labels";
+import { ORDER_GROUP_EMPTY, ORDER_GROUP_PATH } from "@/lib/order-groups";
 import { getOrdersPage } from "@/lib/organizations-data";
 import { ORDER_DETAIL_PARAM } from "@/lib/order-detail-param";
 import { AssignDriverDialog } from "./AssignDriverDialog";
@@ -40,13 +42,16 @@ function canAssign(user: AuthUser, order: OrderSummary): boolean {
 }
 
 interface OrdersTableProps {
+  group: OrderGroup;
   page: number;
   showOrganization: boolean;
   currentUser: AuthUser;
 }
 
-export async function OrdersTable({ page, showOrganization, currentUser }: OrdersTableProps) {
-  const ordersPage = await getOrdersPage(page);
+export async function OrdersTable({ group, page, showOrganization, currentUser }: OrdersTableProps) {
+  const ordersPage = await getOrdersPage(group, page);
+  const basePath = ORDER_GROUP_PATH[group];
+  const empty = ORDER_GROUP_EMPTY[group];
 
   if (ordersPage.totalItems === 0) {
     return (
@@ -55,8 +60,8 @@ export async function OrdersTable({ page, showOrganization, currentUser }: Order
           <EmptyMedia variant="icon">
             <ReceiptText />
           </EmptyMedia>
-          <EmptyTitle>Todavía no hay órdenes</EmptyTitle>
-          <EmptyDescription>Creá la primera para mandarla a entregar.</EmptyDescription>
+          <EmptyTitle>{empty.title}</EmptyTitle>
+          <EmptyDescription>{empty.description}</EmptyDescription>
         </EmptyHeader>
       </Empty>
     );
@@ -127,7 +132,7 @@ export async function OrdersTable({ page, showOrganization, currentUser }: Order
                 <TableCell>{formatDate(order.createdAt)}</TableCell>
                 <TableCell className="text-right">
                   <ViewDetailButton
-                    href={`/ordenes?page=${ordersPage.page}&${ORDER_DETAIL_PARAM}=${order.id}`}
+                    href={`${basePath}?page=${ordersPage.page}&${ORDER_DETAIL_PARAM}=${order.id}`}
                     shouldScroll={false}
                   />
                 </TableCell>
@@ -137,7 +142,7 @@ export async function OrdersTable({ page, showOrganization, currentUser }: Order
         </Table>
       </div>
       <ListPagination
-        basePath="/ordenes"
+        basePath={basePath}
         page={ordersPage.page}
         totalPages={ordersPage.totalPages}
       />

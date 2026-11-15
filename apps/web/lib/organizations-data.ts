@@ -32,6 +32,7 @@ import {
   type OrderSummary,
   type Organization,
   type CashSettlement,
+  type OrderGroup,
   type CashWithPlatform,
   type Paginated,
   type PendingDriverCash,
@@ -147,8 +148,8 @@ export async function getOrganizationMerchant(
   return { organization, merchant };
 }
 
-export function getOrdersPage(page: number): Promise<Paginated<OrderSummary>> {
-  return getFromApi(`/orders?page=${page}`, paginatedSchema(orderSummarySchema));
+export function getOrdersPage(group: OrderGroup, page: number): Promise<Paginated<OrderSummary>> {
+  return getFromApi(`/orders?group=${group}&page=${page}`, paginatedSchema(orderSummarySchema));
 }
 
 export function getOrderBranchOptions(): Promise<OrderBranchOption[]> {
