@@ -6,7 +6,8 @@ export default function DashboardLayout({ children }: LayoutProps<"/">) {
   return (
     <SidebarProvider>
       <AppSidebar />
-      <SidebarInset>
+      {/* min-w-0: sin esto el contenido crece al ancho de una tabla ancha y la página entera se desborda. */}
+      <SidebarInset className="min-w-0">
         <MobileHeader />
         <div className="flex-1 px-4 py-6 md:px-10 md:py-10">{children}</div>
       </SidebarInset>

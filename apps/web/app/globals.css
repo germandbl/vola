@@ -48,6 +48,18 @@
   --text-display--line-height: 60px;
 
   --shadow-flotante: 0 4px 16px rgba(14, 31, 61, 0.08);
+
+  /* La barra que se llena hasta la próxima actualización automática; la duración la pone el componente. */
+  --animate-refresh-countdown: refresh-countdown linear forwards;
+
+  @keyframes refresh-countdown {
+    from {
+      transform: scaleX(0);
+    }
+    to {
+      transform: scaleX(1);
+    }
+  }
 }
 
 @theme inline {
