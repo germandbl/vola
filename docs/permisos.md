@@ -14,7 +14,8 @@ Todos los permisos se revisan en el servidor (Nest). Las reglas están en `packa
   - `merchants.manage`: crear y editar comercios y sucursales.
   - `delivery_fees.manage`: ver y cambiar las tarifas de envío.
   - `orders.create`: crear órdenes.
-- `organizations.view`, `merchants.manage` y `delivery_fees.manage` solo cuentan si el usuario es de la plataforma. `orders.create` también sirve a un agent de un cliente, pero solo en su organización.
+  - `invoices.manage`: facturar el envío a los comercios y registrar sus pagos.
+- `organizations.view`, `merchants.manage`, `delivery_fees.manage` e `invoices.manage` solo cuentan si el usuario es de la plataforma. `orders.create` también sirve a un agent de un cliente, pero solo en su organización.
 
 ## Matriz de acciones por rol
 
@@ -37,6 +38,8 @@ Todos los permisos se revisan en el servidor (Nest). Las reglas están en `packa
 | Ver y cambiar tarifas de envío | Sí | Con permiso `delivery_fees.manage` | Con permiso `delivery_fees.manage` | No | No | No |
 | Ver órdenes | Todas | Todas | Todas, con `organizations.view` u `orders.create` | Solo la suya | Solo la suya | No |
 | Crear órdenes | Sí, para cualquier comercio | Con permiso `orders.create`, para cualquier comercio | Con permiso `orders.create`, para cualquier comercio | Solo la suya | Con permiso `orders.create`, solo la suya | No |
+| Facturar envíos y registrar pagos | Sí | Sí | Con permiso `invoices.manage` | No | No | No |
+| Ver facturas | Todas | Todas | Todas, con `invoices.manage` | Solo las suyas | No | No |
 
 ## Reglas de propiedad del dato
 

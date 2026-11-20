@@ -174,9 +174,10 @@ export function canAccessSettlements(user: AuthUser): boolean {
   return canSettleOwnCash(user);
 }
 
-// Facturar envíos es cobrarle a cualquier comercio: solo quien administra Volá!.
+// Facturar envíos es cobrarle a cualquier comercio: quien administra Volá! o un agente de Volá! con el permiso.
 export function canInvoiceMerchants(user: AuthUser): boolean {
-  return canManageAllOrganizations(user);
+  if (canManageAllOrganizations(user)) return true;
+  return hasPlatformPermission(user, Permission.ManageInvoices);
 }
 
 // El administrador de un comercio ve las facturas que Volá! le hizo.
