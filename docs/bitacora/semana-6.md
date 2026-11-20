@@ -18,7 +18,7 @@ En la prueba con usuarios se mantuvo la hipótesis 1: los comercios registran y 
 - Cada orden apunta a su factura con `invoice_id`, igual que con las liquidaciones de efectivo, así una orden no puede quedar en dos facturas y lo pendiente se calcula sin guardar saldos.
 - La factura lleva el costo de envío que se guardó al crear cada orden, para que el comercio pague lo mismo que vio en la orden aunque la tarifa cambie después.
 - Se factura todo lo pendiente del comercio de una vez, sin periodos, porque hoy Volá! decide cuándo cobrar.
-- Solo el superadmin y los administradores de Volá! generan facturas y registran pagos. El administrador del comercio solo ve las suyas.
+- Generan facturas y registran pagos el superadmin, los administradores de Volá! y los agentes de Volá! con el permiso `invoices.manage`. Un agente de un comercio no puede recibir ese permiso. El administrador del comercio solo ve las suyas.
 
 ## Qué le pedí a la IA
 
