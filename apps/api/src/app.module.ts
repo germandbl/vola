@@ -7,6 +7,7 @@ import { CountriesModule } from './countries/countries.module.js';
 import { DeliveryFeesModule } from './delivery-fees/delivery-fees.module.js';
 import { DatabaseModule } from './database/database.module.js';
 import { DriversModule } from './drivers/drivers.module.js';
+import { InvoicesModule } from './invoices/invoices.module.js';
 import { MerchantsModule } from './merchants/merchants.module.js';
 import { OrdersModule } from './orders/orders.module.js';
 import { OperationMapModule } from './operation-map/operation-map.module.js';
@@ -23,6 +24,7 @@ import { UsersModule } from './users/users.module.js';
     CountriesModule,
     DeliveryFeesModule,
     DriversModule,
+    InvoicesModule,
     MerchantsModule,
     OrdersModule,
     OperationMapModule,
