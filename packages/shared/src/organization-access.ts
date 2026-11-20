@@ -173,3 +173,8 @@ export function canAccessSettlements(user: AuthUser): boolean {
   if (canSettlePlatformCash(user)) return true;
   return canSettleOwnCash(user);
 }
+
+// Facturar envíos es cobrarle a cualquier comercio: solo quien administra Volá!.
+export function canInvoiceMerchants(user: AuthUser): boolean {
+  return canManageAllOrganizations(user);
+}

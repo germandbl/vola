@@ -13,6 +13,7 @@ import {
 import { branches } from '../branches/branches.schema.js';
 import { customers } from '../customers/customers.schema.js';
 import { drivers } from '../drivers/drivers.schema.js';
+import { invoices } from '../invoices/invoices.schema.js';
 import { deliveryFeeBasis } from '../merchants/merchants.schema.js';
 import { organizations } from '../organizations/organizations.schema.js';
 import { cashSettlements } from '../settlements/settlements.schema.js';
@@ -91,6 +92,11 @@ export const orders = pgTable(
     merchantSettlementId: bigint('merchant_settlement_id', {
       mode: 'number',
     }).references(() => cashSettlements.id, { onDelete: 'restrict' }),
+    // Solo para motoristas de Volá!: en qué factura Volá! le cobró el envío al comercio.
+    invoiceId: bigint('invoice_id', { mode: 'number' }).references(
+      () => invoices.id,
+      { onDelete: 'restrict' },
+    ),
     // Va en el enlace público de seguimiento en vez del id: un UUID aleatorio no se adivina cambiando números.
     trackingCode: uuid('tracking_code').notNull().defaultRandom().unique(),
     createdAt: timestamp('created_at').notNull().defaultNow(),
