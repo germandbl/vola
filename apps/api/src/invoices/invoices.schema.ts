@@ -27,9 +27,18 @@ export const invoices = pgTable(
       .notNull()
       .references(() => users.id, { onDelete: 'restrict' }),
     createdAt: timestamp('created_at').notNull().defaultNow(),
+    paidAt: timestamp('paid_at'),
+    paidByUserId: bigint('paid_by_user_id', { mode: 'number' }).references(
+      () => users.id,
+      { onDelete: 'restrict' },
+    ),
   },
   (table) => [
     // Una tarifa de envío puede valer 0, así que una factura también.
     check('invoices_amount_not_negative', sql`${table.amount} >= 0`),
+    check(
+      'invoices_paid_together',
+      sql`(${table.paidAt} IS NULL) = (${table.paidByUserId} IS NULL)`,
+    ),
   ],
 );

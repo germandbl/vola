@@ -11,6 +11,7 @@ import {
 import {
   paginationQuerySchema,
   type AuthUser,
+  type InvoiceDetail,
   type InvoiceOrder,
   type InvoiceSummary,
   type Paginated,
@@ -57,5 +58,22 @@ export class InvoicesController {
     @Param('organizationId', ParseIntPipe) organizationId: number,
   ): Promise<void> {
     return this.pendingInvoicesService.create(user, organizationId);
+  }
+
+  @Get(':invoiceId')
+  findById(
+    @CurrentUser() user: AuthUser,
+    @Param('invoiceId', ParseIntPipe) invoiceId: number,
+  ): Promise<InvoiceDetail> {
+    return this.invoicesService.findById(user, invoiceId);
+  }
+
+  @Post(':invoiceId/payment')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  markPaid(
+    @CurrentUser() user: AuthUser,
+    @Param('invoiceId', ParseIntPipe) invoiceId: number,
+  ): Promise<void> {
+    return this.invoicesService.markPaid(user, invoiceId);
   }
 }
