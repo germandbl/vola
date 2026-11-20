@@ -3,6 +3,7 @@
 import {
   Bike,
   Building2,
+  FileText,
   HandCoins,
   House,
   MapPinned,
@@ -19,7 +20,7 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 
-export type NavIcon = "home" | "orders" | "drivers" | "map" | "settlements" | "organizations";
+export type NavIcon = "home" | "orders" | "drivers" | "map" | "settlements" | "invoices" | "organizations";
 
 export interface NavItem {
   href: string;
@@ -33,6 +34,7 @@ const NAV_ICON: Record<NavIcon, LucideIcon> = {
   drivers: Bike,
   map: MapPinned,
   settlements: HandCoins,
+  invoices: FileText,
   organizations: Building2,
 };
 

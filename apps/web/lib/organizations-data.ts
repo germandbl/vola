@@ -4,6 +4,7 @@ import {
   cashSettlementSchema,
   cashWithPlatformSchema,
   pendingDriverCashSchema,
+  pendingInvoiceSchema,
   pendingMerchantCashSchema,
   branchSummarySchema,
   countrySchema,
@@ -12,6 +13,7 @@ import {
   driverMerchantSchema,
   driverOwnerSchema,
   driverSummarySchema,
+  invoiceSummarySchema,
   merchantSchema,
   operationMapSchema,
   orderBranchOptionSchema,
@@ -27,6 +29,7 @@ import {
   type DriverMerchant,
   type DriverOwner,
   type DriverSummary,
+  type InvoiceSummary,
   type Merchant,
   type OrderBranchOption,
   type OrderCountFeeRate,
@@ -38,6 +41,7 @@ import {
   type CashWithPlatform,
   type Paginated,
   type PendingDriverCash,
+  type PendingInvoice,
   type PendingMerchantCash,
   type UserSummary,
 } from "@vola/shared";
@@ -188,6 +192,14 @@ export function getCashWithPlatform(): Promise<CashWithPlatform> {
 
 export function getSettlementHistory(page: number): Promise<Paginated<CashSettlement>> {
   return getFromApi(`/settlements/history?page=${page}`, paginatedSchema(cashSettlementSchema));
+}
+
+export function getPendingInvoices(): Promise<PendingInvoice[]> {
+  return getFromApi("/invoices/pending", z.array(pendingInvoiceSchema));
+}
+
+export function getInvoicesPage(page: number): Promise<Paginated<InvoiceSummary>> {
+  return getFromApi(`/invoices?page=${page}`, paginatedSchema(invoiceSummarySchema));
 }
 
 export function getOperationMap(): Promise<OperationMap> {
