@@ -13,6 +13,7 @@ import {
   driverMerchantSchema,
   driverOwnerSchema,
   driverSummarySchema,
+  invoiceDetailSchema,
   invoiceSummarySchema,
   merchantSchema,
   operationMapSchema,
@@ -29,6 +30,7 @@ import {
   type DriverMerchant,
   type DriverOwner,
   type DriverSummary,
+  type InvoiceDetail,
   type InvoiceSummary,
   type Merchant,
   type OrderBranchOption,
@@ -200,6 +202,10 @@ export function getPendingInvoices(): Promise<PendingInvoice[]> {
 
 export function getInvoicesPage(page: number): Promise<Paginated<InvoiceSummary>> {
   return getFromApi(`/invoices?page=${page}`, paginatedSchema(invoiceSummarySchema));
+}
+
+export function getInvoice(invoiceId: number): Promise<InvoiceDetail> {
+  return getFromApi(`/invoices/${invoiceId}`, invoiceDetailSchema);
 }
 
 export function getOperationMap(): Promise<OperationMap> {

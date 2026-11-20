@@ -1,0 +1,154 @@
+{
+  "type": "diff",
+  "version": "9",
+  "dialect": "postgres",
+  "id": "2e0b4a82-7f13-4a22-bc60-7bf740944b9d",
+  "prevIds": [
+    "2cdebf2b-56b4-4da6-9dd3-9bf863697bb1"
+  ],
+  "footprints": [
+    {
+      "statementType": "add_column",
+      "statementTarget": [
+        "column",
+        "public",
+        "invoices",
+        "paid_at"
+      ],
+      "writes": [
+        "s|col|public.invoices.paid_at",
+        "n|col|public.invoices.paid_at",
+        "e|col|public.invoices.paid_at"
+      ],
+      "reads": [
+        "n|tbl|public.invoices",
+        "n|sch|public"
+      ]
+    },
+    {
+      "statementType": "add_column",
+      "statementTarget": [
+        "column",
+        "public",
+        "invoices",
+        "paid_by_user_id"
+      ],
+      "writes": [
+        "s|col|public.invoices.paid_by_user_id",
+        "n|col|public.invoices.paid_by_user_id",
+        "e|col|public.invoices.paid_by_user_id"
+      ],
+      "reads": [
+        "n|tbl|public.invoices",
+        "n|sch|public"
+      ]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "invoices"
+      ],
+      "writes": [
+        "s|fk|public.invoices.invoices_paid_by_user_id_users_id_fkey",
+        "n|fk|public.invoices.invoices_paid_by_user_id_users_id_fkey",
+        "e|fk|public.invoices.invoices_paid_by_user_id_users_id_fkey",
+        "n|con|public.invoices.invoices_paid_by_user_id_users_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.invoices",
+        "n|sch|public",
+        "n|tbl|public.users",
+        "n|sch|public",
+        "n|col|public.invoices.paid_by_user_id",
+        "n|col|public.users.id",
+        "e|uniqueness|public.users.id"
+      ]
+    },
+    {
+      "statementType": "add_check",
+      "statementTarget": [
+        "table",
+        "public",
+        "invoices"
+      ],
+      "writes": [
+        "s|ck|public.invoices.invoices_paid_together",
+        "n|ck|public.invoices.invoices_paid_together",
+        "e|ck|public.invoices.invoices_paid_together",
+        "n|con|public.invoices.invoices_paid_together"
+      ],
+      "reads": [
+        "n|tbl|public.invoices",
+        "n|sch|public",
+        "n|col|public.invoices.paid_at",
+        "n|col|public.invoices.paid_by_user_id"
+      ]
+    }
+  ],
+  "deltas": [
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "invoices",
+        "name": "paid_at",
+        "type": "timestamp",
+        "typeSchema": null,
+        "notNull": false,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "invoices",
+        "name": "paid_by_user_id",
+        "type": "bigint",
+        "typeSchema": null,
+        "notNull": false,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "invoices",
+        "name": "invoices_paid_by_user_id_users_id_fkey",
+        "nameExplicit": false,
+        "columns": [
+          "paid_by_user_id"
+        ],
+        "schemaTo": "public",
+        "tableTo": "users",
+        "columnsTo": [
+          "id"
+        ],
+        "onUpdate": "NO ACTION",
+        "onDelete": "RESTRICT",
+        "entityType": "fks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "invoices",
+        "name": "invoices_paid_together",
+        "value": "(\"paid_at\" IS NULL) = (\"paid_by_user_id\" IS NULL)",
+        "entityType": "checks"
+      }
+    }
+  ]
+}

@@ -1,4 +1,4 @@
-import { canInvoiceMerchants } from "@vola/shared";
+import { canAccessInvoices, canInvoiceMerchants } from "@vola/shared";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { PageHeader } from "@/components/PageHeader";
@@ -13,8 +13,16 @@ const INVOICE_TABS = [
 
 async function InvoicesHeader() {
   const currentUser = await getCurrentUser();
-  if (!canInvoiceMerchants(currentUser)) notFound();
+  if (!canAccessInvoices(currentUser)) notFound();
 
+  if (!canInvoiceMerchants(currentUser)) {
+    return (
+      <PageHeader
+        title="Facturas"
+        description="Lo que Volá! te cobra por el envío de las órdenes que entregan sus motoristas."
+      />
+    );
+  }
   return (
     <div className="flex flex-col gap-4">
       <PageHeader

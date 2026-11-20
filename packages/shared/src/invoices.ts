@@ -30,6 +30,15 @@ export const invoiceSummarySchema = z.object({
   amount: z.number(),
   currency: z.string().nullable(),
   createdAt: z.string(),
+  // null mientras el comercio no la ha pagado.
+  paidAt: z.string().nullable(),
 });
 
 export type InvoiceSummary = z.infer<typeof invoiceSummarySchema>;
+
+export const invoiceDetailSchema = invoiceSummarySchema.extend({
+  paidByName: z.string().nullable(),
+  orders: z.array(invoiceOrderSchema),
+});
+
+export type InvoiceDetail = z.infer<typeof invoiceDetailSchema>;

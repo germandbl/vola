@@ -178,3 +178,14 @@ export function canAccessSettlements(user: AuthUser): boolean {
 export function canInvoiceMerchants(user: AuthUser): boolean {
   return canManageAllOrganizations(user);
 }
+
+// El administrador de un comercio ve las facturas que Volá! le hizo.
+export function canViewOwnInvoices(user: AuthUser): boolean {
+  if (user.organizationType !== OrganizationType.Merchant) return false;
+  return user.role === RoleName.Administrator;
+}
+
+export function canAccessInvoices(user: AuthUser): boolean {
+  if (canInvoiceMerchants(user)) return true;
+  return canViewOwnInvoices(user);
+}
