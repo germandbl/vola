@@ -1,0 +1,63 @@
+{
+  "type": "diff",
+  "version": "9",
+  "dialect": "postgres",
+  "id": "6e6c7cf1-696c-4493-a705-d673b9162bbe",
+  "prevIds": [
+    "2e0b4a82-7f13-4a22-bc60-7bf740944b9d"
+  ],
+  "footprints": [
+    {
+      "statementType": "alter_check",
+      "statementTarget": [
+        "table",
+        "public",
+        "role_permissions"
+      ],
+      "writes": [
+        "s|ck|public.role_permissions.role_permissions_permission_key_known"
+      ],
+      "reads": [
+        "n|tbl|public.role_permissions",
+        "n|sch|public",
+        "n|col|public.role_permissions.permission_key",
+        "e|col|public.role_permissions.permission_key"
+      ],
+      "sqlHash": "c229cdbf2342ccce"
+    },
+    {
+      "statementType": "alter_check",
+      "statementTarget": [
+        "table",
+        "public",
+        "user_permissions"
+      ],
+      "writes": [
+        "s|ck|public.user_permissions.user_permissions_permission_key_known"
+      ],
+      "reads": [
+        "n|tbl|public.user_permissions",
+        "n|sch|public",
+        "n|col|public.user_permissions.permission_key",
+        "e|col|public.user_permissions.permission_key"
+      ],
+      "sqlHash": "62d4abca7ae74030"
+    }
+  ],
+  "deltas": [
+    {
+      "op": "alter",
+      "key": "checks\u0000[\"public\",\"role_permissions\",\"role_permissions_permission_key_known\"]",
+      "set": {
+        "value": "\"permission_key\" IN ('organizations.view', 'delivery_fees.manage', 'merchants.manage', 'orders.create', 'drivers.manage', 'orders.assign', 'orders.manage', 'cash.settle', 'invoices.manage')"
+      }
+    },
+    {
+      "op": "alter",
+      "key": "checks\u0000[\"public\",\"user_permissions\",\"user_permissions_permission_key_known\"]",
+      "set": {
+        "value": "\"permission_key\" IN ('organizations.view', 'delivery_fees.manage', 'merchants.manage', 'orders.create', 'drivers.manage', 'orders.assign', 'orders.manage', 'cash.settle', 'invoices.manage')"
+      }
+    }
+  ]
+}

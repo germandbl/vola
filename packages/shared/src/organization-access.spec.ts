@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import type { AuthUser } from "./auth.js";
 import {
   canAssignOrders,
+  canInvoiceMerchants,
   canManageAllMerchants,
   canManageDriversOf,
   canManageMerchants,
@@ -153,5 +154,30 @@ describe("canAssignOrders", () => {
     );
     const agent = createClientUser({ permissions: [Permission.AssignOrders] });
     expect(canAssignOrders(agent, CLIENT_ORGANIZATION_ID)).toBe(true);
+  });
+});
+
+describe("canInvoiceMerchants", () => {
+  const PLATFORM_ORGANIZATION_ID = 1;
+
+  it("lets a Volá! agent invoice only with the permission", () => {
+    const platformAgent = createClientUser({
+      organizationId: PLATFORM_ORGANIZATION_ID,
+      organizationType: OrganizationType.Platform,
+    });
+    const platformAgentWithPermission = createClientUser({
+      organizationId: PLATFORM_ORGANIZATION_ID,
+      organizationType: OrganizationType.Platform,
+      permissions: [Permission.ManageInvoices],
+    });
+    expect(canInvoiceMerchants(platformAgent)).toBe(false);
+    expect(canInvoiceMerchants(platformAgentWithPermission)).toBe(true);
+  });
+
+  it("does not let a client agent invoice even with the permission", () => {
+    const clientAgent = createClientUser({
+      permissions: [Permission.ManageInvoices],
+    });
+    expect(canInvoiceMerchants(clientAgent)).toBe(false);
   });
 });

@@ -10,6 +10,7 @@ export const Permission = {
   AssignOrders: 'orders.assign',
   ManageOrders: 'orders.manage',
   SettleCash: 'cash.settle',
+  ManageInvoices: 'invoices.manage',
 } as const;
 
 export type Permission = (typeof Permission)[keyof typeof Permission];
@@ -25,6 +26,7 @@ export const PERMISSION_LABEL: Record<Permission, string> = {
   [Permission.AssignOrders]: 'Asignar motoristas a órdenes',
   [Permission.ManageOrders]: 'Gestionar órdenes',
   [Permission.SettleCash]: 'Liquidar efectivo',
+  [Permission.ManageInvoices]: 'Facturar a comercios',
 };
 
 export const PERMISSION_DESCRIPTION: Record<Permission, string> = {
@@ -36,12 +38,14 @@ export const PERMISSION_DESCRIPTION: Record<Permission, string> = {
   [Permission.AssignOrders]: 'Asigna, reasigna y libera el motorista de una orden.',
   [Permission.ManageOrders]: 'Marca la preparación y completa o cancela órdenes.',
   [Permission.SettleCash]: 'Recibe el efectivo de los motoristas y ve las liquidaciones.',
+  [Permission.ManageInvoices]: 'Factura el envío a los comercios y registra sus pagos.',
 };
 
-// Ver todas las organizaciones y las tarifas de envío solo tienen efecto para usuarios de Volá!.
+// Ver todas las organizaciones, las tarifas de envío y facturar solo tienen efecto para usuarios de Volá!.
 const PLATFORM_ONLY_PERMISSIONS: Permission[] = [
   Permission.ViewOrganizations,
   Permission.ManageDeliveryFees,
+  Permission.ManageInvoices,
 ];
 
 export function findAssignablePermissions(
