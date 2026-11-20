@@ -1,7 +1,7 @@
 import {
   canAccessDrivers,
+  canAccessInvoices,
   canAccessSettlements,
-  canInvoiceMerchants,
   canViewAllOrganizations,
   canViewOrganization,
   canViewOrders,
@@ -25,7 +25,7 @@ function getNavItems(user: AuthUser): NavItem[] {
   if (canAccessSettlements(user)) {
     items.push({ href: "/liquidaciones", label: "Liquidaciones", icon: "settlements" });
   }
-  if (canInvoiceMerchants(user)) {
+  if (canAccessInvoices(user)) {
     items.push({ href: "/facturas", label: "Facturas", icon: "invoices" });
   }
   if (canViewAllOrganizations(user)) {

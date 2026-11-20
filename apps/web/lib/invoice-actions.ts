@@ -34,3 +34,21 @@ export async function createInvoice(organizationId: number): Promise<CreateInvoi
   refresh();
   return { isCreated: true };
 }
+
+export interface MarkInvoicePaidResult {
+  error?: string;
+  isPaid?: boolean;
+}
+
+function toMarkPaidError(status: number): string {
+  if (status === HTTP_FORBIDDEN) return "No tenés permiso para registrar pagos de facturas.";
+  if (status === HTTP_CONFLICT) return "Esta factura ya estaba pagada. Otra persona registró el pago.";
+  return "No pudimos registrar el pago. Probá de nuevo en un momento.";
+}
+
+export async function markInvoicePaid(invoiceId: number): Promise<MarkInvoicePaidResult> {
+  const response = await fetchWithSession(`/invoices/${invoiceId}/payment`, { method: "POST" });
+  if (!response.ok) return { error: toMarkPaidError(response.status) };
+  refresh();
+  return { isPaid: true };
+}

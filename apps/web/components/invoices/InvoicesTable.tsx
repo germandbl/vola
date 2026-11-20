@@ -1,5 +1,6 @@
 import { FileText } from "lucide-react";
 import { ListPagination } from "@/components/ListPagination";
+import { ViewDetailButton } from "@/components/ViewDetailButton";
 import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty";
 import {
   Table,
@@ -11,6 +12,7 @@ import {
 } from "@/components/ui/table";
 import { formatDateTime, formatMoney, formatOrderCount } from "@/lib/labels";
 import { getInvoicesPage } from "@/lib/organizations-data";
+import { InvoiceStatusChip } from "./InvoiceStatusChip";
 
 interface InvoicesTableProps {
   page: number;
@@ -27,7 +29,7 @@ export async function InvoicesTable({ page }: InvoicesTableProps) {
             <FileText />
           </EmptyMedia>
           <EmptyTitle>Todavía no hay facturas</EmptyTitle>
-          <EmptyDescription>Cada factura que se genere a un comercio va a quedar registrada acá.</EmptyDescription>
+          <EmptyDescription>Cada factura de envíos de Volá! va a quedar registrada acá.</EmptyDescription>
         </EmptyHeader>
       </Empty>
     );
@@ -45,6 +47,10 @@ export async function InvoicesTable({ page }: InvoicesTableProps) {
               <TableHead>Generó</TableHead>
               <TableHead>Órdenes</TableHead>
               <TableHead className="text-right">Monto</TableHead>
+              <TableHead>Estado</TableHead>
+              <TableHead>
+                <span className="sr-only">Acciones</span>
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -57,6 +63,12 @@ export async function InvoicesTable({ page }: InvoicesTableProps) {
                 <TableCell>{formatOrderCount(invoice.orderCount)}</TableCell>
                 <TableCell className="text-right font-semibold">
                   {formatMoney(invoice.amount, invoice.currency)}
+                </TableCell>
+                <TableCell>
+                  <InvoiceStatusChip paidAt={invoice.paidAt} />
+                </TableCell>
+                <TableCell className="text-right">
+                  <ViewDetailButton href={`/facturas/${invoice.id}`} />
                 </TableCell>
               </TableRow>
             ))}
