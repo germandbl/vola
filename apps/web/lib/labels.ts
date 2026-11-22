@@ -1,4 +1,4 @@
-import { DayOfWeek, INVOICE_TYPE_LABEL, OrganizationType, RoleName, type InvoiceSummary } from "@vola/shared";
+import { DayOfWeek, OrganizationType, RoleName } from "@vola/shared";
 
 export const ORGANIZATION_TYPE_LABEL: Record<OrganizationType, string> = {
   [OrganizationType.Merchant]: "Cliente",
@@ -66,17 +66,21 @@ export function formatTime(isoDate: string): string {
   return timeFormatter.format(new Date(isoDate));
 }
 
-const periodFormatter = new Intl.DateTimeFormat("es-HN", { month: "long", year: "numeric", timeZone: "UTC" });
+const billingDateFormatter = new Intl.DateTimeFormat("es-HN", { dateStyle: "medium", timeZone: "UTC" });
 
-// "2026-09" → "septiembre de 2026".
-export function formatPeriod(period: string): string {
-  const [year, month] = period.split("-").map(Number);
-  return periodFormatter.format(new Date(Date.UTC(year, month - 1, 1)));
+// Las fechas de facturación son días ("2026-11-15"), sin hora: se formatean en UTC para que no cambie el día.
+export function formatBillingDate(date: string): string {
+  return billingDateFormatter.format(new Date(`${date}T00:00:00Z`));
 }
 
-// Las de software dicen qué mes cobran: "Uso del software · septiembre de 2026".
-export function describeInvoiceConcept(invoice: Pick<InvoiceSummary, "type" | "period">): string {
-  const typeLabel = INVOICE_TYPE_LABEL[invoice.type];
-  if (!invoice.period) return typeLabel;
-  return `${typeLabel} · ${formatPeriod(invoice.period)}`;
+export function formatDateRange(from: string, to: string): string {
+  if (from === to) return formatBillingDate(from);
+  return `${formatBillingDate(from)} – ${formatBillingDate(to)}`;
+}
+
+const monthFractionFormatter = new Intl.NumberFormat("es-HN", { maximumFractionDigits: 2 });
+
+export function formatMonthFraction(monthFraction: number): string {
+  if (monthFraction === 1) return "1 mes";
+  return `${monthFractionFormatter.format(monthFraction)} meses`;
 }

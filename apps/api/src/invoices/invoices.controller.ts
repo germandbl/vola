@@ -10,16 +10,19 @@ import {
   Query,
 } from '@nestjs/common';
 import {
+  invoiceRangeSchema,
   paginationQuerySchema,
   softwareInvoiceFormSchema,
   type AuthUser,
   type InvoiceDetail,
   type InvoiceOrder,
+  type InvoiceRange,
   type InvoiceSummary,
   type Paginated,
   type PaginationQuery,
   type PendingInvoice,
   type PendingSoftwareInvoice,
+  type SoftwareChargeDetail,
   type SoftwareInvoiceForm,
 } from '@vola/shared';
 import { CurrentUser } from '../auth/current-user.decorator.js';
@@ -53,8 +56,13 @@ export class InvoicesController {
   findPendingOrders(
     @CurrentUser() user: AuthUser,
     @Param('organizationId', ParseIntPipe) organizationId: number,
+    @Query(new ZodValidationPipe(invoiceRangeSchema)) range: InvoiceRange,
   ): Promise<InvoiceOrder[]> {
-    return this.pendingInvoicesService.findPendingOrders(user, organizationId);
+    return this.pendingInvoicesService.findPendingOrders(
+      user,
+      organizationId,
+      range,
+    );
   }
 
   @Post('pending/:organizationId')
@@ -62,8 +70,9 @@ export class InvoicesController {
   create(
     @CurrentUser() user: AuthUser,
     @Param('organizationId', ParseIntPipe) organizationId: number,
+    @Body(new ZodValidationPipe(invoiceRangeSchema)) range: InvoiceRange,
   ): Promise<void> {
-    return this.pendingInvoicesService.create(user, organizationId);
+    return this.pendingInvoicesService.create(user, organizationId, range);
   }
 
   @Get('software/pending')
@@ -71,6 +80,15 @@ export class InvoicesController {
     @CurrentUser() user: AuthUser,
   ): Promise<PendingSoftwareInvoice[]> {
     return this.softwareInvoicesService.findPending(user);
+  }
+
+  @Get('software/pending/:organizationId/preview')
+  previewSoftware(
+    @CurrentUser() user: AuthUser,
+    @Param('organizationId', ParseIntPipe) organizationId: number,
+    @Query(new ZodValidationPipe(invoiceRangeSchema)) range: InvoiceRange,
+  ): Promise<SoftwareChargeDetail> {
+    return this.softwareInvoicesService.preview(user, organizationId, range);
   }
 
   @Post('software/pending/:organizationId')

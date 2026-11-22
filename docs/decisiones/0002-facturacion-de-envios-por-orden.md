@@ -2,6 +2,8 @@
 
 Fecha: semana 6.
 
+Actualización (issue #95): ya no se factura todo lo pendiente de una vez. Volá! elige un rango de fechas, que tiene que terminar a más tardar ayer, y entran las órdenes por facturar entregadas en esos días. Los rangos de un mismo cliente y tipo de factura no se pueden cruzar. `orders.invoice_id` sigue evitando que una orden quede en dos facturas.
+
 ## Contexto
 
 Volá! cobra a cada comercio el envío de las órdenes que entregan sus motoristas. Las órdenes que entrega un motorista propio del comercio no se cobran. El costo de envío de Volá! ya se calcula y se guarda en cada orden al crearla (`orders.vola_delivery_fee`), según la tarifa por distancia o por cantidad de órdenes del comercio. Hacía falta saber qué órdenes ya se facturaron, que ninguna se facture dos veces y que el comercio pueda ver qué le cobran.

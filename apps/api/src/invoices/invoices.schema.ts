@@ -5,10 +5,10 @@ import {
   date,
   integer,
   numeric,
+  index,
   pgEnum,
   pgTable,
   timestamp,
-  unique,
   varchar,
 } from 'drizzle-orm/pg-core';
 import { organizations } from '../organizations/organizations.schema.js';
@@ -26,8 +26,9 @@ export const invoices = pgTable(
       .notNull()
       .references(() => organizations.id, { onDelete: 'restrict' }),
     type: invoiceType('type').notNull().default('delivery'),
-    // Primer día del mes facturado; solo en las de software.
-    periodStartsOn: date('period_starts_on', { mode: 'string' }),
+    // Los días que cubre la factura, incluidos el primero y el último, en la hora de la región.
+    periodStart: date('period_start', { mode: 'string' }).notNull(),
+    periodEnd: date('period_end', { mode: 'string' }).notNull(),
     amount: numeric('amount', {
       precision: 12,
       scale: 2,
@@ -46,11 +47,15 @@ export const invoices = pgTable(
   (table) => [
     // Una tarifa de envío puede valer 0, así que una factura también.
     check('invoices_amount_not_negative', sql`${table.amount} >= 0`),
-    // Un mes de software se factura una sola vez; las de envío no tienen mes y no chocan.
-    unique().on(table.organizationId, table.periodStartsOn),
+    // Para revisar rápido si un rango nuevo choca con una factura anterior del mismo tipo.
+    index('invoices_organization_type_period_index').on(
+      table.organizationId,
+      table.type,
+      table.periodStart,
+    ),
     check(
-      'invoices_period_only_for_software',
-      sql`(${table.type} = 'software') = (${table.periodStartsOn} IS NOT NULL)`,
+      'invoices_period_in_order',
+      sql`${table.periodStart} <= ${table.periodEnd}`,
     ),
     check(
       'invoices_paid_together',
@@ -73,6 +78,14 @@ export const softwareInvoiceDetails = pgTable(
     monthlyFee: contractAmount('monthly_fee').notNull(),
     includedOrders: integer('included_orders').notNull(),
     extraOrderFee: contractAmount('extra_order_fee').notNull(),
+    // Cuántos meses cubre el rango; el costo y las órdenes incluidas se prorratean con esto.
+    monthFraction: numeric('month_fraction', {
+      precision: 10,
+      scale: 6,
+      mode: 'number',
+    }).notNull(),
+    proratedMonthlyFee: contractAmount('prorated_monthly_fee').notNull(),
+    proratedIncludedOrders: integer('prorated_included_orders').notNull(),
     orderCount: integer('order_count').notNull(),
     extraOrderCount: integer('extra_order_count').notNull(),
     subtotal: contractAmount('subtotal').notNull(),
@@ -90,7 +103,11 @@ export const softwareInvoiceDetails = pgTable(
     ),
     check(
       'software_invoice_details_counts_not_negative',
-      sql`${table.orderCount} >= 0 AND ${table.extraOrderCount} >= 0 AND ${table.includedOrders} >= 0`,
+      sql`${table.orderCount} >= 0 AND ${table.extraOrderCount} >= 0 AND ${table.includedOrders} >= 0 AND ${table.proratedIncludedOrders} >= 0`,
+    ),
+    check(
+      'software_invoice_details_month_fraction_positive',
+      sql`${table.monthFraction} > 0`,
     ),
   ],
 );

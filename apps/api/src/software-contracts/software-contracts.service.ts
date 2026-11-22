@@ -7,7 +7,7 @@ import {
   type SoftwareContractSetting,
 } from '@vola/shared';
 import { eq } from 'drizzle-orm';
-import { toPeriod, toPeriodStartDate } from '../common/region-month.js';
+import { toPeriod, toPeriodStartDate } from '../common/region-calendar.js';
 import { DATABASE, type Database } from '../database/database.module.js';
 import { assertCanInvoiceMerchants } from '../invoices/pending-invoices.service.js';
 import { organizations } from '../organizations/organizations.schema.js';

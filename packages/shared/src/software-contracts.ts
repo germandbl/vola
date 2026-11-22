@@ -30,7 +30,7 @@ const MAX_INCLUDED_ORDERS = 1_000_000;
 const HUNDREDTH = 0.01;
 const HUNDREDTHS_PER_UNIT = 100;
 
-// Un mes se escribe como "2026-11", igual que el valor de un <input type="month">.
+// El mes desde el que rige el contrato se escribe como "2026-11", igual que un <input type="month">.
 export const billingPeriodSchema = z
   .string({ error: "Elegí el mes." })
   .regex(/^\d{4}-(0[1-9]|1[0-2])$/, "Elegí un mes válido.");
@@ -71,23 +71,59 @@ function roundToHundredths(amount: number): number {
   return Math.round(amount * HUNDREDTHS_PER_UNIT) / HUNDREDTHS_PER_UNIT;
 }
 
+const MILLIONTHS_PER_UNIT = 1_000_000;
+const MILLISECONDS_PER_DAY = 24 * 60 * 60 * 1000;
+
+function parseDate(date: string): Date {
+  return new Date(`${date}T00:00:00Z`);
+}
+
+function countDays(from: Date, to: Date): number {
+  return Math.round((to.getTime() - from.getTime()) / MILLISECONDS_PER_DAY) + 1;
+}
+
+// Cuántos meses cubre un rango de días, sumando la parte de cada mes: del 1 al 15 de noviembre = 15/30 = 0.5.
+export function calculateMonthFraction(from: string, to: string): number {
+  const rangeStart = parseDate(from);
+  const rangeEnd = parseDate(to);
+  let fraction = 0;
+  let monthStart = new Date(Date.UTC(rangeStart.getUTCFullYear(), rangeStart.getUTCMonth(), 1));
+  while (monthStart <= rangeEnd) {
+    const nextMonthStart = new Date(Date.UTC(monthStart.getUTCFullYear(), monthStart.getUTCMonth() + 1, 1));
+    const monthEnd = new Date(nextMonthStart.getTime() - MILLISECONDS_PER_DAY);
+    const overlapStart = rangeStart > monthStart ? rangeStart : monthStart;
+    const overlapEnd = rangeEnd < monthEnd ? rangeEnd : monthEnd;
+    fraction += countDays(overlapStart, overlapEnd) / countDays(monthStart, monthEnd);
+    monthStart = nextMonthStart;
+  }
+  return Math.round(fraction * MILLIONTHS_PER_UNIT) / MILLIONTHS_PER_UNIT;
+}
+
 export interface SoftwareCharge {
+  proratedMonthlyFee: number;
+  proratedIncludedOrders: number;
   extraOrderCount: number;
   subtotal: number;
 }
 
 type SoftwareContractTerms = Pick<SoftwareContract, "monthlyFee" | "includedOrders" | "extraOrderFee">;
 
-// El costo mensual cubre las órdenes incluidas; cada orden de más se cobra aparte.
+// El costo mensual y las órdenes incluidas se prorratean por los meses que cubre el rango;
+// las órdenes incluidas se redondean hacia abajo para no regalar una orden.
 export function calculateSoftwareCharge(
   contract: SoftwareContractTerms,
   orderCount: number,
+  monthFraction: number,
 ): SoftwareCharge {
-  const extraOrderCount = Math.max(0, orderCount - contract.includedOrders);
+  const proratedMonthlyFee = roundToHundredths(contract.monthlyFee * monthFraction);
+  const proratedIncludedOrders = Math.floor(contract.includedOrders * monthFraction);
+  const extraOrderCount = Math.max(0, orderCount - proratedIncludedOrders);
   const extraOrdersAmount = extraOrderCount * contract.extraOrderFee;
   return {
+    proratedMonthlyFee,
+    proratedIncludedOrders,
     extraOrderCount,
-    subtotal: roundToHundredths(contract.monthlyFee + extraOrdersAmount),
+    subtotal: roundToHundredths(proratedMonthlyFee + extraOrdersAmount),
   };
 }
 

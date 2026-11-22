@@ -1,29 +1,20 @@
-import {
-  ConflictException,
-  Inject,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import {
   InvoiceType,
   OrderStatus,
+  calculateMonthFraction,
   calculateSoftwareCharge,
   contractCurrencySchema,
   convertWithExchangeRate,
   type AuthUser,
+  type InvoiceRange,
   type PendingSoftwareInvoice,
+  type SoftwareChargeDetail,
   type SoftwareInvoiceForm,
 } from '@vola/shared';
-import { and, count, eq, gte, lt, sql } from 'drizzle-orm';
+import { and, count, eq } from 'drizzle-orm';
 import { createFieldValidationException } from '../common/field-validation.js';
-import {
-  REGION_UTC_OFFSET_HOURS,
-  findNextPeriod,
-  findRegionMonthRange,
-  findRegionPeriod,
-  toPeriod,
-  toPeriodStartDate,
-} from '../common/region-month.js';
+import { addDays } from '../common/region-calendar.js';
 import { countries } from '../countries/countries.schema.js';
 import {
   DATABASE,
@@ -33,6 +24,14 @@ import {
 import { orders } from '../orders/orders.schema.js';
 import { organizations } from '../organizations/organizations.schema.js';
 import { softwareContracts } from '../software-contracts/software-contracts.schema.js';
+import { isDeliveredInRange } from './invoice-queries.js';
+import {
+  assertRangeHasEnded,
+  assertRangeNotInvoiced,
+  findLastBillableDate,
+  findLastInvoicedDates,
+  lockOrganization,
+} from './invoice-ranges.js';
 import { invoices, softwareInvoiceDetails } from './invoices.schema.js';
 import { assertCanInvoiceMerchants } from './pending-invoices.service.js';
 
@@ -50,33 +49,6 @@ interface ContractRow {
   extraOrderFee: number;
 }
 
-// Cuenta como uso del software toda orden entregada, la haya llevado un motorista propio o de Volá!.
-// El desfase va escrito en el SQL y no como parámetro: si no, el GROUP BY no reconoce la misma expresión.
-const regionDeliveryPeriod = sql<string>`to_char(
-  ${orders.statusChangedAt} + make_interval(hours => ${sql.raw(String(REGION_UTC_OFFSET_HOURS))}),
-  'YYYY-MM'
-)`;
-
-function toPeriodKey(organizationId: number, period: string): string {
-  return `${organizationId}:${period}`;
-}
-
-// Los meses desde que empieza el contrato hasta el último mes cerrado.
-function listClosedPeriods(
-  startPeriod: string,
-  currentPeriod: string,
-): string[] {
-  const periods: string[] = [];
-  for (
-    let period = startPeriod;
-    period < currentPeriod;
-    period = findNextPeriod(period)
-  ) {
-    periods.push(period);
-  }
-  return periods;
-}
-
 // Si el país del cliente no tiene moneda, la factura queda en la del contrato.
 function findInvoiceCurrency(contract: ContractRow): string {
   return contract.countryCurrency ?? contract.contractCurrency;
@@ -86,6 +58,28 @@ function roundExchangeRate(exchangeRate: number): number {
   return Math.round(exchangeRate * MILLIONTHS_PER_UNIT) / MILLIONTHS_PER_UNIT;
 }
 
+// El próximo rango empieza el día después de la última factura, o cuando empieza el contrato.
+function findNextPeriodStart(
+  contract: ContractRow,
+  lastInvoicedDate: string | undefined,
+): string {
+  if (!lastInvoicedDate) return contract.startsOn;
+  const dayAfterLastInvoice = addDays(lastInvoicedDate, 1);
+  if (dayAfterLastInvoice < contract.startsOn) return contract.startsOn;
+  return dayAfterLastInvoice;
+}
+
+function assertRangeWithinContract(
+  contract: ContractRow,
+  range: InvoiceRange,
+): void {
+  if (range.from >= contract.startsOn) return;
+  throw createFieldValidationException(
+    'from',
+    'El contrato empieza después de esa fecha. Elegí una fecha desde que rige.',
+  );
+}
+
 @Injectable()
 export class SoftwareInvoicesService {
   constructor(@Inject(DATABASE) private readonly database: Database) {}
@@ -93,77 +87,138 @@ export class SoftwareInvoicesService {
   async findPending(user: AuthUser): Promise<PendingSoftwareInvoice[]> {
     assertCanInvoiceMerchants(user);
     const contracts = await this.selectContracts(this.database);
-    const invoicedPeriods = await this.findInvoicedPeriods();
-    const orderCounts = await this.countDeliveredOrdersByPeriod();
-    const currentPeriod = findRegionPeriod(new Date());
+    const lastInvoicedDates = await findLastInvoicedDates(
+      this.database,
+      InvoiceType.Software,
+    );
+    const lastBillableDate = findLastBillableDate();
 
     const pendingInvoices: PendingSoftwareInvoice[] = [];
     for (const contract of contracts) {
-      const startPeriod = toPeriod(contract.startsOn);
-      for (const period of listClosedPeriods(startPeriod, currentPeriod)) {
-        const key = toPeriodKey(contract.organizationId, period);
-        if (invoicedPeriods.has(key)) continue;
-        const orderCount = orderCounts.get(key) ?? 0;
-        pendingInvoices.push(
-          this.toPendingInvoice(contract, period, orderCount),
-        );
-      }
+      const nextPeriodStart = findNextPeriodStart(
+        contract,
+        lastInvoicedDates.get(contract.organizationId),
+      );
+      if (nextPeriodStart > lastBillableDate) continue;
+      pendingInvoices.push({
+        organizationId: contract.organizationId,
+        organizationName: contract.organizationName,
+        contractCurrency: contractCurrencySchema.parse(
+          contract.contractCurrency,
+        ),
+        invoiceCurrency: findInvoiceCurrency(contract),
+        monthlyFee: contract.monthlyFee,
+        includedOrders: contract.includedOrders,
+        extraOrderFee: contract.extraOrderFee,
+        nextPeriodStart,
+        lastBillableDate,
+      });
     }
     return pendingInvoices;
   }
 
-  // Bloquea el contrato: si dos personas facturan el mismo mes, la segunda encuentra la factura ya hecha.
+  // Lo que se cobraría por el rango, para mostrarlo antes de confirmar.
+  async preview(
+    user: AuthUser,
+    organizationId: number,
+    range: InvoiceRange,
+  ): Promise<SoftwareChargeDetail> {
+    assertCanInvoiceMerchants(user);
+    assertRangeHasEnded(range);
+    const contract = await this.findBillableContract(
+      this.database,
+      organizationId,
+      range,
+    );
+    return this.calculateCharge(this.database, contract, range);
+  }
+
   async create(
     user: AuthUser,
     organizationId: number,
     form: SoftwareInvoiceForm,
   ): Promise<void> {
     assertCanInvoiceMerchants(user);
+    const range = { from: form.from, to: form.to };
+    assertRangeHasEnded(range);
     await this.database.transaction(async (transaction) => {
-      const [contract] = await this.selectContracts(transaction)
-        .where(eq(softwareContracts.organizationId, organizationId))
-        .for('update', { of: softwareContracts });
-      if (!contract) {
-        throw new NotFoundException(
-          `Organization ${organizationId} has no software contract`,
-        );
-      }
-      this.assertPeriodIsClosed(contract, form.period);
-      await this.assertPeriodNotInvoiced(
+      await lockOrganization(transaction, organizationId);
+      const contract = await this.findBillableContract(
         transaction,
         organizationId,
-        form.period,
+        range,
       );
-
       const exchangeRate = this.findExchangeRate(contract, form.exchangeRate);
-      const orderCount = await this.countDeliveredOrders(
-        transaction,
-        organizationId,
-        form.period,
-      );
-      const charge = calculateSoftwareCharge(contract, orderCount);
+      const charge = await this.calculateCharge(transaction, contract, range);
       const [invoice] = await transaction
         .insert(invoices)
         .values({
           organizationId,
           type: InvoiceType.Software,
-          periodStartsOn: toPeriodStartDate(form.period),
+          periodStart: range.from,
+          periodEnd: range.to,
           amount: convertWithExchangeRate(charge.subtotal, exchangeRate),
           createdByUserId: user.id,
         })
         .returning({ id: invoices.id });
       await transaction.insert(softwareInvoiceDetails).values({
         invoiceId: invoice.id,
-        contractCurrency: contract.contractCurrency,
-        monthlyFee: contract.monthlyFee,
-        includedOrders: contract.includedOrders,
-        extraOrderFee: contract.extraOrderFee,
-        orderCount,
-        extraOrderCount: charge.extraOrderCount,
-        subtotal: charge.subtotal,
+        ...charge,
         exchangeRate,
       });
     });
+  }
+
+  private async findBillableContract(
+    database: Database | Transaction,
+    organizationId: number,
+    range: InvoiceRange,
+  ): Promise<ContractRow> {
+    const [contract] = await this.selectContracts(database).where(
+      eq(softwareContracts.organizationId, organizationId),
+    );
+    if (!contract) {
+      throw new NotFoundException(
+        `Organization ${organizationId} has no software contract`,
+      );
+    }
+    assertRangeWithinContract(contract, range);
+    await assertRangeNotInvoiced(
+      database,
+      organizationId,
+      InvoiceType.Software,
+      range,
+    );
+    return contract;
+  }
+
+  // Cuenta como uso del software toda orden entregada, la haya llevado un motorista propio o de Volá!.
+  private async calculateCharge(
+    database: Database | Transaction,
+    contract: ContractRow,
+    range: InvoiceRange,
+  ): Promise<SoftwareChargeDetail> {
+    const [{ orderCount }] = await database
+      .select({ orderCount: count(orders.id) })
+      .from(orders)
+      .where(
+        and(
+          eq(orders.organizationId, contract.organizationId),
+          eq(orders.status, OrderStatus.Delivered),
+          isDeliveredInRange(range),
+        ),
+      );
+    const monthFraction = calculateMonthFraction(range.from, range.to);
+    const charge = calculateSoftwareCharge(contract, orderCount, monthFraction);
+    return {
+      contractCurrency: contractCurrencySchema.parse(contract.contractCurrency),
+      monthlyFee: contract.monthlyFee,
+      includedOrders: contract.includedOrders,
+      extraOrderFee: contract.extraOrderFee,
+      monthFraction,
+      orderCount,
+      ...charge,
+    };
   }
 
   private selectContracts(database: Database | Transaction) {
@@ -188,97 +243,6 @@ export class SoftwareInvoicesService {
       .$dynamic();
   }
 
-  private async findInvoicedPeriods(): Promise<Set<string>> {
-    const rows = await this.database
-      .select({
-        organizationId: invoices.organizationId,
-        periodStartsOn: invoices.periodStartsOn,
-      })
-      .from(invoices)
-      .where(eq(invoices.type, InvoiceType.Software));
-    const keys = rows.flatMap((row) => {
-      if (!row.periodStartsOn) return [];
-      return [toPeriodKey(row.organizationId, toPeriod(row.periodStartsOn))];
-    });
-    return new Set(keys);
-  }
-
-  private async countDeliveredOrdersByPeriod(): Promise<Map<string, number>> {
-    const rows = await this.database
-      .select({
-        organizationId: orders.organizationId,
-        period: regionDeliveryPeriod,
-        orderCount: count(orders.id),
-      })
-      .from(orders)
-      .innerJoin(
-        softwareContracts,
-        eq(orders.organizationId, softwareContracts.organizationId),
-      )
-      .where(eq(orders.status, OrderStatus.Delivered))
-      .groupBy(orders.organizationId, regionDeliveryPeriod);
-    return new Map(
-      rows.map((row) => [
-        toPeriodKey(row.organizationId, row.period),
-        row.orderCount,
-      ]),
-    );
-  }
-
-  private async countDeliveredOrders(
-    transaction: Transaction,
-    organizationId: number,
-    period: string,
-  ): Promise<number> {
-    const { start, end } = findRegionMonthRange(period);
-    const [{ orderCount }] = await transaction
-      .select({ orderCount: count(orders.id) })
-      .from(orders)
-      .where(
-        and(
-          eq(orders.organizationId, organizationId),
-          eq(orders.status, OrderStatus.Delivered),
-          gte(orders.statusChangedAt, start),
-          lt(orders.statusChangedAt, end),
-        ),
-      );
-    return orderCount;
-  }
-
-  private assertPeriodIsClosed(contract: ContractRow, period: string): void {
-    if (period < toPeriod(contract.startsOn)) {
-      throw createFieldValidationException(
-        'period',
-        'El contrato empieza después de ese mes. Elegí otro.',
-      );
-    }
-    if (period >= findRegionPeriod(new Date())) {
-      throw createFieldValidationException(
-        'period',
-        'Ese mes todavía no cierra. Facturalo cuando termine.',
-      );
-    }
-  }
-
-  private async assertPeriodNotInvoiced(
-    transaction: Transaction,
-    organizationId: number,
-    period: string,
-  ): Promise<void> {
-    const invoiceCount = await transaction.$count(
-      invoices,
-      and(
-        eq(invoices.organizationId, organizationId),
-        eq(invoices.periodStartsOn, toPeriodStartDate(period)),
-      ),
-    );
-    if (invoiceCount > 0) {
-      throw new ConflictException(
-        `Organization ${organizationId} already has a software invoice for ${period}`,
-      );
-    }
-  }
-
   private findExchangeRate(
     contract: ContractRow,
     exchangeRate: number | null,
@@ -293,26 +257,5 @@ export class SoftwareInvoicesService {
       );
     }
     return roundExchangeRate(exchangeRate);
-  }
-
-  private toPendingInvoice(
-    contract: ContractRow,
-    period: string,
-    orderCount: number,
-  ): PendingSoftwareInvoice {
-    const charge = calculateSoftwareCharge(contract, orderCount);
-    return {
-      organizationId: contract.organizationId,
-      organizationName: contract.organizationName,
-      period,
-      orderCount,
-      contractCurrency: contractCurrencySchema.parse(contract.contractCurrency),
-      monthlyFee: contract.monthlyFee,
-      includedOrders: contract.includedOrders,
-      extraOrderFee: contract.extraOrderFee,
-      extraOrderCount: charge.extraOrderCount,
-      subtotal: charge.subtotal,
-      invoiceCurrency: findInvoiceCurrency(contract),
-    };
   }
 }

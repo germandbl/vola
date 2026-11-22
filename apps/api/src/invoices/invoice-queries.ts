@@ -1,8 +1,12 @@
-import { OrderStatus, OrganizationType } from '@vola/shared';
-import { and, count, eq, isNull, sql } from 'drizzle-orm';
+import { OrderStatus, OrganizationType, type InvoiceRange } from '@vola/shared';
+import { and, count, eq, gte, isNull, lt, sql, type SQL } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 import { branches } from '../branches/branches.schema.js';
 import { countries } from '../countries/countries.schema.js';
+import {
+  REGION_UTC_OFFSET_HOURS,
+  findRegionDayRange,
+} from '../common/region-calendar.js';
 import { customers } from '../customers/customers.schema.js';
 import type { Database } from '../database/database.module.js';
 import { drivers } from '../drivers/drivers.schema.js';
@@ -23,6 +27,21 @@ export const isPendingInvoice = and(
   eq(driverOwners.type, OrganizationType.Platform),
   isNull(orders.invoiceId),
 );
+
+// Las órdenes entregadas dentro de los días del rango, en la hora de la región.
+export function isDeliveredInRange(range: InvoiceRange): SQL | undefined {
+  const { start, end } = findRegionDayRange(range.from, range.to);
+  return and(
+    gte(orders.statusChangedAt, start),
+    lt(orders.statusChangedAt, end),
+  );
+}
+
+// El desfase va escrito en el SQL y no como parámetro: si no, el GROUP BY no reconoce la misma expresión.
+export const regionDeliveryDate = sql<string>`to_char(
+  ${orders.statusChangedAt} + make_interval(hours => ${sql.raw(String(REGION_UTC_OFFSET_HOURS))}),
+  'YYYY-MM-DD'
+)`;
 
 export const invoiceOrderCount = count(orders.id);
 export const invoiceAmount =

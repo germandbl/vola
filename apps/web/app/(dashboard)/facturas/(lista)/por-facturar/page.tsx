@@ -17,7 +17,7 @@ async function PendingInvoicesContent() {
       <section className="flex flex-col gap-4">
         <div className="flex flex-col gap-1">
           <h2 className="text-2xl font-bold">Envíos</h2>
-          <p className="text-sm text-muted-foreground">Las órdenes que entregaron los motoristas de Volá!.</p>
+          <p className="text-sm text-muted-foreground">Las órdenes que entregaron los motoristas de Volá! y todavía no van en ninguna factura.</p>
         </div>
         <Suspense fallback={<TableSkeleton />}>
           <PendingInvoicesTable />
@@ -27,7 +27,7 @@ async function PendingInvoicesContent() {
         <div className="flex flex-col gap-1">
           <h2 className="text-2xl font-bold">Uso del software</h2>
           <p className="text-sm text-muted-foreground">
-            Los meses cerrados de cada contrato, según las órdenes entregadas con cualquier motorista.
+            Los días sin facturar de cada contrato, según las órdenes entregadas con cualquier motorista.
           </p>
         </div>
         <Suspense fallback={<TableSkeleton />}>
