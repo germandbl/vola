@@ -6,36 +6,58 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import {
+  InvoiceType,
   PAGE_SIZE,
+  contractCurrencySchema,
   canInvoiceMerchants,
   canViewOwnInvoices,
   type AuthUser,
   type InvoiceDetail,
+  type SoftwareInvoiceBreakdown,
   type InvoiceSummary,
   type Paginated,
 } from '@vola/shared';
 import { and, asc, desc, eq, isNull, sql, type SQL } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 import { getPageOffset, toPaginated } from '../common/pagination.js';
+import { toPeriod } from '../common/region-month.js';
 import { countries } from '../countries/countries.schema.js';
 import { DATABASE, type Database } from '../database/database.module.js';
 import { orders } from '../orders/orders.schema.js';
 import { organizations } from '../organizations/organizations.schema.js';
 import { users } from '../users/users.schema.js';
 import { selectInvoiceOrders } from './invoice-queries.js';
-import { invoices } from './invoices.schema.js';
+import { invoices, softwareInvoiceDetails } from './invoices.schema.js';
 import { assertCanInvoiceMerchants } from './pending-invoices.service.js';
 
 const createdByUsers = alias(users, 'created_by_users');
 const paidByUsers = alias(users, 'paid_by_users');
 
-const invoicedOrderCount = sql<number>`(
-  select count(*) from ${orders} where ${orders.invoiceId} = ${invoices.id}
+// Las de envío cuentan sus órdenes; las de software guardan cuántas hubo en el mes.
+const invoicedOrderCount = sql<number>`coalesce(
+  ${softwareInvoiceDetails.orderCount},
+  (select count(*) from ${orders} where ${orders.invoiceId} = ${invoices.id})
 )`.mapWith(Number);
 
 function toIsoDate(date: Date | null): string | null {
   if (!date) return null;
   return date.toISOString();
+}
+
+interface InvoiceRow {
+  createdAt: Date;
+  paidAt: Date | null;
+  periodStartsOn: string | null;
+}
+
+function toInvoiceDates<T extends InvoiceRow>(row: T) {
+  const { periodStartsOn, ...invoice } = row;
+  return {
+    ...invoice,
+    period: periodStartsOn ? toPeriod(periodStartsOn) : null,
+    createdAt: row.createdAt.toISOString(),
+    paidAt: toIsoDate(row.paidAt),
+  };
 }
 
 @Injectable()
@@ -54,11 +76,7 @@ export class InvoicesService {
       .offset(getPageOffset(page));
     const totalItems = await this.database.$count(invoices, visibleInvoices);
 
-    const items = rows.map((row) => ({
-      ...row,
-      createdAt: row.createdAt.toISOString(),
-      paidAt: toIsoDate(row.paidAt),
-    }));
+    const items = rows.map((row) => toInvoiceDates(row));
     return toPaginated(items, page, totalItems);
   }
 
@@ -75,13 +93,12 @@ export class InvoicesService {
       .where(eq(orders.invoiceId, invoiceId))
       .orderBy(asc(orders.statusChangedAt));
     return {
-      ...invoice,
-      createdAt: invoice.createdAt.toISOString(),
-      paidAt: toIsoDate(invoice.paidAt),
+      ...toInvoiceDates(invoice),
       orders: invoiceOrders.map((order) => ({
         ...order,
         deliveredAt: order.deliveredAt.toISOString(),
       })),
+      software: await this.findSoftwareBreakdown(invoice.type, invoiceId),
     };
   }
 
@@ -105,10 +122,38 @@ export class InvoicesService {
     throw new ConflictException(`Invoice ${invoiceId} is already paid`);
   }
 
+  private async findSoftwareBreakdown(
+    type: InvoiceType,
+    invoiceId: number,
+  ): Promise<SoftwareInvoiceBreakdown | null> {
+    if (type !== InvoiceType.Software) return null;
+    const [details] = await this.database
+      .select()
+      .from(softwareInvoiceDetails)
+      .where(eq(softwareInvoiceDetails.invoiceId, invoiceId));
+    if (!details) {
+      throw new NotFoundException(
+        `Software invoice ${invoiceId} has no details`,
+      );
+    }
+    return {
+      contractCurrency: contractCurrencySchema.parse(details.contractCurrency),
+      monthlyFee: details.monthlyFee,
+      includedOrders: details.includedOrders,
+      extraOrderFee: details.extraOrderFee,
+      orderCount: details.orderCount,
+      extraOrderCount: details.extraOrderCount,
+      subtotal: details.subtotal,
+      exchangeRate: details.exchangeRate,
+    };
+  }
+
   private selectInvoices() {
     return this.database
       .select({
         id: invoices.id,
+        type: invoices.type,
+        periodStartsOn: invoices.periodStartsOn,
         organizationName: organizations.name,
         createdByName: createdByUsers.name,
         paidByName: paidByUsers.name,
@@ -126,6 +171,10 @@ export class InvoicesService {
         eq(invoices.createdByUserId, createdByUsers.id),
       )
       .leftJoin(paidByUsers, eq(invoices.paidByUserId, paidByUsers.id))
+      .leftJoin(
+        softwareInvoiceDetails,
+        eq(softwareInvoiceDetails.invoiceId, invoices.id),
+      )
       .$dynamic();
   }
 

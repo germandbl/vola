@@ -1,0 +1,425 @@
+{
+  "type": "diff",
+  "version": "9",
+  "dialect": "postgres",
+  "id": "26d8604e-ff0b-4ae4-a196-8208b860f76a",
+  "prevIds": [
+    "e48e15e1-1563-49e8-997d-45374859cf68"
+  ],
+  "footprints": [
+    {
+      "statementType": "create_enum",
+      "statementTarget": [
+        "enum",
+        "public",
+        "invoice_types"
+      ],
+      "writes": [
+        "s|enum|public.invoice_types",
+        "n|enum|public.invoice_types",
+        "e|enum|public.invoice_types",
+        "n|type|public.invoice_types"
+      ],
+      "reads": [
+        "n|sch|public"
+      ]
+    },
+    {
+      "statementType": "create_table",
+      "statementTarget": [
+        "table",
+        "public",
+        "software_invoice_details"
+      ],
+      "writes": [
+        "s|tbl|public.software_invoice_details",
+        "n|tbl|public.software_invoice_details",
+        "e|tbl|public.software_invoice_details",
+        "n|rel|public.software_invoice_details",
+        "n|type|public.software_invoice_details",
+        "n|rel|public.software_invoice_details_pkey"
+      ],
+      "reads": [
+        "n|sch|public"
+      ]
+    },
+    {
+      "statementType": "add_column",
+      "statementTarget": [
+        "column",
+        "public",
+        "invoices",
+        "type"
+      ],
+      "writes": [
+        "s|col|public.invoices.type",
+        "n|col|public.invoices.type",
+        "e|col|public.invoices.type"
+      ],
+      "reads": [
+        "n|tbl|public.invoices",
+        "n|sch|public",
+        "n|enum|public.invoice_types"
+      ]
+    },
+    {
+      "statementType": "add_column",
+      "statementTarget": [
+        "column",
+        "public",
+        "invoices",
+        "period_starts_on"
+      ],
+      "writes": [
+        "s|col|public.invoices.period_starts_on",
+        "n|col|public.invoices.period_starts_on",
+        "e|col|public.invoices.period_starts_on"
+      ],
+      "reads": [
+        "n|tbl|public.invoices",
+        "n|sch|public"
+      ]
+    },
+    {
+      "statementType": "add_unique",
+      "statementTarget": [
+        "table",
+        "public",
+        "invoices"
+      ],
+      "writes": [
+        "s|uq|public.invoices.invoices_organization_id_period_starts_on_unique",
+        "n|uq|public.invoices.invoices_organization_id_period_starts_on_unique",
+        "e|uq|public.invoices.invoices_organization_id_period_starts_on_unique",
+        "n|con|public.invoices.invoices_organization_id_period_starts_on_unique",
+        "n|rel|public.invoices_organization_id_period_starts_on_unique"
+      ],
+      "reads": [
+        "n|tbl|public.invoices",
+        "n|sch|public",
+        "n|col|public.invoices.organization_id",
+        "n|col|public.invoices.period_starts_on"
+      ]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "software_invoice_details"
+      ],
+      "writes": [
+        "s|fk|public.software_invoice_details.software_invoice_details_invoice_id_invoices_id_fkey",
+        "n|fk|public.software_invoice_details.software_invoice_details_invoice_id_invoices_id_fkey",
+        "e|fk|public.software_invoice_details.software_invoice_details_invoice_id_invoices_id_fkey",
+        "n|con|public.software_invoice_details.software_invoice_details_invoice_id_invoices_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.software_invoice_details",
+        "n|sch|public",
+        "n|tbl|public.invoices",
+        "n|sch|public",
+        "n|col|public.software_invoice_details.invoice_id",
+        "n|col|public.invoices.id",
+        "e|uniqueness|public.invoices.id"
+      ]
+    },
+    {
+      "statementType": "add_check",
+      "statementTarget": [
+        "table",
+        "public",
+        "invoices"
+      ],
+      "writes": [
+        "s|ck|public.invoices.invoices_period_only_for_software",
+        "n|ck|public.invoices.invoices_period_only_for_software",
+        "e|ck|public.invoices.invoices_period_only_for_software",
+        "n|con|public.invoices.invoices_period_only_for_software"
+      ],
+      "reads": [
+        "n|tbl|public.invoices",
+        "n|sch|public",
+        "n|col|public.invoices.type",
+        "n|col|public.invoices.period_starts_on"
+      ]
+    }
+  ],
+  "deltas": [
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "name": "software_invoice_details",
+        "isRlsEnabled": false,
+        "entityType": "tables"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "name": "invoice_types",
+        "values": [
+          "delivery",
+          "software"
+        ],
+        "entityType": "enums"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "invoices",
+        "name": "type",
+        "type": "invoice_types",
+        "typeSchema": "public",
+        "notNull": true,
+        "dimensions": 0,
+        "default": "'delivery'",
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "invoices",
+        "name": "period_starts_on",
+        "type": "date",
+        "typeSchema": null,
+        "notNull": false,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "software_invoice_details",
+        "name": "invoice_id",
+        "type": "bigint",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "software_invoice_details",
+        "name": "contract_currency",
+        "type": "varchar(3)",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "software_invoice_details",
+        "name": "monthly_fee",
+        "type": "numeric(12,2)",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "software_invoice_details",
+        "name": "included_orders",
+        "type": "integer",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "software_invoice_details",
+        "name": "extra_order_fee",
+        "type": "numeric(12,2)",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "software_invoice_details",
+        "name": "order_count",
+        "type": "integer",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "software_invoice_details",
+        "name": "extra_order_count",
+        "type": "integer",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "software_invoice_details",
+        "name": "subtotal",
+        "type": "numeric(12,2)",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "software_invoice_details",
+        "name": "exchange_rate",
+        "type": "numeric(14,6)",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "software_invoice_details",
+        "name": "software_invoice_details_invoice_id_invoices_id_fkey",
+        "nameExplicit": false,
+        "columns": [
+          "invoice_id"
+        ],
+        "schemaTo": "public",
+        "tableTo": "invoices",
+        "columnsTo": [
+          "id"
+        ],
+        "onUpdate": "NO ACTION",
+        "onDelete": "CASCADE",
+        "entityType": "fks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "software_invoice_details",
+        "name": "software_invoice_details_pkey",
+        "columns": [
+          "invoice_id"
+        ],
+        "nameExplicit": false,
+        "entityType": "pks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "invoices",
+        "name": "invoices_organization_id_period_starts_on_unique",
+        "nameExplicit": false,
+        "columns": [
+          "organization_id",
+          "period_starts_on"
+        ],
+        "nullsNotDistinct": false,
+        "entityType": "uniques"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "invoices",
+        "name": "invoices_period_only_for_software",
+        "value": "(\"type\" = 'software') = (\"period_starts_on\" IS NOT NULL)",
+        "entityType": "checks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "software_invoice_details",
+        "name": "software_invoice_details_exchange_rate_positive",
+        "value": "\"exchange_rate\" > 0",
+        "entityType": "checks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "software_invoice_details",
+        "name": "software_invoice_details_counts_not_negative",
+        "value": "\"order_count\" >= 0 AND \"extra_order_count\" >= 0 AND \"included_orders\" >= 0",
+        "entityType": "checks"
+      }
+    }
+  ]
+}

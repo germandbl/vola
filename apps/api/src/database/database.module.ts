@@ -6,6 +6,9 @@ export const DATABASE = Symbol('DATABASE');
 
 export type Database = NodePgDatabase & { $client: Pool };
 
+// El objeto que recibe el callback de database.transaction(), para pasarlo a funciones auxiliares.
+export type Transaction = Parameters<Parameters<Database['transaction']>[0]>[0];
+
 export function createDatabase(): Database {
   const databaseUrl = process.env.DATABASE_URL;
   if (!databaseUrl) {

@@ -1,4 +1,5 @@
 import {
+  Body,
   Controller,
   Get,
   HttpCode,
@@ -10,6 +11,7 @@ import {
 } from '@nestjs/common';
 import {
   paginationQuerySchema,
+  softwareInvoiceFormSchema,
   type AuthUser,
   type InvoiceDetail,
   type InvoiceOrder,
@@ -17,17 +19,21 @@ import {
   type Paginated,
   type PaginationQuery,
   type PendingInvoice,
+  type PendingSoftwareInvoice,
+  type SoftwareInvoiceForm,
 } from '@vola/shared';
 import { CurrentUser } from '../auth/current-user.decorator.js';
 import { ZodValidationPipe } from '../common/zod-validation.pipe.js';
 import { InvoicesService } from './invoices.service.js';
 import { PendingInvoicesService } from './pending-invoices.service.js';
+import { SoftwareInvoicesService } from './software-invoices.service.js';
 
 @Controller('invoices')
 export class InvoicesController {
   constructor(
     private readonly invoicesService: InvoicesService,
     private readonly pendingInvoicesService: PendingInvoicesService,
+    private readonly softwareInvoicesService: SoftwareInvoicesService,
   ) {}
 
   @Get()
@@ -58,6 +64,24 @@ export class InvoicesController {
     @Param('organizationId', ParseIntPipe) organizationId: number,
   ): Promise<void> {
     return this.pendingInvoicesService.create(user, organizationId);
+  }
+
+  @Get('software/pending')
+  findPendingSoftware(
+    @CurrentUser() user: AuthUser,
+  ): Promise<PendingSoftwareInvoice[]> {
+    return this.softwareInvoicesService.findPending(user);
+  }
+
+  @Post('software/pending/:organizationId')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  createSoftware(
+    @CurrentUser() user: AuthUser,
+    @Param('organizationId', ParseIntPipe) organizationId: number,
+    @Body(new ZodValidationPipe(softwareInvoiceFormSchema))
+    form: SoftwareInvoiceForm,
+  ): Promise<void> {
+    return this.softwareInvoicesService.create(user, organizationId, form);
   }
 
   @Get(':invoiceId')
