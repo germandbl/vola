@@ -10,7 +10,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { formatDateTime, formatMoney, formatOrderCount } from "@/lib/labels";
+import { describeInvoiceConcept, formatDateTime, formatMoney, formatOrderCount } from "@/lib/labels";
 import { getInvoicesPage } from "@/lib/organizations-data";
 import { InvoiceStatusChip } from "./InvoiceStatusChip";
 
@@ -29,7 +29,7 @@ export async function InvoicesTable({ page }: InvoicesTableProps) {
             <FileText />
           </EmptyMedia>
           <EmptyTitle>Todavía no hay facturas</EmptyTitle>
-          <EmptyDescription>Cada factura de envíos de Volá! va a quedar registrada acá.</EmptyDescription>
+          <EmptyDescription>Cada factura de envíos o de uso del software va a quedar registrada acá.</EmptyDescription>
         </EmptyHeader>
       </Empty>
     );
@@ -44,6 +44,7 @@ export async function InvoicesTable({ page }: InvoicesTableProps) {
               <TableHead>Factura</TableHead>
               <TableHead>Fecha</TableHead>
               <TableHead>Comercio</TableHead>
+              <TableHead>Concepto</TableHead>
               <TableHead>Generó</TableHead>
               <TableHead>Órdenes</TableHead>
               <TableHead className="text-right">Monto</TableHead>
@@ -59,6 +60,7 @@ export async function InvoicesTable({ page }: InvoicesTableProps) {
                 <TableCell className="font-semibold">#{invoice.id}</TableCell>
                 <TableCell>{formatDateTime(invoice.createdAt)}</TableCell>
                 <TableCell>{invoice.organizationName}</TableCell>
+                <TableCell>{describeInvoiceConcept(invoice)}</TableCell>
                 <TableCell>{invoice.createdByName}</TableCell>
                 <TableCell>{formatOrderCount(invoice.orderCount)}</TableCell>
                 <TableCell className="text-right font-semibold">

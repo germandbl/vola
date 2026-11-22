@@ -1,4 +1,4 @@
-import { DayOfWeek, OrganizationType, RoleName } from "@vola/shared";
+import { DayOfWeek, INVOICE_TYPE_LABEL, OrganizationType, RoleName, type InvoiceSummary } from "@vola/shared";
 
 export const ORGANIZATION_TYPE_LABEL: Record<OrganizationType, string> = {
   [OrganizationType.Merchant]: "Cliente",
@@ -64,4 +64,19 @@ const timeFormatter = new Intl.DateTimeFormat("es-HN", { timeStyle: "short" });
 
 export function formatTime(isoDate: string): string {
   return timeFormatter.format(new Date(isoDate));
+}
+
+const periodFormatter = new Intl.DateTimeFormat("es-HN", { month: "long", year: "numeric", timeZone: "UTC" });
+
+// "2026-09" → "septiembre de 2026".
+export function formatPeriod(period: string): string {
+  const [year, month] = period.split("-").map(Number);
+  return periodFormatter.format(new Date(Date.UTC(year, month - 1, 1)));
+}
+
+// Las de software dicen qué mes cobran: "Uso del software · septiembre de 2026".
+export function describeInvoiceConcept(invoice: Pick<InvoiceSummary, "type" | "period">): string {
+  const typeLabel = INVOICE_TYPE_LABEL[invoice.type];
+  if (!invoice.period) return typeLabel;
+  return `${typeLabel} · ${formatPeriod(invoice.period)}`;
 }

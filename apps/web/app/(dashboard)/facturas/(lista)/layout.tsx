@@ -19,7 +19,7 @@ async function InvoicesHeader() {
     return (
       <PageHeader
         title="Facturas"
-        description="Lo que Volá! te cobra por el envío de las órdenes que entregan sus motoristas."
+        description="Lo que Volá! te cobra por el envío de las órdenes que entregan sus motoristas y por el uso del software."
       />
     );
   }
@@ -27,7 +27,7 @@ async function InvoicesHeader() {
     <div className="flex flex-col gap-4">
       <PageHeader
         title="Facturas"
-        description="El envío de las órdenes que entregan los motoristas de Volá!, facturado a cada comercio."
+        description="El envío de las órdenes de los motoristas de Volá! y el uso del software, facturados a cada comercio."
       />
       <SectionTabs label="Secciones de facturas" tabs={INVOICE_TABS} />
     </div>
