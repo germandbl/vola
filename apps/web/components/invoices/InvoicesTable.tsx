@@ -1,3 +1,4 @@
+import { INVOICE_TYPE_LABEL } from "@vola/shared";
 import { FileText } from "lucide-react";
 import { ListPagination } from "@/components/ListPagination";
 import { ViewDetailButton } from "@/components/ViewDetailButton";
@@ -10,7 +11,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { describeInvoiceConcept, formatDateTime, formatMoney, formatOrderCount } from "@/lib/labels";
+import { formatDateRange, formatDateTime, formatMoney, formatOrderCount } from "@/lib/labels";
 import { getInvoicesPage } from "@/lib/organizations-data";
 import { InvoiceStatusChip } from "./InvoiceStatusChip";
 
@@ -45,6 +46,7 @@ export async function InvoicesTable({ page }: InvoicesTableProps) {
               <TableHead>Fecha</TableHead>
               <TableHead>Comercio</TableHead>
               <TableHead>Concepto</TableHead>
+              <TableHead>Periodo</TableHead>
               <TableHead>Generó</TableHead>
               <TableHead>Órdenes</TableHead>
               <TableHead className="text-right">Monto</TableHead>
@@ -60,7 +62,8 @@ export async function InvoicesTable({ page }: InvoicesTableProps) {
                 <TableCell className="font-semibold">#{invoice.id}</TableCell>
                 <TableCell>{formatDateTime(invoice.createdAt)}</TableCell>
                 <TableCell>{invoice.organizationName}</TableCell>
-                <TableCell>{describeInvoiceConcept(invoice)}</TableCell>
+                <TableCell>{INVOICE_TYPE_LABEL[invoice.type]}</TableCell>
+                <TableCell>{formatDateRange(invoice.periodStart, invoice.periodEnd)}</TableCell>
                 <TableCell>{invoice.createdByName}</TableCell>
                 <TableCell>{formatOrderCount(invoice.orderCount)}</TableCell>
                 <TableCell className="text-right font-semibold">

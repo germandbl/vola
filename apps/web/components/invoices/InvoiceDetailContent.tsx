@@ -1,8 +1,8 @@
-import { InvoiceType, canInvoiceMerchants, type InvoiceDetail } from "@vola/shared";
+import { INVOICE_TYPE_LABEL, InvoiceType, canInvoiceMerchants, type InvoiceDetail } from "@vola/shared";
 import { PageHeader } from "@/components/PageHeader";
 import { Card, CardContent } from "@/components/ui/card";
 import { getCurrentUser } from "@/lib/current-user";
-import { describeInvoiceConcept, formatDateTime, formatMoney, formatOrderCount } from "@/lib/labels";
+import { formatDateRange, formatDateTime, formatMoney, formatOrderCount } from "@/lib/labels";
 import { getInvoice } from "@/lib/organizations-data";
 import { InvoiceOrdersTable } from "./InvoiceOrdersTable";
 import { InvoiceStatusChip } from "./InvoiceStatusChip";
@@ -11,7 +11,7 @@ import { SoftwareInvoiceBreakdownCard } from "./SoftwareInvoiceBreakdownCard";
 
 const INVOICE_DESCRIPTION: Record<InvoiceType, string> = {
   [InvoiceType.Delivery]: "El envío de cada orden que entregó un motorista de Volá!.",
-  [InvoiceType.Software]: "El uso del software en el mes, según el contrato del cliente.",
+  [InvoiceType.Software]: "El uso del software en el periodo, según el contrato del cliente.",
 };
 
 function describePayment(invoice: InvoiceDetail): string {
@@ -29,7 +29,8 @@ export async function InvoiceDetailContent({ invoiceId }: InvoiceDetailContentPr
   const canMarkPaid = canInvoiceMerchants(currentUser) && !invoice.paidAt;
   const details = [
     { label: "Comercio", value: invoice.organizationName },
-    { label: "Concepto", value: describeInvoiceConcept(invoice) },
+    { label: "Concepto", value: INVOICE_TYPE_LABEL[invoice.type] },
+    { label: "Periodo", value: formatDateRange(invoice.periodStart, invoice.periodEnd) },
     { label: "Generada", value: `${formatDateTime(invoice.createdAt)} · ${invoice.createdByName}` },
     { label: "Órdenes", value: formatOrderCount(invoice.orderCount) },
     { label: "Total", value: formattedAmount },

@@ -18,7 +18,8 @@ import {
 import { Field, FieldDescription, FieldError, FieldLabel } from "@/components/ui/field";
 import { Spinner } from "@/components/ui/spinner";
 import { useCreateSoftwareInvoice } from "@/hooks/use-create-software-invoice";
-import { formatMoney, formatPeriod } from "@/lib/labels";
+import { formatMoney } from "@/lib/labels";
+import { InvoiceRangeFields } from "./InvoiceRangeFields";
 import { SoftwareChargeLines } from "./SoftwareChargeLines";
 
 interface CreateSoftwareInvoiceDialogProps {
@@ -27,8 +28,9 @@ interface CreateSoftwareInvoiceDialogProps {
 
 export function CreateSoftwareInvoiceDialog({ pendingInvoice }: CreateSoftwareInvoiceDialogProps) {
   const dialog = useCreateSoftwareInvoice(pendingInvoice);
-  const { fieldErrors, formError } = dialog.result;
+  const { fieldErrors, previewState } = dialog;
   const { contractCurrency, invoiceCurrency } = pendingInvoice;
+  const isLoaded = previewState.kind === "loaded";
 
   return (
     <Dialog open={dialog.isOpen} onOpenChange={dialog.changeOpen}>
@@ -42,10 +44,24 @@ export function CreateSoftwareInvoiceDialog({ pendingInvoice }: CreateSoftwareIn
         <DialogHeader>
           <DialogTitle>Facturar a {pendingInvoice.organizationName}</DialogTitle>
           <DialogDescription>
-            Uso del software en {formatPeriod(pendingInvoice.period)}, según su contrato.
+            Uso del software en esas fechas. El costo mensual y las órdenes incluidas se prorratean por días.
           </DialogDescription>
         </DialogHeader>
-        <SoftwareChargeLines {...pendingInvoice} />
+        <InvoiceRangeFields
+          range={dialog.range}
+          lastBillableDate={pendingInvoice.lastBillableDate}
+          errors={fieldErrors}
+          onChange={dialog.changeRange}
+        />
+        {previewState.kind === "loading" && (
+          <div className="flex justify-center py-6">
+            <Spinner />
+          </div>
+        )}
+        {previewState.kind === "failed" && previewState.message && (
+          <FormErrorAlert message={previewState.message} />
+        )}
+        {previewState.kind === "loaded" && <SoftwareChargeLines {...previewState.charge} />}
         {dialog.needsExchangeRate && (
           <Field data-invalid={Boolean(fieldErrors.exchangeRate)}>
             <FieldLabel htmlFor="exchangeRate">Tasa de cambio</FieldLabel>
@@ -68,13 +84,12 @@ export function CreateSoftwareInvoiceDialog({ pendingInvoice }: CreateSoftwareIn
           <span>Total a facturar</span>
           <span>{dialog.convertedTotal === null ? "—" : formatMoney(dialog.convertedTotal, invoiceCurrency)}</span>
         </div>
-        {fieldErrors.period && <FormErrorAlert message={fieldErrors.period} />}
-        {formError && <FormErrorAlert message={formError} />}
+        {dialog.formError && <FormErrorAlert message={dialog.formError} />}
         <DialogFooter>
           <DialogClose asChild>
             <Button variant="outline">Volver</Button>
           </DialogClose>
-          <Button disabled={dialog.isPending} onClick={dialog.confirm}>
+          <Button disabled={!isLoaded || dialog.isPending} onClick={dialog.confirm}>
             {dialog.isPending && <Spinner data-icon="inline-start" />}
             {dialog.isPending ? "Generando…" : "Generar factura"}
           </Button>

@@ -8,7 +8,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { formatMoney, formatOrderCount } from "@/lib/labels";
+import { formatBillingDate, formatMoney, formatOrderCount } from "@/lib/labels";
 import { getPendingInvoices } from "@/lib/organizations-data";
 import { CreateInvoiceDialog } from "./CreateInvoiceDialog";
 
@@ -24,7 +24,7 @@ export async function PendingInvoicesTable() {
           </EmptyMedia>
           <EmptyTitle>No hay envíos por facturar</EmptyTitle>
           <EmptyDescription>
-            Cuando un motorista de Volá! entregue una orden de un comercio, su envío va a aparecer acá.
+            Cuando un motorista de Volá! entregue una orden de un comercio, su envío va a aparecer acá al día siguiente.
           </EmptyDescription>
         </EmptyHeader>
       </Empty>
@@ -37,6 +37,7 @@ export async function PendingInvoicesTable() {
         <TableHeader>
           <TableRow>
             <TableHead>Comercio</TableHead>
+            <TableHead>Sin facturar desde</TableHead>
             <TableHead>Órdenes</TableHead>
             <TableHead className="text-right">Por facturar</TableHead>
             <TableHead>
@@ -48,6 +49,7 @@ export async function PendingInvoicesTable() {
           {pendingInvoices.map((pendingInvoice) => (
             <TableRow key={pendingInvoice.organizationId}>
               <TableCell className="font-semibold">{pendingInvoice.organizationName}</TableCell>
+              <TableCell>{formatBillingDate(pendingInvoice.firstDeliveryDate)}</TableCell>
               <TableCell>{formatOrderCount(pendingInvoice.orderCount)}</TableCell>
               <TableCell className="text-right font-semibold">
                 {formatMoney(pendingInvoice.amount, pendingInvoice.currency)}

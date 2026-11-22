@@ -8,7 +8,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { formatMoney, formatOrderCount, formatPeriod } from "@/lib/labels";
+import { formatBillingDate, formatMoney, formatOrderCount } from "@/lib/labels";
 import { getPendingSoftwareInvoices } from "@/lib/organizations-data";
 import { CreateSoftwareInvoiceDialog } from "./CreateSoftwareInvoiceDialog";
 
@@ -22,9 +22,9 @@ export async function PendingSoftwareInvoicesTable() {
           <EmptyMedia variant="icon">
             <MonitorCog />
           </EmptyMedia>
-          <EmptyTitle>No hay meses por facturar</EmptyTitle>
+          <EmptyTitle>No hay uso del software por facturar</EmptyTitle>
           <EmptyDescription>
-            Cuando cierre un mes de un cliente con contrato, su uso del software va a aparecer acá.
+            Cuando un cliente con contrato tenga días sin facturar, va a aparecer acá.
           </EmptyDescription>
         </EmptyHeader>
       </Empty>
@@ -37,10 +37,10 @@ export async function PendingSoftwareInvoicesTable() {
         <TableHeader>
           <TableRow>
             <TableHead>Cliente</TableHead>
-            <TableHead>Mes</TableHead>
-            <TableHead>Órdenes</TableHead>
-            <TableHead>Excedentes</TableHead>
-            <TableHead className="text-right">Subtotal</TableHead>
+            <TableHead>Sin facturar desde</TableHead>
+            <TableHead>Costo mensual</TableHead>
+            <TableHead>Incluidas al mes</TableHead>
+            <TableHead>Por orden excedente</TableHead>
             <TableHead>
               <span className="sr-only">Acciones</span>
             </TableHead>
@@ -48,14 +48,12 @@ export async function PendingSoftwareInvoicesTable() {
         </TableHeader>
         <TableBody>
           {pendingInvoices.map((pendingInvoice) => (
-            <TableRow key={`${pendingInvoice.organizationId}-${pendingInvoice.period}`}>
+            <TableRow key={pendingInvoice.organizationId}>
               <TableCell className="font-semibold">{pendingInvoice.organizationName}</TableCell>
-              <TableCell className="first-letter:uppercase">{formatPeriod(pendingInvoice.period)}</TableCell>
-              <TableCell>{formatOrderCount(pendingInvoice.orderCount)}</TableCell>
-              <TableCell>{formatOrderCount(pendingInvoice.extraOrderCount)}</TableCell>
-              <TableCell className="text-right font-semibold">
-                {formatMoney(pendingInvoice.subtotal, pendingInvoice.contractCurrency)}
-              </TableCell>
+              <TableCell>{formatBillingDate(pendingInvoice.nextPeriodStart)}</TableCell>
+              <TableCell>{formatMoney(pendingInvoice.monthlyFee, pendingInvoice.contractCurrency)}</TableCell>
+              <TableCell>{formatOrderCount(pendingInvoice.includedOrders)}</TableCell>
+              <TableCell>{formatMoney(pendingInvoice.extraOrderFee, pendingInvoice.contractCurrency)}</TableCell>
               <TableCell className="text-right">
                 <CreateSoftwareInvoiceDialog pendingInvoice={pendingInvoice} />
               </TableCell>

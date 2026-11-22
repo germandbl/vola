@@ -17,6 +17,7 @@ import {
 import { Spinner } from "@/components/ui/spinner";
 import { useCreateInvoice } from "@/hooks/use-create-invoice";
 import { formatDateTime, formatMoney } from "@/lib/labels";
+import { InvoiceRangeFields } from "./InvoiceRangeFields";
 
 interface InvoiceOrdersListProps {
   orders: InvoiceOrder[];
@@ -55,7 +56,7 @@ interface CreateInvoiceDialogProps {
 }
 
 export function CreateInvoiceDialog({ pendingInvoice }: CreateInvoiceDialogProps) {
-  const dialog = useCreateInvoice(pendingInvoice.organizationId);
+  const dialog = useCreateInvoice(pendingInvoice);
   const { ordersState } = dialog;
   const hasOrders = ordersState.kind === "loaded" && ordersState.orders.length > 0;
 
@@ -71,24 +72,28 @@ export function CreateInvoiceDialog({ pendingInvoice }: CreateInvoiceDialogProps
         <DialogHeader>
           <DialogTitle>Facturar a {pendingInvoice.organizationName}</DialogTitle>
           <DialogDescription>
-            La factura lleva el envío de todas estas órdenes, que entregaron motoristas de Volá!.
+            La factura lleva el envío de las órdenes que entregaron motoristas de Volá! en esas fechas.
           </DialogDescription>
         </DialogHeader>
+        <InvoiceRangeFields
+          range={dialog.range}
+          lastBillableDate={pendingInvoice.lastBillableDate}
+          errors={dialog.fieldErrors}
+          onChange={dialog.changeRange}
+        />
         {ordersState.kind === "loading" && (
           <div className="flex justify-center py-6">
             <Spinner />
           </div>
         )}
-        {ordersState.kind === "failed" && (
-          <FormErrorAlert message="No pudimos cargar las órdenes. Cerrá y probá de nuevo." />
-        )}
+        {ordersState.kind === "failed" && ordersState.message && <FormErrorAlert message={ordersState.message} />}
         {ordersState.kind === "loaded" && !hasOrders && (
-          <p className="text-sm text-muted-foreground">Ya no hay órdenes por facturar.</p>
+          <p className="text-sm text-muted-foreground">No hay envíos por facturar en esas fechas.</p>
         )}
         {ordersState.kind === "loaded" && hasOrders && (
           <InvoiceOrdersList orders={ordersState.orders} currency={pendingInvoice.currency} />
         )}
-        {dialog.error && <FormErrorAlert message={dialog.error} />}
+        {dialog.formError && <FormErrorAlert message={dialog.formError} />}
         <DialogFooter>
           <DialogClose asChild>
             <Button variant="outline">Volver</Button>
