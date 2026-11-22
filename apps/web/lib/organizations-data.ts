@@ -5,6 +5,7 @@ import {
   cashWithPlatformSchema,
   pendingDriverCashSchema,
   pendingInvoiceSchema,
+  softwareContractSettingSchema,
   pendingMerchantCashSchema,
   branchSummarySchema,
   countrySchema,
@@ -44,6 +45,7 @@ import {
   type Paginated,
   type PendingDriverCash,
   type PendingInvoice,
+  type SoftwareContractSetting,
   type PendingMerchantCash,
   type UserSummary,
 } from "@vola/shared";
@@ -206,6 +208,10 @@ export function getInvoicesPage(page: number): Promise<Paginated<InvoiceSummary>
 
 export function getInvoice(invoiceId: number): Promise<InvoiceDetail> {
   return getFromApi(`/invoices/${invoiceId}`, invoiceDetailSchema);
+}
+
+export function getSoftwareContract(organizationId: number): Promise<SoftwareContractSetting> {
+  return getFromApi(`/organizations/${organizationId}/software-contract`, softwareContractSettingSchema);
 }
 
 export function getOperationMap(): Promise<OperationMap> {
