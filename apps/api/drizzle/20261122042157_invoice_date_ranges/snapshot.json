@@ -1,0 +1,406 @@
+{
+  "type": "diff",
+  "version": "9",
+  "dialect": "postgres",
+  "id": "caa06d5a-d029-4628-b8ee-b339a42beb89",
+  "prevIds": [
+    "26d8604e-ff0b-4ae4-a196-8208b860f76a"
+  ],
+  "footprints": [
+    {
+      "statementType": "drop_unique",
+      "statementTarget": [
+        "table",
+        "public",
+        "invoices"
+      ],
+      "writes": [
+        "s|uq|public.invoices.invoices_organization_id_period_starts_on_unique",
+        "n|uq|public.invoices.invoices_organization_id_period_starts_on_unique",
+        "e|uq|public.invoices.invoices_organization_id_period_starts_on_unique",
+        "n|con|public.invoices.invoices_organization_id_period_starts_on_unique",
+        "n|rel|public.invoices_organization_id_period_starts_on_unique"
+      ],
+      "reads": [
+        "n|tbl|public.invoices",
+        "n|sch|public",
+        "e|col|public.invoices.organization_id",
+        "e|col|public.invoices.period_starts_on"
+      ],
+      "sharedWrites": [
+        "e|uniqueness|public.invoices.organization_id.period_starts_on"
+      ]
+    },
+    {
+      "statementType": "drop_check",
+      "statementTarget": [
+        "table",
+        "public",
+        "invoices"
+      ],
+      "writes": [
+        "s|ck|public.invoices.invoices_period_only_for_software",
+        "n|ck|public.invoices.invoices_period_only_for_software",
+        "e|ck|public.invoices.invoices_period_only_for_software",
+        "n|con|public.invoices.invoices_period_only_for_software"
+      ],
+      "reads": [
+        "n|tbl|public.invoices",
+        "n|sch|public",
+        "e|col|public.invoices.type",
+        "e|col|public.invoices.period_starts_on"
+      ]
+    },
+    {
+      "statementType": "add_column",
+      "statementTarget": [
+        "column",
+        "public",
+        "invoices",
+        "period_start"
+      ],
+      "writes": [
+        "s|col|public.invoices.period_start",
+        "n|col|public.invoices.period_start",
+        "e|col|public.invoices.period_start"
+      ],
+      "reads": [
+        "n|tbl|public.invoices",
+        "n|sch|public"
+      ]
+    },
+    {
+      "statementType": "add_column",
+      "statementTarget": [
+        "column",
+        "public",
+        "invoices",
+        "period_end"
+      ],
+      "writes": [
+        "s|col|public.invoices.period_end",
+        "n|col|public.invoices.period_end",
+        "e|col|public.invoices.period_end"
+      ],
+      "reads": [
+        "n|tbl|public.invoices",
+        "n|sch|public"
+      ]
+    },
+    {
+      "statementType": "add_column",
+      "statementTarget": [
+        "column",
+        "public",
+        "software_invoice_details",
+        "month_fraction"
+      ],
+      "writes": [
+        "s|col|public.software_invoice_details.month_fraction",
+        "n|col|public.software_invoice_details.month_fraction",
+        "e|col|public.software_invoice_details.month_fraction"
+      ],
+      "reads": [
+        "n|tbl|public.software_invoice_details",
+        "n|sch|public"
+      ]
+    },
+    {
+      "statementType": "add_column",
+      "statementTarget": [
+        "column",
+        "public",
+        "software_invoice_details",
+        "prorated_monthly_fee"
+      ],
+      "writes": [
+        "s|col|public.software_invoice_details.prorated_monthly_fee",
+        "n|col|public.software_invoice_details.prorated_monthly_fee",
+        "e|col|public.software_invoice_details.prorated_monthly_fee"
+      ],
+      "reads": [
+        "n|tbl|public.software_invoice_details",
+        "n|sch|public"
+      ]
+    },
+    {
+      "statementType": "add_column",
+      "statementTarget": [
+        "column",
+        "public",
+        "software_invoice_details",
+        "prorated_included_orders"
+      ],
+      "writes": [
+        "s|col|public.software_invoice_details.prorated_included_orders",
+        "n|col|public.software_invoice_details.prorated_included_orders",
+        "e|col|public.software_invoice_details.prorated_included_orders"
+      ],
+      "reads": [
+        "n|tbl|public.software_invoice_details",
+        "n|sch|public"
+      ]
+    },
+    {
+      "statementType": "drop_column",
+      "statementTarget": [
+        "column",
+        "public",
+        "invoices",
+        "period_starts_on"
+      ],
+      "writes": [
+        "s|col|public.invoices.period_starts_on",
+        "n|col|public.invoices.period_starts_on",
+        "e|col|public.invoices.period_starts_on"
+      ],
+      "reads": [
+        "n|tbl|public.invoices",
+        "n|sch|public"
+      ]
+    },
+    {
+      "statementType": "create_index",
+      "statementTarget": [
+        "index",
+        "public",
+        "invoices",
+        "invoices_organization_type_period_index"
+      ],
+      "writes": [
+        "s|idx|public.invoices_organization_type_period_index",
+        "n|idx|public.invoices_organization_type_period_index",
+        "e|idx|public.invoices_organization_type_period_index",
+        "n|rel|public.invoices_organization_type_period_index"
+      ],
+      "reads": [
+        "n|tbl|public.invoices",
+        "n|sch|public",
+        "n|col|public.invoices.organization_id",
+        "n|col|public.invoices.type",
+        "n|col|public.invoices.period_start"
+      ]
+    },
+    {
+      "statementType": "add_check",
+      "statementTarget": [
+        "table",
+        "public",
+        "invoices"
+      ],
+      "writes": [
+        "s|ck|public.invoices.invoices_period_in_order",
+        "n|ck|public.invoices.invoices_period_in_order",
+        "e|ck|public.invoices.invoices_period_in_order",
+        "n|con|public.invoices.invoices_period_in_order"
+      ],
+      "reads": [
+        "n|tbl|public.invoices",
+        "n|sch|public",
+        "n|col|public.invoices.period_start",
+        "n|col|public.invoices.period_end"
+      ]
+    },
+    {
+      "statementType": "add_check",
+      "statementTarget": [
+        "table",
+        "public",
+        "software_invoice_details"
+      ],
+      "writes": [
+        "s|ck|public.software_invoice_details.software_invoice_details_month_fraction_positive",
+        "n|ck|public.software_invoice_details.software_invoice_details_month_fraction_positive",
+        "e|ck|public.software_invoice_details.software_invoice_details_month_fraction_positive",
+        "n|con|public.software_invoice_details.software_invoice_details_month_fraction_positive"
+      ],
+      "reads": [
+        "n|tbl|public.software_invoice_details",
+        "n|sch|public",
+        "n|col|public.software_invoice_details.month_fraction"
+      ]
+    },
+    {
+      "statementType": "alter_check",
+      "statementTarget": [
+        "table",
+        "public",
+        "software_invoice_details"
+      ],
+      "writes": [
+        "s|ck|public.software_invoice_details.software_invoice_details_counts_not_negative"
+      ],
+      "reads": [
+        "n|tbl|public.software_invoice_details",
+        "n|sch|public",
+        "n|col|public.software_invoice_details.order_count",
+        "n|col|public.software_invoice_details.extra_order_count",
+        "n|col|public.software_invoice_details.included_orders",
+        "n|col|public.software_invoice_details.prorated_included_orders",
+        "e|col|public.software_invoice_details.order_count",
+        "e|col|public.software_invoice_details.extra_order_count",
+        "e|col|public.software_invoice_details.included_orders"
+      ],
+      "sqlHash": "34bcd5a9f0f3182f"
+    }
+  ],
+  "deltas": [
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "invoices",
+        "name": "period_start",
+        "type": "date",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "invoices",
+        "name": "period_end",
+        "type": "date",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "software_invoice_details",
+        "name": "month_fraction",
+        "type": "numeric(10,6)",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "software_invoice_details",
+        "name": "prorated_monthly_fee",
+        "type": "numeric(12,2)",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "software_invoice_details",
+        "name": "prorated_included_orders",
+        "type": "integer",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "invoices",
+        "name": "invoices_organization_type_period_index",
+        "nameExplicit": true,
+        "columns": [
+          {
+            "value": "organization_id",
+            "isExpression": false,
+            "asc": true,
+            "nullsFirst": false,
+            "opclass": null
+          },
+          {
+            "value": "type",
+            "isExpression": false,
+            "asc": true,
+            "nullsFirst": false,
+            "opclass": null
+          },
+          {
+            "value": "period_start",
+            "isExpression": false,
+            "asc": true,
+            "nullsFirst": false,
+            "opclass": null
+          }
+        ],
+        "isUnique": false,
+        "where": null,
+        "with": "",
+        "method": "btree",
+        "concurrently": false,
+        "entityType": "indexes"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "invoices",
+        "name": "invoices_period_in_order",
+        "value": "\"period_start\" <= \"period_end\"",
+        "entityType": "checks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "software_invoice_details",
+        "name": "software_invoice_details_month_fraction_positive",
+        "value": "\"month_fraction\" > 0",
+        "entityType": "checks"
+      }
+    },
+    {
+      "op": "drop",
+      "key": "columns\u0000[\"public\",\"invoices\",\"period_starts_on\"]"
+    },
+    {
+      "op": "drop",
+      "key": "uniques\u0000[\"public\",\"invoices\",\"invoices_organization_id_period_starts_on_unique\"]"
+    },
+    {
+      "op": "drop",
+      "key": "checks\u0000[\"public\",\"invoices\",\"invoices_period_only_for_software\"]"
+    },
+    {
+      "op": "alter",
+      "key": "checks\u0000[\"public\",\"software_invoice_details\",\"software_invoice_details_counts_not_negative\"]",
+      "set": {
+        "value": "\"order_count\" >= 0 AND \"extra_order_count\" >= 0 AND \"included_orders\" >= 0 AND \"prorated_included_orders\" >= 0"
+      }
+    }
+  ]
+}

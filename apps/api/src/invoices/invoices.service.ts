@@ -20,7 +20,6 @@ import {
 import { and, asc, desc, eq, isNull, sql, type SQL } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 import { getPageOffset, toPaginated } from '../common/pagination.js';
-import { toPeriod } from '../common/region-month.js';
 import { countries } from '../countries/countries.schema.js';
 import { DATABASE, type Database } from '../database/database.module.js';
 import { orders } from '../orders/orders.schema.js';
@@ -47,14 +46,11 @@ function toIsoDate(date: Date | null): string | null {
 interface InvoiceRow {
   createdAt: Date;
   paidAt: Date | null;
-  periodStartsOn: string | null;
 }
 
 function toInvoiceDates<T extends InvoiceRow>(row: T) {
-  const { periodStartsOn, ...invoice } = row;
   return {
-    ...invoice,
-    period: periodStartsOn ? toPeriod(periodStartsOn) : null,
+    ...row,
     createdAt: row.createdAt.toISOString(),
     paidAt: toIsoDate(row.paidAt),
   };
@@ -141,6 +137,9 @@ export class InvoicesService {
       monthlyFee: details.monthlyFee,
       includedOrders: details.includedOrders,
       extraOrderFee: details.extraOrderFee,
+      monthFraction: details.monthFraction,
+      proratedMonthlyFee: details.proratedMonthlyFee,
+      proratedIncludedOrders: details.proratedIncludedOrders,
       orderCount: details.orderCount,
       extraOrderCount: details.extraOrderCount,
       subtotal: details.subtotal,
@@ -153,7 +152,8 @@ export class InvoicesService {
       .select({
         id: invoices.id,
         type: invoices.type,
-        periodStartsOn: invoices.periodStartsOn,
+        periodStart: invoices.periodStart,
+        periodEnd: invoices.periodEnd,
         organizationName: organizations.name,
         createdByName: createdByUsers.name,
         paidByName: paidByUsers.name,
