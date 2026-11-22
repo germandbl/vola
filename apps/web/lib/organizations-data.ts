@@ -5,6 +5,7 @@ import {
   cashWithPlatformSchema,
   pendingDriverCashSchema,
   pendingInvoiceSchema,
+  pendingSoftwareInvoiceSchema,
   softwareContractSettingSchema,
   pendingMerchantCashSchema,
   branchSummarySchema,
@@ -45,6 +46,7 @@ import {
   type Paginated,
   type PendingDriverCash,
   type PendingInvoice,
+  type PendingSoftwareInvoice,
   type SoftwareContractSetting,
   type PendingMerchantCash,
   type UserSummary,
@@ -200,6 +202,10 @@ export function getSettlementHistory(page: number): Promise<Paginated<CashSettle
 
 export function getPendingInvoices(): Promise<PendingInvoice[]> {
   return getFromApi("/invoices/pending", z.array(pendingInvoiceSchema));
+}
+
+export function getPendingSoftwareInvoices(): Promise<PendingSoftwareInvoice[]> {
+  return getFromApi("/invoices/software/pending", z.array(pendingSoftwareInvoiceSchema));
 }
 
 export function getInvoicesPage(page: number): Promise<Paginated<InvoiceSummary>> {

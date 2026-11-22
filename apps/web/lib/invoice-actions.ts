@@ -1,10 +1,12 @@
 "use server";
 
-import { invoiceOrderSchema, type InvoiceOrder } from "@vola/shared";
+import { invoiceOrderSchema, type InvoiceOrder, type SoftwareInvoiceForm } from "@vola/shared";
 import { refresh } from "next/cache";
 import { z } from "zod";
 import { fetchWithSession } from "./api-fetch";
+import { toFieldErrors, type FieldErrors } from "./form-state";
 
+const HTTP_BAD_REQUEST = 400;
 const HTTP_FORBIDDEN = 403;
 const HTTP_CONFLICT = 409;
 
@@ -51,4 +53,40 @@ export async function markInvoicePaid(invoiceId: number): Promise<MarkInvoicePai
   if (!response.ok) return { error: toMarkPaidError(response.status) };
   refresh();
   return { isPaid: true };
+}
+
+const apiValidationErrorSchema = z.object({
+  issues: z.array(
+    z.object({ path: z.array(z.union([z.string(), z.number()])), message: z.string() }),
+  ),
+});
+
+export interface CreateSoftwareInvoiceResult {
+  fieldErrors: FieldErrors;
+  formError?: string;
+  isCreated?: boolean;
+}
+
+async function toSoftwareInvoiceError(response: Response): Promise<CreateSoftwareInvoiceResult> {
+  if (response.status === HTTP_BAD_REQUEST) {
+    const body = apiValidationErrorSchema.safeParse(await response.json());
+    if (body.success) return { fieldErrors: toFieldErrors(body.data.issues) };
+  }
+  if (response.status === HTTP_CONFLICT) {
+    return { fieldErrors: {}, formError: "Ese mes ya se facturó. Otra persona generó la factura mientras tanto." };
+  }
+  return { fieldErrors: {}, formError: toCreateInvoiceError(response.status) };
+}
+
+export async function createSoftwareInvoice(
+  organizationId: number,
+  form: SoftwareInvoiceForm,
+): Promise<CreateSoftwareInvoiceResult> {
+  const response = await fetchWithSession(`/invoices/software/pending/${organizationId}`, {
+    method: "POST",
+    body: JSON.stringify(form),
+  });
+  if (!response.ok) return toSoftwareInvoiceError(response);
+  refresh();
+  return { fieldErrors: {}, isCreated: true };
 }
