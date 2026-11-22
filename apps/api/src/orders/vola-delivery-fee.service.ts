@@ -8,6 +8,7 @@ import {
 import { and, count, eq, gte } from 'drizzle-orm';
 import { branches } from '../branches/branches.schema.js';
 import { createFieldValidationException } from '../common/field-validation.js';
+import { findStartOfRegionMonth } from '../common/region-month.js';
 import { DATABASE, type Database } from '../database/database.module.js';
 import { DeliveryFeesService } from '../delivery-fees/delivery-fees.service.js';
 import { OrderCountFeesService } from '../delivery-fees/order-count-fees.service.js';
@@ -16,10 +17,6 @@ import {
   type Coordinates,
 } from '../google-maps/route-distance.service.js';
 import { orders } from './orders.schema.js';
-
-// Centroamérica (salvo Panamá) usa UTC-6 todo el año, sin horario de verano.
-const REGION_UTC_OFFSET_HOURS = -6;
-const MILLISECONDS_PER_HOUR = 60 * 60 * 1000;
 
 export interface OrderOrigin extends Coordinates {
   merchantId: number;
@@ -30,17 +27,6 @@ export interface VolaDeliveryFee {
   fee: number;
   basis: DeliveryFeeBasis;
   distanceKm: number | null;
-}
-
-function findStartOfRegionMonth(now: Date): Date {
-  const offsetMilliseconds = REGION_UTC_OFFSET_HOURS * MILLISECONDS_PER_HOUR;
-  const regionNow = new Date(now.getTime() + offsetMilliseconds);
-  const regionMonthStart = Date.UTC(
-    regionNow.getUTCFullYear(),
-    regionNow.getUTCMonth(),
-    1,
-  );
-  return new Date(regionMonthStart - offsetMilliseconds);
 }
 
 @Injectable()

@@ -7,20 +7,11 @@ import {
   type SoftwareContractSetting,
 } from '@vola/shared';
 import { eq } from 'drizzle-orm';
+import { toPeriod, toPeriodStartDate } from '../common/region-month.js';
 import { DATABASE, type Database } from '../database/database.module.js';
 import { assertCanInvoiceMerchants } from '../invoices/pending-invoices.service.js';
 import { organizations } from '../organizations/organizations.schema.js';
 import { softwareContracts } from './software-contracts.schema.js';
-
-const PERIOD_LENGTH = 'YYYY-MM'.length;
-
-function toStartsOn(period: string): string {
-  return `${period}-01`;
-}
-
-function toPeriod(startsOn: string): string {
-  return startsOn.slice(0, PERIOD_LENGTH);
-}
 
 @Injectable()
 export class SoftwareContractsService {
@@ -58,7 +49,7 @@ export class SoftwareContractsService {
     await this.assertIsMerchant(organizationId);
     const terms = {
       currency: form.currency,
-      startsOn: toStartsOn(form.startPeriod),
+      startsOn: toPeriodStartDate(form.startPeriod),
       monthlyFee: form.monthlyFee,
       includedOrders: form.includedOrders,
       extraOrderFee: form.extraOrderFee,
