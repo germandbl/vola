@@ -13,6 +13,7 @@ import { OrdersModule } from './orders/orders.module.js';
 import { OperationMapModule } from './operation-map/operation-map.module.js';
 import { OrganizationsModule } from './organizations/organizations.module.js';
 import { SettlementsModule } from './settlements/settlements.module.js';
+import { SoftwareContractsModule } from './software-contracts/software-contracts.module.js';
 import { TrackingModule } from './tracking/tracking.module.js';
 import { UsersModule } from './users/users.module.js';
 
@@ -30,6 +31,7 @@ import { UsersModule } from './users/users.module.js';
     OperationMapModule,
     OrganizationsModule,
     SettlementsModule,
+    SoftwareContractsModule,
     TrackingModule,
     UsersModule,
   ],

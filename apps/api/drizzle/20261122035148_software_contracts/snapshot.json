@@ -1,0 +1,295 @@
+{
+  "type": "diff",
+  "version": "9",
+  "dialect": "postgres",
+  "id": "e48e15e1-1563-49e8-997d-45374859cf68",
+  "prevIds": [
+    "6e6c7cf1-696c-4493-a705-d673b9162bbe"
+  ],
+  "footprints": [
+    {
+      "statementType": "create_table",
+      "statementTarget": [
+        "table",
+        "public",
+        "software_contracts"
+      ],
+      "writes": [
+        "s|tbl|public.software_contracts",
+        "n|tbl|public.software_contracts",
+        "e|tbl|public.software_contracts",
+        "n|rel|public.software_contracts",
+        "n|type|public.software_contracts",
+        "n|rel|public.software_contracts_pkey",
+        "n|rel|public.software_contracts_organization_id_key"
+      ],
+      "reads": [
+        "n|sch|public"
+      ]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "software_contracts"
+      ],
+      "writes": [
+        "s|fk|public.software_contracts.software_contracts_organization_id_organizations_id_fkey",
+        "n|fk|public.software_contracts.software_contracts_organization_id_organizations_id_fkey",
+        "e|fk|public.software_contracts.software_contracts_organization_id_organizations_id_fkey",
+        "n|con|public.software_contracts.software_contracts_organization_id_organizations_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.software_contracts",
+        "n|sch|public",
+        "n|tbl|public.organizations",
+        "n|sch|public",
+        "n|col|public.software_contracts.organization_id",
+        "n|col|public.organizations.id",
+        "e|uniqueness|public.organizations.id"
+      ]
+    }
+  ],
+  "deltas": [
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "name": "software_contracts",
+        "isRlsEnabled": false,
+        "entityType": "tables"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "software_contracts",
+        "name": "id",
+        "type": "bigint",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": {
+          "type": "always",
+          "name": "software_contracts_id_seq",
+          "increment": "1",
+          "startWith": "1",
+          "minValue": "1",
+          "maxValue": "9223372036854775807",
+          "cache": 1,
+          "cycle": false
+        },
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "software_contracts",
+        "name": "organization_id",
+        "type": "bigint",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "software_contracts",
+        "name": "currency",
+        "type": "varchar(3)",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "software_contracts",
+        "name": "starts_on",
+        "type": "date",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "software_contracts",
+        "name": "monthly_fee",
+        "type": "numeric(12,2)",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "software_contracts",
+        "name": "included_orders",
+        "type": "integer",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "software_contracts",
+        "name": "extra_order_fee",
+        "type": "numeric(12,2)",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "software_contracts",
+        "name": "created_at",
+        "type": "timestamp",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": "now()",
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "software_contracts",
+        "name": "updated_at",
+        "type": "timestamp",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": "now()",
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "software_contracts",
+        "name": "software_contracts_organization_id_organizations_id_fkey",
+        "nameExplicit": false,
+        "columns": [
+          "organization_id"
+        ],
+        "schemaTo": "public",
+        "tableTo": "organizations",
+        "columnsTo": [
+          "id"
+        ],
+        "onUpdate": "NO ACTION",
+        "onDelete": "CASCADE",
+        "entityType": "fks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "software_contracts",
+        "name": "software_contracts_pkey",
+        "columns": [
+          "id"
+        ],
+        "nameExplicit": false,
+        "entityType": "pks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "software_contracts",
+        "name": "software_contracts_organization_id_key",
+        "nameExplicit": false,
+        "columns": [
+          "organization_id"
+        ],
+        "nullsNotDistinct": false,
+        "entityType": "uniques"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "software_contracts",
+        "name": "software_contracts_currency_iso",
+        "value": "\"currency\" ~ '^[A-Z]{3}$'",
+        "entityType": "checks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "software_contracts",
+        "name": "software_contracts_starts_on_first_day",
+        "value": "extract(day from \"starts_on\") = 1",
+        "entityType": "checks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "software_contracts",
+        "name": "software_contracts_amounts_not_negative",
+        "value": "\"monthly_fee\" >= 0 AND \"extra_order_fee\" >= 0 AND \"included_orders\" >= 0",
+        "entityType": "checks"
+      }
+    }
+  ]
+}
