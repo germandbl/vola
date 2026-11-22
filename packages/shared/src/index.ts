@@ -16,3 +16,4 @@ export * from './theme.js';
 export * from './settlements.js';
 export * from './operation-map.js';
 export * from './invoices.js';
+export * from './software-contracts.js';

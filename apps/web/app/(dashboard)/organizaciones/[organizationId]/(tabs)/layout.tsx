@@ -1,15 +1,16 @@
-import { OrganizationType, type Organization } from "@vola/shared";
+import { OrganizationType, canInvoiceMerchants, type AuthUser, type Organization } from "@vola/shared";
 import { Suspense } from "react";
 import { PageHeader } from "@/components/PageHeader";
 import { SectionTabs, type SectionTab } from "@/components/SectionTabs";
 import { Skeleton } from "@/components/ui/skeleton";
+import { getCurrentUser } from "@/lib/current-user";
 import { ORGANIZATION_TYPE_LABEL } from "@/lib/labels";
 import { getOrganization } from "@/lib/organizations-data";
 import { readIdParam } from "@/lib/route-params";
 
 type OrganizationLayoutProps = LayoutProps<"/organizaciones/[organizationId]">;
 
-function getTabs(organization: Organization): SectionTab[] {
+function getTabs(organization: Organization, currentUser: AuthUser): SectionTab[] {
   const basePath = `/organizaciones/${organization.id}`;
   const tabs: SectionTab[] = [
     { href: basePath, label: "General" },
@@ -18,12 +19,15 @@ function getTabs(organization: Organization): SectionTab[] {
   if (organization.type === OrganizationType.Merchant) {
     tabs.push({ href: `${basePath}/comercios`, label: "Comercios" });
   }
+  if (organization.type === OrganizationType.Merchant && canInvoiceMerchants(currentUser)) {
+    tabs.push({ href: `${basePath}/contrato`, label: "Contrato" });
+  }
   return tabs;
 }
 
 async function OrganizationHeader({ params }: Pick<OrganizationLayoutProps, "params">) {
   const organizationId = readIdParam((await params).organizationId);
-  const organization = await getOrganization(organizationId);
+  const [organization, currentUser] = await Promise.all([getOrganization(organizationId), getCurrentUser()]);
   const countryLabel = organization.countryName ?? "Sin país";
 
   return (
@@ -32,7 +36,7 @@ async function OrganizationHeader({ params }: Pick<OrganizationLayoutProps, "par
         title={organization.name}
         description={`${ORGANIZATION_TYPE_LABEL[organization.type]} · ${countryLabel}`}
       />
-      <SectionTabs label="Secciones de la organización" tabs={getTabs(organization)} />
+      <SectionTabs label="Secciones de la organización" tabs={getTabs(organization, currentUser)} />
     </div>
   );
 }
